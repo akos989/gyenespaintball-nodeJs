@@ -1,14 +1,17 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
+
+const operatorRoutes = require('./api/routes/operators');
 
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-    res.status(200).json({
-        message: 'It works!'
-    });
-});
+
+//Routes to handle
+app.use('/operators', operatorRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not found');
