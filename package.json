@@ -1,0 +1,27 @@
+{
+  "name": "gyenespaintball-nodejs",
+  "version": "1.0.0",
+  "description": "RESTful API for Gyenespaintball.hu",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akos989/gyenespaintball-nodeJs.git"
+  },
+  "author": "Akos Morvai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akos989/gyenespaintball-nodeJs/issues"
+  },
+  "homepage": "https://github.com/akos989/gyenespaintball-nodeJs#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
