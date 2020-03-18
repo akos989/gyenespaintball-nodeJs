@@ -36,63 +36,61 @@ exports.get_all = (req, res, next) => {
 };
 
 exports.create = (req, res, next) => {
-    Operator.findOne({email: req.body.email})
+    Operator.find({email: req.body.email})
         .exec()
-        .then(operator => {
-            if (operator) {
+        .then(docs => {
+            if (docs.length >= 1) {
                 return res.status(409).json({
                     error: {
                         error: 'EMAIL_EXISTS'
                     }
                 });
-            }
-            bcrypt.hash(req.body.password, 10, (err, hash) => {
-                if (err) {
-                    return res.status(500).json({
-                        error: {
-                            error: 'HASH_FAILED',
-                            message: err
-                        }
-                    });
-                } else {
-                    const operator = new Operator({
-                        _id: new mongoose.Types.ObjectId(),
-                        name: req.body.name,
-                        email: req.body.email,
-                        password: hash,
-                        phoneNumber: req.body.phoneNumber,
-                        admin: req.body.admin
-                    });
-                    operator.save()
-                        .then(result => {
-                            const token = jwt.sign(
-                                {
-                                    operatorId: result._id,
-                                    email: result.email
-                                },
-                                process.env.JWT_KEY,
-                                {
-                                    expiresIn: '1h'
-                                }
-                            );
-                            res.status(201).json({
-                                message: 'OPERATOR_CREATED',
-                                token: token,
-                                email: result.email,
-                                expiresIn: '3600',
-                                localId: result._id                                        
-                            });
-                        })
-                        .catch(err => {
-                            res.status(500).json({
-                                error: {
-                                    error: 'CREATION_FAILED',
-                                    message: err
-                                }
-                            });
+            } else {
+                bcrypt.hash(req.body.password, 10, (err, hash) => {
+                    if (err) {
+                        return res.status(500).json({
+                            error: {
+                                error: 'HASH_FAILED',
+                                message: err
+                            }
                         });
-                }
-            });            
+                    } else {
+                        const operator = new Operator({        
+                            _id: new mongoose.Types.ObjectId(),
+                            email: req.body.email,
+                            password: hash,
+                            admin: res.locals.admin,
+                            phoneNumber: req.body.phoneNumber,
+                            name: req.body.name
+                        });
+                        operator.save()
+                            .then(result => {
+                                const token = jwt.sign(
+                                    {
+                                        operatorId: result._id,
+                                        email: result.email
+                                    },
+                                    process.env.JWT_KEY,
+                                    {
+                                        expiresIn: '1h'
+                                    }
+                                );
+                                res.locals.operator = result;
+                                res.locals.token = token;
+                                
+                                next();
+                            })
+                            .catch(err => {
+                                res.status(500).json({
+                                    error: {
+                                        error: 'CREATION_FAILED',
+                                        message: err
+                                    }
+                                });                    
+                            }); 
+                    }
+                });    
+            }
         })
         .catch(err => {
             res.status(500).json({
@@ -100,8 +98,8 @@ exports.create = (req, res, next) => {
                     error: 'CREATION_FAILED',
                     message: err
                 }
-            });
-        });
+            });                    
+        }); 
 };
 
 exports.login = (req, res, next) => {

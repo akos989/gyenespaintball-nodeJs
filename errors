@@ -4,10 +4,15 @@ error {
             HASH_FAILED
             CREATION_FAILED
             AUTH_FAILED
-}
+            NO_ID_TO_VALIDATE // amikor rányom a validation linkre
+            ALREADY_VALIDATED
+            VALIDATION_FAILED // valami random error
+            }
 
 
 //success:
 
 message:    OPERATOR_CREATED
+            TEMP_OPERATOR_CREATED
             AUTH_SUCCESSFUL
+            READY_TO_VALIDATE
