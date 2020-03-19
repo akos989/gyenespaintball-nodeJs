@@ -11,6 +11,7 @@ error {
             NOT_ADMIN
             DATE_EXISTS
             DATE_IS_BEFORE_MIN
+            FROM_>_TO
 }
 
 
@@ -20,3 +21,6 @@ message:    OPERATOR_CREATED
             TEMP_OPERATOR_CREATED
             AUTH_SUCCESSFUL
             READY_TO_VALIDATE
+            CREATED
+            FOUND
+            DELETED

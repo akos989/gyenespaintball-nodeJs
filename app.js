@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const operatorRoutes = require('./api/routes/operators');
 const tempOperatorRoutes = require('./api/routes/temp_operators');
 const reservationRoutes = require('./api/routes/reservations');
+const NODRoutes = require('./api/routes/not_open_dates');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -16,6 +17,8 @@ app.use(bodyParser.json());
 app.use('/operators', operatorRoutes);
 app.use('/temp_operators', tempOperatorRoutes);
 app.use('/reservations', reservationRoutes);
+app.use('/no_dates', NODRoutes);
+
 
 app.use((req, res, next) => {
     const error = new Error('Not found');

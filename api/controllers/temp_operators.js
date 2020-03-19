@@ -99,7 +99,7 @@ exports.validate = (req, res, next) => {
 };
 
 exports.delete_validated = (req, res, next) => {
-    TempOperator.remove({ _id: req.params.temp_operatorId })
+    TempOperator.deleteOne({ _id: req.params.temp_operatorId })
         .exec()
         .then(result => {
             res.status(201).json({

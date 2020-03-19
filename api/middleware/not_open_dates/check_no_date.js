@@ -1,15 +1,18 @@
-const Reservation = require('../../models/reservation');
+const NOD = require('../../models/not_open_date');
 
 module.exports = (req, res, next) => {
-    const date = new Date(req.body.date);
+    let date = new Date(req.body.fromDate);
     date.setHours(date.getHours() + 2);
-    req.body.date = date;
+    req.body.fromDate = date;
+    date = new Date(req.body.toDate);
+    date.setHours(date.getHours() + 2);
+    req.body.toDate = date;
 
-    Reservation.findOne({date: date})
+    NOD.findOne({fromDate: req.body.fromDate})
         .exec()
         .then( doc => {
             if (doc) {
-                if (req.params.reservationId != doc._id) {
+                if (req.params.nodId != doc._id) {
                     return res.status(500).json({
                         error: {
                             error: 'DATE_EXISTS'
@@ -17,21 +20,18 @@ module.exports = (req, res, next) => {
                     });
                 }                
             }
-            let addition = 1;
-            if (new Date().getUTCHours === 23) {
-                addition = 2;
-            }
-            const minDate = new Date(
-                    new Date().getUTCFullYear(),
-                    new Date().getUTCMonth(),
-                    new Date().getUTCDate() + addition,
-                    1
-            );
             
-            if (date <= minDate) {
+            if (req.body.fromDate <= new Date()) {
                 return res.status(500).json({
                     error: {
                         error: 'DATE_IS_BEFORE_MIN'
+                    }
+                });
+            }
+            if (req.body.fromDate > req.body.toDate) {
+                return res.status(500).json({
+                    error: {
+                        error: 'FROM_>_TO'
                     }
                 });
             }
