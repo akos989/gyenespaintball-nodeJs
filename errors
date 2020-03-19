@@ -1,13 +1,17 @@
 error {
     message?: //some random error message from the server
-    error!: EMAIL_EXISTS
+    error!: NOT_FOUND
+            EMAIL_EXISTS
             HASH_FAILED
             CREATION_FAILED
             AUTH_FAILED
             NO_ID_TO_VALIDATE // amikor rányom a validation linkre
             ALREADY_VALIDATED
             VALIDATION_FAILED // valami random error
-            }
+            NOT_ADMIN
+            DATE_EXISTS
+            DATE_IS_BEFORE_MIN
+}
 
 
 //success:

@@ -155,3 +155,21 @@ exports.login = (req, res, next) => {
             });
         });
 };
+
+exports.delete = (req, res, next) => {
+    Operator.deleteOne({ _id: req.params.operatorId })
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'DELETE_SUCCESFUL'
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'NOT_DELETED',
+                    message: err
+                }
+            });
+        });
+};
