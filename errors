@@ -12,6 +12,9 @@ error {
             DATE_EXISTS
             DATE_IS_BEFORE_MIN
             FROM_>_TO
+            TEMP_OPERATOR_EXPIRED
+            PASS_NOT_MATCH
+            PASS_NOT_MATCH_OLD
 }
 
 

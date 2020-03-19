@@ -4,6 +4,9 @@ module.exports = (req, res, next) => {
     if (req.userData.reservationId) {
         return next();
     }
+    if (req.userData.operatorId == req.params.operatorId) {
+        return next();
+    }
     Operator.findById(req.userData.operatorId)
         .exec()
         .then( operator => {
@@ -21,6 +24,7 @@ module.exports = (req, res, next) => {
                     }
                 });
             }
+            res.locals.isAdmin = true;
             next();            
         })
         .catch(err => {

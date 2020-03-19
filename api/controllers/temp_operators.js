@@ -13,10 +13,36 @@ exports.create = (req, res, next) => {
                     }
                 });
             }
+            if (req.body.accessLimit) {
+                const date = new Date(req.body.accessLimit);
+                date.setHours(date.getHours() + 2);
+                req.body.accessLimit = date;
+            }
+            let addition = 1;
+            if (new Date().getUTCHours === 23) {
+                addition = 2;
+            }
+            const minDate = new Date(
+                    new Date().getUTCFullYear(),
+                    new Date().getUTCMonth(),
+                    new Date().getUTCDate() + addition,
+                    1
+            );
+            
+            if (req.body.accessLimit <= minDate) {
+                return res.status(500).json({
+                    error: {
+                        error: 'DATE_IS_BEFORE_MIN'
+                    }
+                });
+            }
+            
             const tOperator = new TempOperator({
                 _id: new mongoose.Types.ObjectId(),
                 email: req.body.email,
-                admin: req.body.admin
+                admin: req.body.admin,
+                temporary: req.body.temporary,
+                accessLimit: req.body.accessLimit
             });
             tOperator.save()
                 .then(result => {
@@ -58,6 +84,13 @@ exports.can_validate = (req, res, next) => {
                     }
                 });
             }
+            if (operator.temporary && operator.accessLimit <= new Date()) {
+                return res.status(500).json({
+                    error: {
+                        error: 'TEMP_OPERATOR_EXPIRED'
+                    }
+                }); 
+            }
             res.status(200).json({
                 message: 'READY_TO_VALIDATE',
                 operatorId: operator._id,
@@ -86,6 +119,10 @@ exports.validate = (req, res, next) => {
                 });
             }
             res.locals.admin = doc.admin;
+            if (!doc.admin && doc.temporary) {
+                res.locals.temporary = doc.temporary;
+                res.locals.accessLimit = doc.accessLimit;
+            }
             next();
         })
         .catch(err => {

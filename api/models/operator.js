@@ -12,7 +12,17 @@ const Operator = db.model('Operator', {
     },
     password: { type: String, required: true },
     phoneNumber: {type:String, required: true },
-    admin: { type: Boolean, default: false }
+    admin: { type: Boolean, default: false },
+    temporary: { type: Boolean, default: false },
+    accessLimit: {
+        type: Date,
+        min: new Date(
+                new Date().getFullYear(),
+                new Date().getMonth(),
+                new Date().getDate() + 1,
+                1
+        )
+    }
 });
 
 module.exports = Operator;

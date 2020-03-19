@@ -5,12 +5,11 @@ const checkAuth = require('../middleware/auth/check-auth');
 const checkAdmin = require('../middleware/auth/check-admin');
 const checkTemp = require('../middleware/auth/check_temp');
 
-const TempOperatorController = require('../controllers/temp_operators');
+const tempOController = require('../controllers/temp_o');
 
-router.post('/create',
-    checkAuth, checkAdmin,
-    TempOperatorController.create
+router.get('/',
+    checkAuth, checkTemp,
+    tempOController.get_all
 );
-router.get('/can_validate/:operatorId', TempOperatorController.can_validate);
 
 module.exports = router;
