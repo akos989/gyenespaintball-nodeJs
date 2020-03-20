@@ -295,3 +295,36 @@ exports.get_all_temporary = (req, res, next) => {
             });
         });
 };
+
+exports.get_my_account = (req, res, next) => {
+    Operator.findById(req.userData.operatorId)
+        .exec()
+        .then(operator => {
+            if (!operator) {
+                return res.status(404).josn({
+                    error: {
+                        error: 'NOT_FOUND'
+                    }
+                });
+            }
+            res.status(200).json({
+                operator: {
+                    _id: operator._id,
+                    name: operator.name,
+                    email: operator.email,
+                    phoneNumber: operator.phoneNumber,
+                    admin: operator.admin,
+                    temporary: operator.temporary,
+                    accessLimit: operator.accessLimit
+                }
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
+                }
+            });
+        });
+};
