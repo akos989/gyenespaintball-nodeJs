@@ -4,7 +4,9 @@ module.exports = (req, res, next) => {
     if (req.userData.reservationId) {
         return next();
     }
-    if (req.userData.operatorId == req.params.operatorId) {
+    if (req.userData.operatorId == req.params.operatorId ||
+        req.userData.operatorId == req.body.operatorId) 
+        {
         return next();
     }
     Operator.findById(req.userData.operatorId)

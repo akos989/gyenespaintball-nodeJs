@@ -22,7 +22,8 @@ const Operator = db.model('Operator', {
                 new Date().getDate() + 1,
                 1
         )
-    }
+    },
+    subscriptions: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }]
 });
 
 module.exports = Operator;

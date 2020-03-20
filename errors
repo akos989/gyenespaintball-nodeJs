@@ -15,6 +15,7 @@ error {
             TEMP_OPERATOR_EXPIRED
             PASS_NOT_MATCH
             PASS_NOT_MATCH_OLD
+            ALREADY_SUBSCRIBED
 }
 
 

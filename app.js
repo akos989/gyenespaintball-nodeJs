@@ -7,6 +7,7 @@ const operatorRoutes = require('./api/routes/operators');
 const tempOperatorRoutes = require('./api/routes/temp_operators');
 const reservationRoutes = require('./api/routes/reservations');
 const NODRoutes = require('./api/routes/not_open_dates');
+const subscriptionRoutes = require('./api/routes/subscriptions');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -18,6 +19,7 @@ app.use('/operators', operatorRoutes);
 app.use('/temp_operators', tempOperatorRoutes);
 app.use('/reservations', reservationRoutes);
 app.use('/no_dates', NODRoutes);
+app.use('/subscriptions', subscriptionRoutes);
 
 
 app.use((req, res, next) => {

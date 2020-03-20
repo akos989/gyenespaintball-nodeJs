@@ -7,6 +7,7 @@ const checkAdmin = require('../middleware/auth/check-admin');
 const checkDate = require('../middleware/reservations/check_date');
 const checkNoDates = require('../middleware/reservations/check_no_dates');
 const checkTemp = require('../middleware/auth/check_temp');
+const deleteSubscription = require('../middleware/subscriptions/delete_sub_with_reservation');
 
 const ReservationsController = require('../controllers/reservations');
 
@@ -31,6 +32,7 @@ router.patch('/:reservationId',
 );
 router.delete('/:reservationId',
     checkReservationAuth, checkAdmin,
+    deleteSubscription,
     ReservationsController.delete
 );
 
