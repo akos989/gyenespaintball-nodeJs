@@ -16,6 +16,8 @@ error {
             PASS_NOT_MATCH
             PASS_NOT_MATCH_OLD
             ALREADY_SUBSCRIBED
+            NAME_EXISTS
+            NO_PACKAGE
 }
 
 

@@ -5,6 +5,7 @@ const Reservation = require('../models/reservation');
 
 exports.get_all = (req, res, next) => {
     Reservation.find()
+        .populate('packageId')
         .exec()
         .then( reservations => {
             res.status(200).json({
@@ -18,7 +19,8 @@ exports.get_all = (req, res, next) => {
                             phoneNumber: reservation.phoneNumber,
                             playerNumber: reservation.playerNumber,
                             notes: reservation.notes,
-                            date: reservation.date
+                            date: reservation.date,
+                            package: reservation.packageId
                         }
                     })
                 }                
@@ -42,7 +44,8 @@ exports.create = (req, res, next) => {
         phoneNumber: req.body.phoneNumber,
         playerNumber: req.body.playerNumber,
         notes: req.body.notes,
-        date: req.body.date
+        date: req.body.date,
+        packageId: req.body.packageId
     });
     reservation.save()
         .then(result => {
@@ -69,7 +72,8 @@ exports.create = (req, res, next) => {
                     phoneNumber: result.phoneNumber,
                     playerNumber: result.playerNumber,
                     notes: result.notes,
-                    date: result.date
+                    date: result.date,
+                    packageId: result.packageId
                 }                        
             });
         })
@@ -85,6 +89,7 @@ exports.create = (req, res, next) => {
 
 exports.get_one = (req, res, next) => {
     Reservation.findById(req.params.reservationId)
+        .populate('packageId')
         .exec()
         .then(reservation => {
             if (!reservation) {
@@ -103,7 +108,8 @@ exports.get_one = (req, res, next) => {
                     phoneNumber: reservation.phoneNumber,
                     playerNumber: reservation.playerNumber,
                     notes: reservation.notes,
-                    date: reservation.date
+                    date: reservation.date,
+                    package: reservation.packageId
                 }
             });
         })
@@ -126,7 +132,8 @@ exports.update = (req, res, next) => {
                 req.body.email = req.body.email ? req.body.email : original.email;
                 req.body.phoneNumber = req.body.phoneNumber ? req.body.phoneNumber : original.phoneNumber;
                 req.body.playerNumber = req.body.playerNumber ? req.body.playerNumber : original.playerNumber;
-                req.body.notes = req.body.notes ? req.body.notes : original.notes;
+                req.body.notes = req.body.notes ? req.body.notes : original.notes;                
+                req.body.packageId = req.body.packageId ? req.body.packageId : original.packageId; 
 
                 original.date.setHours(original.date.getHours() - 1);
                 req.body.date = req.body.date ? req.body.date : original.date;

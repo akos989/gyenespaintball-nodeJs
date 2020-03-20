@@ -1,7 +1,9 @@
 const Operator = require('../../models/operator');
 
 module.exports = (req, res, next) => {
-    if (req.userData.reservationId) {
+    if (req.userData.operatorId == req.params.operatorId ||
+        req.userData.operatorId == req.body.operatorId) 
+        {
         return next();
     }
     Operator.findById(req.userData.operatorId)

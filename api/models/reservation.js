@@ -22,7 +22,8 @@ const Reservation = db.model('Reservation', {
                 new Date().getDate() + 1,
                 1
             )
-    }
+    },
+    packageId: { type: Schema.Types.ObjectId, required: true, ref: 'Package' }
 });
 
 module.exports = Reservation;

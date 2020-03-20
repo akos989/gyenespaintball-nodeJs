@@ -14,12 +14,12 @@ router.get('/',
 );
 
 router.post('/:reservationId', 
-    checkAuth, checkTemp, checkAdmin,
+    checkAuth, checkTemp,
     checkReservationId, alreadyHas,
     SubscriptionController.subscribe
 );
 router.delete('/:reservationId', 
-    checkAuth, checkTemp, checkAdmin,
+    checkAuth, checkTemp,
     SubscriptionController.delete
 );
 router.get('/my_subs', 

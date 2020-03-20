@@ -9,6 +9,7 @@ const checkTemp = require('../middleware/auth/check_temp');
 const checkEmail = require('../middleware/operator/check_email');
 const checkOldPass = require('../middleware/operator/check_old_pass');
 const hashPass = require('../middleware/operator/hash_pass');
+const checkOwn = require('../middleware/auth/check-own');
 
 router.get('/', checkAuth, checkTemp, OperatorController.get_all);
 router.post('/create/:temp_operatorId',
@@ -22,7 +23,7 @@ router.delete('/:operatorId',
     OperatorController.delete
 );
 router.patch('/:operatorId',
-    checkAuth, checkAdmin,
+    checkAuth, checkOwn,
     checkEmail, checkOldPass, hashPass,
     OperatorController.update
 );
