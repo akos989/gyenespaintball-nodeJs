@@ -2,7 +2,6 @@ const Reservation = require('../../models/reservation');
 
 module.exports = (req, res, next) => {
     const date = new Date(req.body.date);
-    date.setHours(date.getHours() + 2);
     req.body.date = date;
 
     Reservation.findOne({date: date})

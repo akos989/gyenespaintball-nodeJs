@@ -9,8 +9,10 @@ const reservationRoutes = require('./api/routes/reservations');
 const NODRoutes = require('./api/routes/not_open_dates');
 const subscriptionRoutes = require('./api/routes/subscriptions');
 const packageRoutes = require('./api/routes/packages');
+const modalRoutes = require('./api/routes/modals');
 
 app.use(morgan('dev'));
+app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
@@ -22,7 +24,7 @@ app.use('/reservations', reservationRoutes);
 app.use('/no_dates', NODRoutes);
 app.use('/subscriptions', subscriptionRoutes);
 app.use('/packages', packageRoutes);
-
+app.use('/modals', modalRoutes);
 
 
 app.use((req, res, next) => {

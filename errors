@@ -18,6 +18,8 @@ error {
             ALREADY_SUBSCRIBED
             NAME_EXISTS
             NO_PACKAGE
+            DATE_NOT_GIVEN
+            NO_FOR_TODAY
 }
 
 

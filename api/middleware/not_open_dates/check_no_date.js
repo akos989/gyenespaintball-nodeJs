@@ -2,10 +2,8 @@ const NOD = require('../../models/not_open_date');
 
 module.exports = (req, res, next) => {
     let date = new Date(req.body.fromDate);
-    date.setHours(date.getHours() + 2);
     req.body.fromDate = date;
     date = new Date(req.body.toDate);
-    date.setHours(date.getHours() + 2);
     req.body.toDate = date;
 
     NOD.findOne({fromDate: req.body.fromDate})
