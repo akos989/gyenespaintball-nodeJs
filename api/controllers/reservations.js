@@ -37,17 +37,7 @@ exports.get_all = (req, res, next) => {
 };
 
 exports.create = (req, res, next) => {    
-    const reservation = new Reservation({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        email: req.body.email,
-        phoneNumber: req.body.phoneNumber,
-        playerNumber: req.body.playerNumber,
-        notes: req.body.notes,
-        date: req.body.date,
-        packageId: req.body.packageId
-    });
-    console.log(reservation._id);
+    const reservation = res.locals.reservation;
     reservation.save()
         .then(result => {
             res.locals.emailSubject = 'Új foglalás';
@@ -115,59 +105,31 @@ exports.get_one = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
-    Reservation.findById(req.params.reservationId)
-        .exec()
-        .then(original => {
-            console.log(original);
-            if (original) {
-                original.name = req.body.name ? req.body.name : original.name;
-                original.email = req.body.email ? req.body.email : original.email;
-                original.phoneNumber = req.body.phoneNumber ? req.body.phoneNumber : original.phoneNumber;
-                original.playerNumber = req.body.playerNumber ? req.body.playerNumber : original.playerNumber;
-                original.notes = req.body.notes ? req.body.notes : original.notes;                
-                original.packageId = req.body.packageId ? req.body.packageId : original.packageId; 
-                original.date = req.body.date ? req.body.date : original.date;
-                
-                original.save()
-                    .then(result => {
-                        res.status(200).json({
-                            message: 'RESERVATION_UPDATED',
-                            reservation: {
-                                _id: result._id,
-                                name: result.name,
-                                email: result.email,
-                                phoneNumber: result.phoneNumber,
-                                playerNumber: result.playerNumber,
-                                notes: result.notes,
-                                date: result.date,
-                                package: result.packageId
-                            }
-                        });
-                    })
-                    .catch(err => {
-                        res.status(500).json({
-                            error: {
-                                error: 'FAILED',
-                                message: err
-                            }
-                        });
-                    }); 
-            } else {
-                res.status(404).json({
-                    error: {
-                        error: 'NOT_FOUND'
-                    }
-                });
+   const reservation = res.locals.reservation;
+   reservation.save()
+    .then(result => {
+        res.status(200).json({
+            message: 'RESERVATION_UPDATED',
+            reservation: {
+                _id: result._id,
+                name: result.name,
+                email: result.email,
+                phoneNumber: result.phoneNumber,
+                playerNumber: result.playerNumber,
+                notes: result.notes,
+                date: result.date,
+                package: result.packageId
             }
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: {
-                    error: 'FAILED',
-                    message: err
-                }
-            });
         });
+    })
+    .catch(err => {
+        res.status(500).json({
+            error: {
+                error: 'FAILED',
+                message: err
+            }
+        });
+    });
 };
 
 exports.delete = (req, res, next) => {
@@ -187,3 +149,7 @@ exports.delete = (req, res, next) => {
             });
         });
 };
+
+exports.get_for_month = (req, res, next) => {
+    Reservation.find().where()
+}

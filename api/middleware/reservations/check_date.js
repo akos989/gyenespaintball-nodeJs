@@ -1,33 +1,54 @@
 const Reservation = require('../../models/reservation');
 
 module.exports = (req, res, next) => {
-    if (req.params.reservationId) {
-        if (!req.body.date) {
-            return next();
-        }
-    }
-    const date = new Date(req.body.date);
-    req.body.date = date;
-
-    Reservation.find({date: date})
+    Reservation.find()
+        .populate('packageId')
         .exec()
         .then( docs => {
-            if (docs.length >= 2) {
+            let intersectNum = 0;
+            const reservation = res.locals.reservation;
+            let playerNum = reservation.playerNumber;
+            let startA = reservation.date.getHours();
+            let endA = reservation.date.getHours() + res.locals.package.duration;
+            for (const doc of docs) {
+                let startB = doc.date.getHours();
+                let endB = doc.date.getHours() + doc.packageId.duration;
+                
+                if (reservation.date.getFullYear() === doc.date.getFullYear() &&
+                    reservation.date.getMonth() === doc.date.getMonth() &&
+                    reservation.date.getDate() === doc.date.getDate()
+                ) {
+                    const min = (startA < startB ? [startA, endA] : [startB, endB]);
+                    const max = ( (min[0] === startA && min[1] === endA) ? [startB, endB] : [startA, endA] );
+                    if (!(min[1] <= max[0])) {
+                        playerNum += doc.playerNum;
+                        intersectNum++;
+                    }
+                }
+            }
+            if (intersectNum >= 2 || playerNum > 35 ) {
                 return res.status(500).json({
                     error: {
                         error: 'DATE_FULL'
                     }
                 });
             }
-            if (docs.length == 1) {
-                if ( ((+docs[0].playerNumber) + (+req.body.playerNumber)) >= 33 ) {
-                    return res.status(500).json({
-                        error: {
-                            error: 'DATE_FULL'
-                        }
-                    });
-                }
-            }
+            // if (docs.length >= 2) {
+            //     return res.status(500).json({
+            //         error: {
+            //             error: 'DATE_FULL'
+            //         }
+            //     });
+            // }
+            // if (docs.length == 1) {
+            //     if ( ((+docs[0].playerNumber) + (+req.body.playerNumber)) >= 33 ) {
+            //         return res.status(500).json({
+            //             error: {
+            //                 error: 'DATE_FULL'
+            //             }
+            //         });
+            //     }
+            // }
 
             let addition = 1;
             if (new Date().getUTCHours === 23) {
@@ -39,8 +60,8 @@ module.exports = (req, res, next) => {
                     new Date().getUTCDate() + addition,
                     1
             );
-            
-            if (date <= minDate) {
+
+            if (reservation.date <= minDate) {
                 return res.status(500).json({
                     error: {
                         error: 'DATE_IS_BEFORE_MIN'

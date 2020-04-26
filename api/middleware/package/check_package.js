@@ -1,12 +1,7 @@
 const Package = require('../../models/package');
 
 module.exports = (req, res, next) => {
-    if (req.params.reservationId) {
-        if (!req.body.packageId) {
-            return next();
-        }
-    }
-    Package.findById( req.body.packageId )
+    Package.findById( res.locals.reservation.packageId )
         .exec()
         .then(package => {
             if (!package) {
@@ -17,8 +12,8 @@ module.exports = (req, res, next) => {
                 });
             }
            
-            if (package.fromNumberLimit <= req.body.playerNumber &&
-                req.body.playerNumber <= package.toNumberLimit) {
+            if (package.fromNumberLimit <= res.locals.reservation.playerNumber &&
+                res.locals.reservation.playerNumber <= package.toNumberLimit) {
                     return next();
                 }
             return res.status(500).json({
