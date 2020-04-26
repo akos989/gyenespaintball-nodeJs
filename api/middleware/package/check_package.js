@@ -1,6 +1,11 @@
 const Package = require('../../models/package');
 
 module.exports = (req, res, next) => {
+    if (req.params.reservationId) {
+        if (!req.body.packageId) {
+            return next();
+        }
+    }
     Package.findById( req.body.packageId )
         .exec()
         .then(package => {

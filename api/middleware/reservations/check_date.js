@@ -1,21 +1,34 @@
 const Reservation = require('../../models/reservation');
 
 module.exports = (req, res, next) => {
+    if (req.params.reservationId) {
+        if (!req.body.date) {
+            return next();
+        }
+    }
     const date = new Date(req.body.date);
     req.body.date = date;
 
-    Reservation.findOne({date: date})
+    Reservation.find({date: date})
         .exec()
-        .then( doc => {
-            if (doc) {
-                if (req.params.reservationId != doc._id) {
+        .then( docs => {
+            if (docs.length >= 2) {
+                return res.status(500).json({
+                    error: {
+                        error: 'DATE_FULL'
+                    }
+                });
+            }
+            if (docs.length == 1) {
+                if ( ((+docs[0].playerNumber) + (+req.body.playerNumber)) >= 33 ) {
                     return res.status(500).json({
                         error: {
-                            error: 'DATE_EXISTS'
+                            error: 'DATE_FULL'
                         }
                     });
-                }                
+                }
             }
+
             let addition = 1;
             if (new Date().getUTCHours === 23) {
                 addition = 2;
@@ -38,7 +51,7 @@ module.exports = (req, res, next) => {
             return next();
         })
         .catch(err => {
-            res.status(500).json({
+            return res.status(500).json({
                 error: {
                     error: 'FAILED',
                     message: err

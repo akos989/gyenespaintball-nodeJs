@@ -3,9 +3,9 @@ const db = require('../config/db');
 
 const Modal = db.model('Modal', {
     _id: Schema.Types.ObjectId,
-    name: { type: String, required: true },
+    name: { type: String, required: true},
     description: { type: String },
-    modalImage: { type: String, required: true },
+    modalImage: { type: String },
     fromDate: { type: Date },
     toDate: { type: Date, min: new Date() }
 });

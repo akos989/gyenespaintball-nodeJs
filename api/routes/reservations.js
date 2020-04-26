@@ -10,6 +10,10 @@ const checkTemp = require('../middleware/auth/check_temp');
 const deleteSubscription = require('../middleware/subscriptions/delete_sub_with_reservation');
 const checkPackage = require('../middleware/package/check_package');
 
+const sendEmail = require('../middleware/email/send_message');
+const emailReservationCreated = require('../middleware/email/client_reservation_created');
+
+
 const ReservationsController = require('../controllers/reservations');
 
 router.get('/',
@@ -18,21 +22,20 @@ router.get('/',
 );
 router.post('/',
     checkDate, checkNoDates, checkPackage,
-    ReservationsController.create
+    ReservationsController.create,
+    emailReservationCreated, sendEmail
 );
 router.get('/:reservationId',
     checkReservationAuth, 
     ReservationsController.get_one
 );
 router.patch('/:reservationId',
-    checkReservationAuth, checkAdmin,
-    ReservationsController.update,
+    checkAuth, checkAdmin,
     checkDate, checkNoDates, checkPackage,
-    ReservationsController.delete,
-    ReservationsController.create
+    ReservationsController.update
 );
 router.delete('/:reservationId',
-    checkReservationAuth, checkAdmin,
+    checkAuth, checkAdmin,
     deleteSubscription,
     ReservationsController.delete
 );

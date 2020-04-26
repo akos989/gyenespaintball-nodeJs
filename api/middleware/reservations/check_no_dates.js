@@ -1,6 +1,11 @@
 const NOD = require('../../models/not_open_date');
 
 module.exports = (req, res, next) => {
+    if (req.params.reservationId) {
+        if (!req.body.date) {
+            return next();
+        }
+    }
     NOD.find()
         .exec()
         .then(noDates => {

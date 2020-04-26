@@ -20,6 +20,7 @@ error {
             NO_PACKAGE
             DATE_NOT_GIVEN
             NO_FOR_TODAY
+            DATE_FULL
 }
 
 
@@ -32,3 +33,4 @@ message:    OPERATOR_CREATED
             CREATED
             FOUND
             DELETED
+            RESERVATION_UPDATED

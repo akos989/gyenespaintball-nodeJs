@@ -15,7 +15,7 @@ const Reservation = db.model('Reservation', {
     date: {
         type: Date,
         required: true,
-        unique: true,
+        unique: false,
         min: new Date(
                 new Date().getFullYear(),
                 new Date().getMonth(),

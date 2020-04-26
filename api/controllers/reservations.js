@@ -47,24 +47,15 @@ exports.create = (req, res, next) => {
         date: req.body.date,
         packageId: req.body.packageId
     });
+    console.log(reservation._id);
     reservation.save()
         .then(result => {
-            const token = jwt.sign(
-                {
-                    reservationId: result._id,
-                    email: result.email,
-                    type: 'reservation'
-                },
-                process.env.JWT_KEY,
-                {
-                    expiresIn: '1h'
-                }
-            );
-            
+            res.locals.emailSubject = 'Új foglalás';
+            res.locals.reservationInfo = result;           
+            next();
+
             res.status(201).json({
                 message: 'RESERVATION_CREATED',
-                reservationToken: token,
-                expiresIn: '3600',
                 reservation: {
                     _id: result._id,
                     name: result.name,
@@ -127,26 +118,47 @@ exports.update = (req, res, next) => {
     Reservation.findById(req.params.reservationId)
         .exec()
         .then(original => {
+            console.log(original);
             if (original) {
-                req.body.name = req.body.name ? req.body.name : original.name;
-                req.body.email = req.body.email ? req.body.email : original.email;
-                req.body.phoneNumber = req.body.phoneNumber ? req.body.phoneNumber : original.phoneNumber;
-                req.body.playerNumber = req.body.playerNumber ? req.body.playerNumber : original.playerNumber;
-                req.body.notes = req.body.notes ? req.body.notes : original.notes;                
-                req.body.packageId = req.body.packageId ? req.body.packageId : original.packageId; 
-
-                original.date.setHours(original.date.getHours() - 1);
-                req.body.date = req.body.date ? req.body.date : original.date;
+                original.name = req.body.name ? req.body.name : original.name;
+                original.email = req.body.email ? req.body.email : original.email;
+                original.phoneNumber = req.body.phoneNumber ? req.body.phoneNumber : original.phoneNumber;
+                original.playerNumber = req.body.playerNumber ? req.body.playerNumber : original.playerNumber;
+                original.notes = req.body.notes ? req.body.notes : original.notes;                
+                original.packageId = req.body.packageId ? req.body.packageId : original.packageId; 
+                original.date = req.body.date ? req.body.date : original.date;
                 
-                res.locals.update = true;
-
-                return next();
+                original.save()
+                    .then(result => {
+                        res.status(200).json({
+                            message: 'RESERVATION_UPDATED',
+                            reservation: {
+                                _id: result._id,
+                                name: result.name,
+                                email: result.email,
+                                phoneNumber: result.phoneNumber,
+                                playerNumber: result.playerNumber,
+                                notes: result.notes,
+                                date: result.date,
+                                package: result.packageId
+                            }
+                        });
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            error: {
+                                error: 'FAILED',
+                                message: err
+                            }
+                        });
+                    }); 
+            } else {
+                res.status(404).json({
+                    error: {
+                        error: 'NOT_FOUND'
+                    }
+                });
             }
-            return res.status(404).json({
-                error: {
-                    error: 'NOT_FOUND'
-                }
-            });
         })
         .catch(err => {
             res.status(500).json({
@@ -162,9 +174,6 @@ exports.delete = (req, res, next) => {
     Reservation.deleteOne({ _id: req.params.reservationId })
         .exec()
         .then(result => {
-            if (res.locals.update) {
-                return next();
-            }
             return res.status(200).json({
                 message: 'DELETE_SUCCESFUL'
             });
