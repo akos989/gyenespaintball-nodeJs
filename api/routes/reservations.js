@@ -51,6 +51,7 @@ router.delete('/:reservationId',
     checkAuth, checkAdmin,
     deleteSubscription,
     ReservationsController.delete
+    //email
 );
 
 module.exports = router;

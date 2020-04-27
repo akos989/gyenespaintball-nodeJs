@@ -10,20 +10,20 @@ exports.get_all = (req, res, next) => {
         .then( reservations => {
             res.status(200).json({
                 count: reservations.length,
-                reservations: {
-                    reservation: reservations.map(reservation => {
-                        return {
+                reservations: reservations.map(reservation => {
+                    return {
+                        reservation: {
                             _id: reservation._id,
-                            name: reservation.name,
-                            email: reservation.email,
-                            phoneNumber: reservation.phoneNumber,
-                            playerNumber: reservation.playerNumber,
-                            notes: reservation.notes,
-                            date: reservation.date,
-                            package: reservation.packageId
-                        }
-                    })
-                }                
+                        name: reservation.name,
+                        email: reservation.email,
+                        phoneNumber: reservation.phoneNumber,
+                        playerNumber: reservation.playerNumber,
+                        notes: reservation.notes,
+                        date: reservation.date,
+                        package: reservation.packageId
+                        }                        
+                    }
+                })             
             });
         } )
         .catch(err => {
@@ -151,5 +151,37 @@ exports.delete = (req, res, next) => {
 };
 
 exports.get_for_month = (req, res, next) => {
-    Reservation.find().where()
+    const date = new Date(req.body.date);
+    const fromDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    const toDate = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23);
+
+    Reservation.find({ date: { $gte: fromDate, $lte: toDate } })
+        .exec()
+        .then(reservations => {
+            return res.status(200).json({
+                count: reservations.length,
+                reservations: reservations.map(reservation => {
+                    return {
+                        reservation: {
+                            _id: reservation._id,
+                        name: reservation.name,
+                        email: reservation.email,
+                        phoneNumber: reservation.phoneNumber,
+                        playerNumber: reservation.playerNumber,
+                        notes: reservation.notes,
+                        date: reservation.date,
+                        package: reservation.packageId
+                        }                        
+                    }
+                })
+            });
+        })
+        .catch(err => {
+            return res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
+                }
+            });
+        });
 }

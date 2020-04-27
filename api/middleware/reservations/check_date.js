@@ -33,23 +33,6 @@ module.exports = (req, res, next) => {
                     }
                 });
             }
-            // if (docs.length >= 2) {
-            //     return res.status(500).json({
-            //         error: {
-            //             error: 'DATE_FULL'
-            //         }
-            //     });
-            // }
-            // if (docs.length == 1) {
-            //     if ( ((+docs[0].playerNumber) + (+req.body.playerNumber)) >= 33 ) {
-            //         return res.status(500).json({
-            //             error: {
-            //                 error: 'DATE_FULL'
-            //             }
-            //         });
-            //     }
-            // }
-
             let addition = 1;
             if (new Date().getUTCHours === 23) {
                 addition = 2;

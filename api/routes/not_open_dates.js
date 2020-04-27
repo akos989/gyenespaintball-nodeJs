@@ -12,8 +12,13 @@ router.get('/',
     checkAuth, checkTemp,
     NODController.get_all
 );
+
+router.get('/allForMonth',
+    NODController.get_for_month
+);
+
 router.post('/',
-    checkAuth, checkAdmin, checkNoDate,
+    checkAuth, checkAdmin,
     NODController.create
 );
 router.get('/:nodId',
@@ -22,7 +27,7 @@ router.get('/:nodId',
 );
 router.patch('/:nodId',
     checkAuth, checkAdmin,
-    checkNoDate,
+   // checkNoDate,
     NODController.update,
     NODController.delete,
     NODController.create
