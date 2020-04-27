@@ -8,9 +8,10 @@ exports.get_all = (req, res, next) => {
     .then(packages => {
         res.status(200).json({
             count: packages.length,
-            package: packages.map(package => {
+            packages: packages.map(package => {
                 return {
-                    _id: package._id,
+                    package: {
+                        _id: package._id,
                     name: package.name,
                     fromNumberLimit: package.fromNumberLimit,
                     toNumberLimit: package.toNumberLimit,
@@ -19,6 +20,7 @@ exports.get_all = (req, res, next) => {
                     duration: package.duration,
                     sale: package.sale,
                     includedBullets: package.includedBullets
+                    }                    
                 }
             })
         });

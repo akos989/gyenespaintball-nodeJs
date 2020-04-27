@@ -163,12 +163,7 @@ exports.get_for_month = (req, res, next) => {
                 reservations: reservations.map(reservation => {
                     return {
                         reservation: {
-                            _id: reservation._id,
-                        name: reservation.name,
-                        email: reservation.email,
-                        phoneNumber: reservation.phoneNumber,
                         playerNumber: reservation.playerNumber,
-                        notes: reservation.notes,
                         date: reservation.date,
                         package: reservation.packageId
                         }                        
