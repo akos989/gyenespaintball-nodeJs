@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
                 if (nod.fromDate <= reservation.date && nod.toDate >= reservation.date) {
                     return res.status(500).json({
                         error: {
-                            error: 'DATE_NOT_AVAILABLE'
+                            error: 'DATE_CLOSED'
                         }
                     });
                 }
