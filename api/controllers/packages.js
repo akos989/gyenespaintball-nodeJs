@@ -17,8 +17,9 @@ exports.get_all = (req, res, next) => {
                     bulletPrice: package.bulletPrice,
                     basePrice: package.basePrice,
                     duration: package.duration,
-                    sale: package.sale,
-                    includedBullets: package.includedBullets
+                    disabled: package.disabled,
+                    includedBullets: package.includedBullets,
+                    description: package.description
                 }
             })
         });
@@ -52,8 +53,9 @@ exports.create = (req, res, next) => {
                 bulletPrice: req.body.bulletPrice,
                 basePrice: req.body.basePrice,
                 duration: req.body.duration,
-                sale: req.body.sale,
-                includedBullets: req.body.includedBullets
+                disabled: req.body.disabled,
+                includedBullets: req.body.includedBullets,
+                description: req.body.description
             });
             package.save()
                 .then(package => {
@@ -65,8 +67,9 @@ exports.create = (req, res, next) => {
                         bulletPrice: package.bulletPrice,
                         basePrice: package.basePrice,
                         duration: package.duration,
-                        sale: package.sale,
-                        includedBullets: package.includedBullets
+                        disabled: package.disabled,
+                        includedBullets: package.includedBullets,
+                        description: package.description
                     });
                 })
                 .catch(err => {
@@ -107,8 +110,9 @@ exports.get_one = (req, res, next) => {
                 bulletPrice: package.bulletPrice,
                 basePrice: package.basePrice,
                 duration: package.duration,
-                sale: package.sale,
-                includedBullets: package.includedBullets
+                disabled: package.disabled,
+                includedBullets: package.includedBullets,
+                description: package.description
             });               
         })
         .catch(err => {
@@ -157,9 +161,10 @@ exports.update = (req, res, next) => {
             package.bulletPrice = req.body.bulletPrice ? req.body.bulletPrice : package.bulletPrice;
             package.basePrice = req.body.basePrice ? req.body.basePrice : package.basePrice;
             package.duration = req.body.duration ? req.body.duration : package.duration;
-            package.sale = req.body.sale ? req.body.sale : package.sale; 
+            package.disabled = req.body.disabled ? req.body.disabled : package.disabled; 
             package.includedBullets = req.body.includedBullets ? req.body.includedBullets : package.includedBullets;
-
+            package.description = req.body.description ? req.body.description : package.description;
+            
             package.save()
                 .then(package => {                    
                     return res.status(200).json({
@@ -171,8 +176,9 @@ exports.update = (req, res, next) => {
                         bulletPrice: package.bulletPrice,
                         basePrice: package.basePrice,
                         duration: package.duration,
-                        sale: package.sale,
-                        includedBullets: package.includedBullets
+                        disabled: package.disabled,
+                        includedBullets: package.includedBullets,
+                        description: package.description
                     });
                 })
                 .catch(err => {

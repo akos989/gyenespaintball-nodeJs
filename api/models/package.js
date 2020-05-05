@@ -9,8 +9,9 @@ const Package = db.model('Package', {
     bulletPrice: {type: Number, required: true, min: 0},
     basePrice: {type: Number, required: true, min: 0},
     duration: { type: Number, default: 2, min: 0},
-    sale: {type: Boolean, default: false},
-    includedBullets: {type: Number}
+    disabled: {type: Boolean, default: false},
+    includedBullets: {type: Number, default: 0},
+    description: { type: String }
 });
 
 module.exports = Package;

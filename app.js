@@ -9,6 +9,7 @@ const reservationRoutes = require('./api/routes/reservations');
 const NODRoutes = require('./api/routes/not_open_dates');
 const subscriptionRoutes = require('./api/routes/subscriptions');
 const packageRoutes = require('./api/routes/packages');
+const packageTypeRoutes = require('./api/routes/package-type');
 const modalRoutes = require('./api/routes/modals');
 
 app.use(function(req, res, next) {
@@ -31,7 +32,7 @@ app.use('/api/no_dates', NODRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/packages', packageRoutes);
 app.use('/api/modals', modalRoutes);
-
+app.use('/api/packages_type', packageTypeRoutes);
 
 let reporter = function (type, ...rest)
 {
