@@ -6,17 +6,14 @@ exports.get_all = (req, res, next) => {
         .exec()
         .then( nods => {
             res.status(200).json({
-                count: nods.length,
-                noDates: {
-                    noDate: nods.map(nod => {
+                    noDates: nods.map(nod => {
                         return {
-                            _id: nod._id,
+                            id: nod._id,
                             reason: nod.reason,
                             fromDate: nod.fromDate,
                             toDate: nod.toDate
                         }
                     })
-                }                
             });
         } )
         .catch(err => {

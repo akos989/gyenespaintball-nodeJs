@@ -9,11 +9,10 @@ const checkTemp = require('../middleware/auth/check_temp');
 const NODController = require('../controllers/not_open_dates'); 
 
 router.get('/',
-    checkAuth, checkTemp,
     NODController.get_all
 );
 
-router.get('/allForMonth',
+router.post('/allForMonth',
     NODController.get_for_month
 );
 

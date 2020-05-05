@@ -9,19 +9,40 @@ exports.get_all = (req, res, next) => {
         .exec()
         .then( reservations => {
             res.status(200).json({
-                count: reservations.length,
                 reservations: reservations.map(reservation => {
                     return {
-                        reservation: {
-                            _id: reservation._id,
+                        id: reservation._id,
                         name: reservation.name,
                         email: reservation.email,
                         phoneNumber: reservation.phoneNumber,
                         playerNumber: reservation.playerNumber,
                         notes: reservation.notes,
                         date: reservation.date,
-                        package: reservation.packageId
-                        }                        
+                        packageId: reservation.packageId
+                    }
+                })             
+            });
+        } )
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
+                }
+            });
+        });
+};
+
+exports.get_all_client = (req, res, next) => {
+    Reservation.find()
+        .exec()
+        .then( reservations => {
+            res.status(200).json({
+                reservations: reservations.map(reservation => {
+                    return {
+                        playerNumber: reservation.playerNumber,
+                        date: reservation.date,
+                        packageId: reservation.packageId
                     }
                 })             
             });
@@ -47,7 +68,7 @@ exports.create = (req, res, next) => {
             res.status(201).json({
                 message: 'RESERVATION_CREATED',
                 reservation: {
-                    _id: result._id,
+                    id: result._id,
                     name: result.name,
                     email: result.email,
                     phoneNumber: result.phoneNumber,
@@ -83,14 +104,14 @@ exports.get_one = (req, res, next) => {
             res.status(200).json({
                 message: 'RESERVATION_FOUND',
                 reservation: {
-                    _id: reservation._id,
+                    id: reservation._id,
                     name: reservation.name,
                     email: reservation.email,
                     phoneNumber: reservation.phoneNumber,
                     playerNumber: reservation.playerNumber,
                     notes: reservation.notes,
                     date: reservation.date,
-                    package: reservation.packageId
+                    packageId: reservation.packageId
                 }
             });
         })
@@ -111,14 +132,14 @@ exports.update = (req, res, next) => {
         res.status(200).json({
             message: 'RESERVATION_UPDATED',
             reservation: {
-                _id: result._id,
+                id: result._id,
                 name: result.name,
                 email: result.email,
                 phoneNumber: result.phoneNumber,
                 playerNumber: result.playerNumber,
                 notes: result.notes,
                 date: result.date,
-                package: result.packageId
+                packageId: result.packageId
             }
         });
     })
@@ -159,14 +180,11 @@ exports.get_for_month = (req, res, next) => {
         .exec()
         .then(reservations => {
             return res.status(200).json({
-                count: reservations.length,
                 reservations: reservations.map(reservation => {
                     return {
-                        reservation: {
                         playerNumber: reservation.playerNumber,
                         date: reservation.date,
-                        package: reservation.packageId
-                        }                        
+                        packageId: reservation.packageId
                     }
                 })
             });

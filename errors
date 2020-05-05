@@ -1,26 +1,32 @@
 error {
     message?: //some random error message from the server
-    error!: NOT_FOUND
-            EMAIL_EXISTS
-            HASH_FAILED
-            CREATION_FAILED
-            AUTH_FAILED
-            NO_ID_TO_VALIDATE // amikor rányom a validation linkre
-            ALREADY_VALIDATED
-            VALIDATION_FAILED // valami random error
-            NOT_ADMIN
-            DATE_EXISTS
-            DATE_IS_BEFORE_MIN
-            FROM_>_TO
-            TEMP_OPERATOR_EXPIRED
-            PASS_NOT_MATCH
-            PASS_NOT_MATCH_OLD
-            ALREADY_SUBSCRIBED
-            NAME_EXISTS
-            NO_PACKAGE
-            DATE_NOT_GIVEN
-            NO_FOR_TODAY
-            DATE_FULL
+C|A    	    error!: 
+-----------------------
+-|-	    NOT_FOUND
+0|-         EMAIL_EXISTS
+0|-         HASH_FAILED
+-|-         CREATION_FAILED
+0|-         AUTH_FAILED
+0|-         NO_ID_TO_VALIDATE // amikor rányom a validation linkre
+0|-         ALREADY_VALIDATED
+0|-         VALIDATION_FAILED // valami random error
+0|          NOT_ADMIN
++|-         DATE_EXISTS
++|-         DATE_IS_BEFORE_MIN
+0|-         FROM_>_TO
+0|-         TEMP_OPERATOR_EXPIRED
+0|-         PASS_NOT_MATCH
+0|-         PASS_NOT_MATCH_OLD
+0|-         ALREADY_SUBSCRIBED
+0|-         NAME_EXISTS
++|-         NO_PACKAGE
++|-         NOT_GOOD_PACKAGE
+?|-         DATE_NOT_GIVEN
++|-         DATE_IS_BEFORE_MIN
+?|-          NO_FOR_TODAY
++|-         DATE_FULL
++|-         DATE_CLOSED
++|-	    FAILED
 }
 
 

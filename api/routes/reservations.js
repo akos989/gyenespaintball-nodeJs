@@ -23,7 +23,11 @@ router.get('/',
     ReservationsController.get_all
 );
 
-router.get('/allForMonth',
+router.get('/allForClient',
+    ReservationsController.get_all_client
+);
+
+router.post('/allForMonth',
     ReservationsController.get_for_month
 );
 
