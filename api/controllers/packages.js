@@ -39,7 +39,7 @@ exports.create = (req, res, next) => {
         .exec()
         .then(result => {
             if (result) {
-                res.status(500).json({
+                return res.status(500).json({
                     error: {
                         error: 'NAME_EXISTS'
                     }

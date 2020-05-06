@@ -73,7 +73,6 @@ exports.create = (req, res, next) => {
 };
 
 exports.can_validate = (req, res, next) => {
-    //params.operatorId
     TempOperator.findById(req.params.operatorId)
         .exec()
         .then(operator => {
