@@ -4,23 +4,16 @@ module.exports = (req, res, next) => {
     const hour = date.getHours();
     res.locals.emailBody = `
         <div style="text-align: center;">
-            <img src="cid:logo-png-email" alt="logo" style="height: 40px; width: 40px;">
-        </div>
-        <div style="text-align: center;">
-            <h1 style="padding-bottom: 30px;">Kedves ${res.locals.reservationInfo.name}!</h1>
-            <h2 style="padding-bottom: 30px;"> Köszönjük a foglalást! </h2>
-            <div style="padding-bottom: 30px;">
-                A foglalásról a játék kezdete előtt 48 órával fog kapni egy email értesítőt. Lemondani a kezdés előtt 24 óráig díjmentesen lehet, utána ki kell fizetni a teljes alapárat. 
-            </div>
+            <h1 style="padding-bottom: 30px;">Új foglalás érkezett!</h1>
             <hr>
             <h2>Foglalás adatai:</h2>
             <div style="padding-bottom: 30px;">
                 <div style="font-weight: bold;">Név:</div>
                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.name}</div>
                 <div style="font-weight: bold;">Email:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.email}</div>
+                <div style="padding-bottom: 10px;"><a href="mailto:${res.locals.reservationInfo.email}">${res.locals.reservationInfo.email}</a></div>
                 <div style="font-weight: bold;">Telefonszám:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.phoneNumber}</div>
+                <div style="padding-bottom: 10px;"><a href="tel:${res.locals.reservationInfo.phoneNumber}">${res.locals.reservationInfo.phoneNumber}</a></div>
                 <div style="font-weight: bold;">Játékosszám:</div>
                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.playerNumber}</div>
                 <div style="font-weight: bold;">Dátum:</div>
@@ -37,21 +30,6 @@ module.exports = (req, res, next) => {
                 <div style="font-weight: bold;">Megjegyzések:</div>
                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.notes ? res.locals.reservationInfo.notes : '-'}</div>
             </div>
-        </div>
-        <hr>  
-        <div style="text-align:center;">
-            <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
-            <div>Balaton utca, Gyenesdiás</div><div>8315</div>
-            <hr>
-            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
-            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
-            <div>Email:</div>
-            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
-            <hr>
-            <div style="padding-top: 5vh; padding-bottom: 5vh;">
-                <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
-                <a href="https://www.instagram.com/gyenespaintball/" target="_blank"><span style="margin-left: 30px;"><img src="cid:insta" alt="insta" style="height: 25px; width: 25px;"></span></a>
-            </div> 
         </div>
     `;
     return next();

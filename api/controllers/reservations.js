@@ -62,7 +62,7 @@ exports.create = (req, res, next) => {
     reservation.save()
         .then(result => {
             res.locals.emailSubject = 'Új foglalás';
-            res.locals.reservationInfo = result;           
+            res.locals.reservationInfo = result;
             next();
 
             res.status(201).json({
