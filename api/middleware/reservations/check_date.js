@@ -1,6 +1,8 @@
 const Reservation = require('../../models/reservation');
 
 module.exports = (req, res, next) => {
+    if (!req.body.date)
+        return next();
     Reservation.find()
         .populate('packageId')
         .exec()
@@ -33,25 +35,6 @@ module.exports = (req, res, next) => {
                     }
                 });
             }
-            let addition = 1;
-            if (new Date().getUTCHours === 23) {
-                addition = 2;
-            }
-            const minDate = new Date(
-                    new Date().getUTCFullYear(),
-                    new Date().getUTCMonth(),
-                    new Date().getUTCDate() + addition,
-                    1
-            );
-
-            if (reservation.date <= minDate) {
-                return res.status(500).json({
-                    error: {
-                        error: 'DATE_IS_BEFORE_MIN'
-                    }
-                });
-            }
-
             return next();
         })
         .catch(err => {

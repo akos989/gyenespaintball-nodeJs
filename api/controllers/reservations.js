@@ -62,7 +62,10 @@ exports.create = (req, res, next) => {
     reservation.save()
         .then(result => {
             res.locals.emailSubject = 'Új foglalás';
+            res.locals.emailTitle = 'Köszönjük a foglalást!';
+            res.locals.emailDetails = 'A foglalásról a játék kezdete előtt 48 órával fog kapni egy email értesítőt. Lemondani a kezdés előtt 24 óráig díjmentesen lehet, utána ki kell fizetni a teljes alapárat.';
             res.locals.reservationInfo = result;
+            res.locals.adminEmail = true;
             next();
 
             res.status(201).json({
@@ -129,6 +132,13 @@ exports.update = (req, res, next) => {
    const reservation = res.locals.reservation;
    reservation.save()
     .then(result => {
+        res.locals.emailSubject = 'Módosított foglalás';
+        res.locals.emailTitle = 'Foglalását módosították!';
+        res.locals.emailDetails = 'A lenti foglalás adatai megváltoztak. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
+        res.locals.reservationInfo = result;
+        res.locals.adminEmail = false;
+        next();
+
         res.status(200).json({
             message: 'RESERVATION_UPDATED',
             reservation: {
@@ -141,7 +151,7 @@ exports.update = (req, res, next) => {
                 date: result.date,
                 packageId: result.packageId
             }
-        });
+        });        
     })
     .catch(err => {
         res.status(500).json({
@@ -157,6 +167,7 @@ exports.delete = (req, res, next) => {
     Reservation.deleteOne({ _id: req.params.reservationId })
         .exec()
         .then(result => {
+            console.log(result);
             return res.status(200).json({
                 message: 'DELETE_SUCCESFUL'
             });

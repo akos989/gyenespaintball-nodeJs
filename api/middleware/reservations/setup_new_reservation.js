@@ -7,6 +7,7 @@ module.exports = (req, res, next) => {
             .exec()
             .then( original => {
                 if (original) {
+                    res.locals.original = original;
                     original.name = req.body.name ? req.body.name : original.name;
                     original.email = req.body.email ? req.body.email : original.email;
                     original.phoneNumber = req.body.phoneNumber ? req.body.phoneNumber : original.phoneNumber;

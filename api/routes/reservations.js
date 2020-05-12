@@ -12,13 +12,11 @@ const checkPackage = require('../middleware/package/check_package');
 const setUpNew = require('../middleware/reservations/setup_new_reservation');
 const findPackage = require('../middleware/package/find_package');
 
-const sendEmail = require('../middleware/email/send_email_to_client');
-const emailReservationCreated = require('../middleware/email/client_reservation_created');
-const sendEmailToAdmin = require('../middleware/email/send_email_to_admin');
-const emailReservationCreatedAdmin = require('../middleware/email/admin_reservation_email');
 const getAdmins = require('../middleware/operator/get_admins');
 
+const EmailController = require('../controllers/email');
 const ReservationsController = require('../controllers/reservations');
+const ScheduleController = require('../controllers/scheduler');
 
 router.get('/',
     checkAuth, checkTemp,
@@ -37,8 +35,9 @@ router.post('/',
     setUpNew, findPackage,
     checkDate, checkNoDates, checkPackage,
     ReservationsController.create,
-    emailReservationCreated, sendEmail,
-    getAdmins, emailReservationCreatedAdmin, sendEmailToAdmin
+    EmailController.client_reservaion_email, EmailController.send_to_client,
+    getAdmins, EmailController.admin_reservation_email, EmailController.send_to_admins,
+    EmailController.scheduled_email_content, EmailController.scheduled_email
 );
 
 router.get('/:reservationId',
@@ -50,8 +49,9 @@ router.patch('/:reservationId',
     checkAuth, checkAdmin,
     setUpNew, findPackage,
     checkDate, checkNoDates, checkPackage,
-    ReservationsController.update
-    //email
+    ReservationsController.update,
+    EmailController.client_reservaion_email, EmailController.send_to_client,
+    EmailController.scheduled_email_content, EmailController.scheduled_email
 );
 
 router.delete('/:reservationId',

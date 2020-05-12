@@ -16,12 +16,7 @@ const Reservation = db.model('Reservation', {
         type: Date,
         required: true,
         unique: false,
-        min: new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate() + 1,
-                1
-            )
+        min: new Date()
     },
     packageId: { type: Schema.Types.ObjectId, required: true, ref: 'Package' }
 });
