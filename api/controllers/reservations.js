@@ -18,7 +18,8 @@ exports.get_all = (req, res, next) => {
                         playerNumber: reservation.playerNumber,
                         notes: reservation.notes,
                         date: reservation.date,
-                        packageId: reservation.packageId
+                        packageId: reservation.packageId,
+                        archived: reservation.archived
                     }
                 })             
             });
@@ -34,7 +35,7 @@ exports.get_all = (req, res, next) => {
 };
 
 exports.get_all_client = (req, res, next) => {
-    Reservation.find()
+    Reservation.find({archived: false})
         .exec()
         .then( reservations => {
             res.status(200).json({
@@ -149,7 +150,8 @@ exports.update = (req, res, next) => {
                 playerNumber: result.playerNumber,
                 notes: result.notes,
                 date: result.date,
-                packageId: result.packageId
+                packageId: result.packageId,
+                archived: result.archived
             }
         });        
     })
@@ -209,3 +211,38 @@ exports.get_for_month = (req, res, next) => {
             });
         });
 }
+
+exports.notify_reservations = () => {
+    const EmailController = require('./email');
+    let tomorrowDate = new Date();
+    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1);
+    let laterDate = new Date();
+    laterDate.setUTCDate(laterDate.getUTCDate() + 2);
+    Reservation.find({ date: { $gte: tomorrowDate, $lte: laterDate }, archived: false })
+        .populate('packageId')
+        .exec()
+        .then(reservations => {
+            reservations.forEach((reservation) => {
+                const htmlBody = EmailController
+                    .scheduled_email_content(reservation, reservation.packageId);
+                EmailController.scheduled_email(reservation.email, htmlBody);
+            });
+        })
+        .catch(err => {});
+};
+
+exports.autoArchiveReservations = () => {
+    let today = new Date();
+    today.setUTCDate(today.getUTCDate());
+    Reservation.find({ date: { $lte: today}, archived: false})
+        .exec()
+        .then(reservations => {
+            reservations.forEach(reservation => {
+                reservation.archived = true;
+                reservation.save()
+                    .then(result => {})
+                    .catch(err => {});
+            });
+        })
+        .catch(err => {})
+};  

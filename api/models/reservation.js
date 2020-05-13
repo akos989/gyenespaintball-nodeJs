@@ -18,7 +18,8 @@ const Reservation = db.model('Reservation', {
         unique: false,
         min: new Date()
     },
-    packageId: { type: Schema.Types.ObjectId, required: true, ref: 'Package' }
+    packageId: { type: Schema.Types.ObjectId, required: true, ref: 'Package' },
+    archived: { type: Boolean, default: false }
 });
 
 module.exports = Reservation;

@@ -15,7 +15,8 @@ module.exports = (req, res, next) => {
                     original.notes = req.body.notes ? req.body.notes : original.notes;                
                     original.packageId = req.body.packageId ? req.body.packageId : original.packageId; 
                     original.date = req.body.date ? req.body.date : original.date;
-
+                    original.archived = req.body.archived ? req.body.archived : original.archived;
+                    
                     res.locals.reservation = original;
                     return next();
                 }
