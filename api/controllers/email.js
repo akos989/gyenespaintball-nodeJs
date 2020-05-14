@@ -125,7 +125,7 @@ exports.send_to_client = (req, res, next) => {
         from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
         to: res.locals.reservationInfo.email, // list of receivers
         subject: res.locals.emailSubject, // Subject line
-        text: "Hello world?", // plain text body
+        text: "Új foglalás", // plain text body
         html: res.locals.emailBody, // html body
         attachments: [
           {
@@ -171,12 +171,11 @@ exports.send_to_admins = (req, res, next) => {
         }
       });
       // send mail with defined transport object
-    
       let mailOptions = {
         from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
         to: res.locals.adminEmails, // list of receivers
         subject: res.locals.emailSubject, // Subject line
-        text: "Hello world?", // plain text body
+        text: "Új foglalás", // plain text body
         html: res.locals.emailBody
       };
       transporter.sendMail(mailOptions, (error, info) => {
@@ -186,7 +185,6 @@ exports.send_to_admins = (req, res, next) => {
         console.log("Message sent: %s", info.messageId);
       
         console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-        // return next();
       });
 };
 
@@ -211,7 +209,7 @@ exports.scheduled_email = (to, htmlBody, emailSubject) => {
       from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
       to: to, // list of receivers
       subject: emailSubject, // Subject line
-      text: "Hello world?", // plain text body
+      text: "Emlékeztető", // plain text body
       html: htmlBody, // html body
       attachments: [
         {
@@ -328,4 +326,90 @@ exports.thanks_email_content = (reservation) => {
         </div>
     `;
   return emailBody;
+};
+
+exports.client_message_create_body = (req, res, next) => {
+  res.locals.emailBody = `
+        <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
+        <div style="text-align: center;">
+            <h1 style="padding-bottom: 30px;">Kedves ${res.locals.messageInfo.name}!</h1>
+            <div style="padding-bottom: 10px;">${res.locals.emailTitle}</div>
+            <hr>
+            <div style="padding-bottom: 30px; font-weight: bold;">Használt email cím: ${res.locals.messageInfo.email}</div>        
+            <div style="padding-bottom: 10px; font-weight: bold;">Üzenet: </div>
+            <div style="padding-bottom: 10px; text-align: left;">${res.locals.messageInfo.text}</div>
+            <hr>
+            <div style="padding-bottom: 30px;">Munkatársaink mihamarabb felveszik veled a kapcsolatot!</div>
+        </div>
+        <hr>
+        <div style="text-align:center;">
+            <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
+            <div>Balaton utca, Gyenesdiás</div><div>8315</div>
+            <hr>
+            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
+            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
+            <div>Email:</div>
+            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+            <hr>
+            <div style="padding-top: 5vh; padding-bottom: 5vh;">
+                <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
+                <a href="https://www.instagram.com/gyenespaintball/" target="_blank"><span style="margin-left: 30px;"><img src="cid:insta" alt="insta" style="height: 25px; width: 25px;"></span></a>
+            </div> 
+        </div>
+    `;
+    return next();
+};
+
+exports.admin_message_create_body = (req, res, next) => {
+  res.locals.emailBody = `
+        <div style="text-align: center;">
+            <h1 style="padding-bottom: 30px;">Új üzenet érkezett!</h1>
+            <hr>
+            <h2 style="padding-bottom: 30px;">Adatok:</h2>
+            <div style="padding-bottom: 10px;">Email cím: </div>
+            <div style="padding-bottom: 10px;">${res.locals.messageInfo.email}</div>
+            <div style="padding-bottom: 10px;">Név: </div>
+            <div style="padding-bottom: 10px;">${res.locals.messageInfo.name}</div>     
+            <div style="padding-bottom: 10px;">Üzenet: </div>
+            <div style="padding-bottom: 10px; text-align: left;">${res.locals.messageInfo.text}</div>
+            <hr>
+            <div style="padding-top: 30px; padding-bottom: 30px;">
+            <a href="https://www.gyenespaintball.hu/operator/message/reply/${res.locals.messageInfo._id}">
+              <button>Válaszolok</button>
+            </a>
+            </div>
+        </div>
+    `;
+    return next();
+};
+
+exports.client_message_reply_body = (req, res, next) => {
+  res.locals.emailBody = `
+        <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
+        <div style="text-align: center;">
+            <h1 style="padding-bottom: 30px;">Kedves ${res.locals.messageInfo.name}!</h1>
+            <div style="padding-bottom: 10px;">Köszönjük, hogy hagyott üzenetet!</div>
+            <hr>
+            <div style="padding-bottom: 10px; text-align: left;">${res.locals.replyBody}</div>
+            <hr>
+            <div style="padding-top: 30px; padding-bottom: 10px;">Eredeti üzenet: </div>
+            <div style="padding-bottom: 10px; text-align: left;">${res.locals.messageInfo.text}</div>
+        </div>
+        <hr>
+        <div style="text-align:center;">
+            <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
+            <div>Balaton utca, Gyenesdiás</div><div>8315</div>
+            <hr>
+            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
+            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
+            <div>Email:</div>
+            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+            <hr>
+            <div style="padding-top: 5vh; padding-bottom: 5vh;">
+                <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
+                <a href="https://www.instagram.com/gyenespaintball/" target="_blank"><span style="margin-left: 30px;"><img src="cid:insta" alt="insta" style="height: 25px; width: 25px;"></span></a>
+            </div> 
+        </div>
+    `;
+    return next();
 };

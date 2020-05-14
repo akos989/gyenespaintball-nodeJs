@@ -11,6 +11,7 @@ const subscriptionRoutes = require('./api/routes/subscriptions');
 const packageRoutes = require('./api/routes/packages');
 const packageTypeRoutes = require('./api/routes/package-type');
 const modalRoutes = require('./api/routes/modals');
+const messageRoutes = require('./api/routes/messages');
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -33,6 +34,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/packages', packageRoutes);
 app.use('/api/modals', modalRoutes);
 app.use('/api/packages_type', packageTypeRoutes);
+app.use('/api/messages', messageRoutes);
 
 // let reporter = function (type, ...rest)
 // {
