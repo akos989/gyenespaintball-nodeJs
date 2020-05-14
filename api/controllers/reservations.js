@@ -133,27 +133,44 @@ exports.update = (req, res, next) => {
    const reservation = res.locals.reservation;
    reservation.save()
     .then(result => {
-        res.locals.emailSubject = 'Módosított foglalás';
-        res.locals.emailTitle = 'Foglalását módosították!';
-        res.locals.emailDetails = 'A lenti foglalás adatai megváltoztak. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
-        res.locals.reservationInfo = result;
-        res.locals.adminEmail = false;
-        next();
-
-        res.status(200).json({
-            message: 'RESERVATION_UPDATED',
-            reservation: {
-                id: result._id,
-                name: result.name,
-                email: result.email,
-                phoneNumber: result.phoneNumber,
-                playerNumber: result.playerNumber,
-                notes: result.notes,
-                date: result.date,
-                packageId: result.packageId,
-                archived: result.archived
-            }
-        });        
+        if (result.archived) {
+            return res.status(200).json({
+                message: 'RESERVATION_UPDATED',
+                reservation: {
+                    id: result._id,
+                    name: result.name,
+                    email: result.email,
+                    phoneNumber: result.phoneNumber,
+                    playerNumber: result.playerNumber,
+                    notes: result.notes,
+                    date: result.date,
+                    packageId: result.packageId,
+                    archived: result.archived
+                }
+            });
+        } else {
+            res.locals.emailSubject = 'Módosított foglalás';
+            res.locals.emailTitle = 'Foglalását módosították!';
+            res.locals.emailDetails = 'A lenti foglalás adatai megváltoztak. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
+            res.locals.reservationInfo = result;
+            res.locals.adminEmail = false;
+            next();
+    
+            res.status(200).json({
+                message: 'RESERVATION_UPDATED',
+                reservation: {
+                    id: result._id,
+                    name: result.name,
+                    email: result.email,
+                    phoneNumber: result.phoneNumber,
+                    playerNumber: result.playerNumber,
+                    notes: result.notes,
+                    date: result.date,
+                    packageId: result.packageId,
+                    archived: result.archived
+                }
+            });
+        }
     })
     .catch(err => {
         res.status(500).json({
@@ -169,10 +186,22 @@ exports.delete = (req, res, next) => {
     Reservation.deleteOne({ _id: req.params.reservationId })
         .exec()
         .then(result => {
-            console.log(result);
-            return res.status(200).json({
-                message: 'DELETE_SUCCESFUL'
-            });
+            if (!res.locals.reservation.archived) {
+                res.locals.emailSubject = 'Törölt foglalás';
+                res.locals.emailTitle = 'Foglalását törölték!';
+                res.locals.emailDetails = 'A lenti foglalást törölték. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
+                res.locals.reservationInfo = res.locals.reservation;
+                res.locals.adminEmail = false;
+             
+                next();
+                res.status(200).json({
+                    message: 'DELETE_SUCCESFUL'
+                });
+            } else {
+                return res.status(200).json({
+                    message: 'DELETE_SUCCESFUL'
+                });
+            }
         })
         .catch(err => {
             res.status(500).json({
@@ -215,7 +244,7 @@ exports.get_for_month = (req, res, next) => {
 exports.notify_reservations = () => {
     const EmailController = require('./email');
     let tomorrowDate = new Date();
-    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1);
+    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() - 1);
     let laterDate = new Date();
     laterDate.setUTCDate(laterDate.getUTCDate() + 2);
     Reservation.find({ date: { $gte: tomorrowDate, $lte: laterDate }, archived: false })
@@ -225,15 +254,18 @@ exports.notify_reservations = () => {
             reservations.forEach((reservation) => {
                 const htmlBody = EmailController
                     .scheduled_email_content(reservation, reservation.packageId);
-                EmailController.scheduled_email(reservation.email, htmlBody);
+                EmailController.scheduled_email(
+                    reservation.email, htmlBody, 'Foglalási emlékeztető'
+                );
             });
         })
         .catch(err => {});
 };
 
 exports.autoArchiveReservations = () => {
+    const EmailController = require('./email');
     let today = new Date();
-    today.setUTCDate(today.getUTCDate());
+    today.setUTCDate(today.getUTCDate() + 4);
     Reservation.find({ date: { $lte: today}, archived: false})
         .exec()
         .then(reservations => {
@@ -242,6 +274,11 @@ exports.autoArchiveReservations = () => {
                 reservation.save()
                     .then(result => {})
                     .catch(err => {});
+                const htmlBody = EmailController
+                    .thanks_email_content(reservation);
+                EmailController.scheduled_email(
+                    reservation.email, htmlBody, 'Köszönet'
+                );
             });
         })
         .catch(err => {})

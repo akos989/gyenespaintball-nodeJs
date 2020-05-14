@@ -191,7 +191,7 @@ exports.send_to_admins = (req, res, next) => {
 };
 
 
-exports.scheduled_email = (to, htmlBody) => {
+exports.scheduled_email = (to, htmlBody, emailSubject) => {
   let transporter = nodemailer.createTransport({
       host: "mail.szomato-coaching.hu",
       port: 465,
@@ -210,7 +210,7 @@ exports.scheduled_email = (to, htmlBody) => {
     let mailOptions = {
       from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
       to: to, // list of receivers
-      subject: "Foglalási emlékeztető", // Subject line
+      subject: emailSubject, // Subject line
       text: "Hello world?", // plain text body
       html: htmlBody, // html body
       attachments: [
@@ -284,6 +284,34 @@ exports.scheduled_email_content = (reservation, package) => {
             </div>
         </div>
         <hr>  
+        <div style="text-align:center;">
+            <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
+            <div>Balaton utca, Gyenesdiás</div><div>8315</div>
+            <hr>
+            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
+            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
+            <div>Email:</div>
+            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+            <hr>
+            <div style="padding-top: 5vh; padding-bottom: 5vh;">
+                <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
+                <a href="https://www.instagram.com/gyenespaintball/" target="_blank"><span style="margin-left: 30px;"><img src="cid:insta" alt="insta" style="height: 25px; width: 25px;"></span></a>
+            </div> 
+        </div>
+    `;
+  return emailBody;
+};
+
+exports.thanks_email_content = (reservation) => {
+    const emailBody = `
+        <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
+        <div style="text-align: center;">
+            <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
+            <div style="padding-bottom: 10px;">Köszönjük, hogy ma velünk tartottál...</div>
+            <div style="padding-bottom: 10px;">Reméljük, hogy egy jó élménnyel lettél gazdagabb. Lájkolj facebookon, hagy review-et google-en :D</div>        
+            <div style="padding-bottom: 30px;">Találkozzunk legközelebb is!</div>
+        </div>
+        <hr>
         <div style="text-align:center;">
             <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
             <div>Balaton utca, Gyenesdiás</div><div>8315</div>

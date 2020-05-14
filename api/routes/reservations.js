@@ -11,6 +11,7 @@ const deleteSubscription = require('../middleware/subscriptions/delete_sub_with_
 const checkPackage = require('../middleware/package/check_package');
 const setUpNew = require('../middleware/reservations/setup_new_reservation');
 const findPackage = require('../middleware/package/find_package');
+const findReservation = require('../middleware/reservations/check_valid_id');
 
 const getAdmins = require('../middleware/operator/get_admins');
 
@@ -36,7 +37,6 @@ router.post('/',
     ReservationsController.create,
     EmailController.client_reservaion_email, EmailController.send_to_client,
     getAdmins, EmailController.admin_reservation_email, EmailController.send_to_admins
-    // EmailController.scheduled_email_content, EmailController.scheduled_email
 );
 
 router.get('/:reservationId',
@@ -50,14 +50,14 @@ router.patch('/:reservationId',
     checkDate, checkNoDates, checkPackage,
     ReservationsController.update,
     EmailController.client_reservaion_email, EmailController.send_to_client
-    // EmailController.scheduled_email_content, EmailController.scheduled_email
 );
 
 router.delete('/:reservationId',
     checkAuth, checkAdmin,
     deleteSubscription,
-    ReservationsController.delete
-    //email
+    findReservation, findPackage,
+    ReservationsController.delete,
+    EmailController.client_reservaion_email, EmailController.send_to_client
 );
 
 module.exports = router;
