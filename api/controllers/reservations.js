@@ -58,17 +58,16 @@ exports.get_all_client = (req, res, next) => {
         });
 };
 
-exports.create = (req, res, next) => {    
+exports.create = (req, res, next) => {
     const reservation = res.locals.reservation;
     reservation.save()
         .then(result => {
             res.locals.emailSubject = 'Új foglalás';
             res.locals.emailTitle = 'Köszönjük a foglalást!';
             res.locals.emailDetails = 'A foglalásról a játék kezdete előtt 48 órával fog kapni egy email értesítőt. Lemondani a kezdés előtt 24 óráig díjmentesen lehet, utána ki kell fizetni a teljes alapárat.';
-            res.locals.reservationInfo = result;
+		res.locals.reservationInfo = result;
             res.locals.adminEmail = true;
             next();
-
             res.status(201).json({
                 message: 'RESERVATION_CREATED',
                 reservation: {
@@ -244,7 +243,7 @@ exports.get_for_month = (req, res, next) => {
 exports.notify_reservations = () => {
     const EmailController = require('./email');
     let tomorrowDate = new Date();
-    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() - 1);
+    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1);
     let laterDate = new Date();
     laterDate.setUTCDate(laterDate.getUTCDate() + 2);
     Reservation.find({ date: { $gte: tomorrowDate, $lte: laterDate }, archived: false })
@@ -265,7 +264,8 @@ exports.notify_reservations = () => {
 exports.autoArchiveReservations = () => {
     const EmailController = require('./email');
     let today = new Date();
-    today.setUTCDate(today.getUTCDate() + 4);
+    today.setUTCDate(today.getUTCDate() + 1);
+console.log(today);
     Reservation.find({ date: { $lte: today}, archived: false})
         .exec()
         .then(reservations => {

@@ -13,7 +13,7 @@ exports.get_all = (req, res, next) => {
                     name: modal.name,
                     fromDate: modal.fromDate,
                     toDate: modal.toDate,
-                    modalImage: modal.modalImage,
+                    modalImage: 'http://localhost:3000/'+modal.modalImage,
                     description: modal.description
                 }
             })
@@ -74,7 +74,7 @@ exports.get_one = (req, res, next) => {
                 name: modal.name,
                 fromDate: modal.fromDate,
                 toDate: modal.toDate,
-                modalImage: modal.modalImage,
+                modalImage: 'http://localhost:3000/'+modal.modalImage,
                 description: modal.description
             });               
         })
@@ -116,10 +116,11 @@ exports.update = (req, res, next) => {
                         error: 'NOT_FOUND'
                     }
                 });
-            }            
+            }
             modal.name = req.body.name ? req.body.name : modal.name;
             modal.description = req.body.description ? req.body.description : modal.description;
-            modal.modalImage = req.file.path ? req.file.path : modal.modalImage;
+            if (req.file)
+                modal.modalImage = req.file.path ? req.file.path : modal.modalImage;
             modal.fromDate = req.body.fromDate ? req.body.fromDate : modal.fromDate;
             modal.toDate = req.body.toDate ? req.body.toDate : modal.toDate;
             
@@ -131,7 +132,7 @@ exports.update = (req, res, next) => {
                         name: modal.name,
                         fromDate: modal.fromDate,
                         toDate: modal.toDate,
-                        modalImage: modal.modalImage,
+                        modalImage: 'http://localhost:3000/'+modal.modalImage,
                         description: modal.description
                     });
                 })
@@ -172,19 +173,19 @@ exports.today = (req, res, next) => {
         .exec()
         .then(modal => {
             if (!modal) {
-                return res.status(404).json({
-                    error: {
-                        error: 'NO_FOR_TODAY'
-                    }
+                return res.status(200).json({
+                    modal: {
+		            name: '',
+		            description: '',
+		            modalImgUrl: ''
+		        }
                 });
             }
             return res.status(200).json({
                 modal: {
                     name: modal.name,
                     description: modal.description,
-                    modalImage: modal.modalImage,
-                    fromDate: modal.fromDate,
-                    toDate: modal.toDate
+                    modalImgUrl: 'http://localhost:3000/'+modal.modalImage
                 }
             });
         })

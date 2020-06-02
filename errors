@@ -23,7 +23,7 @@ C|A    	    error!:
 +|-         NOT_GOOD_PACKAGE
 ?|-         DATE_NOT_GIVEN
 +|-         DATE_IS_BEFORE_MIN
-?|-          NO_FOR_TODAY
+?|-         NO_FOR_TODAY
 +|-         DATE_FULL
 +|-         DATE_CLOSED
 +|-	    FAILED

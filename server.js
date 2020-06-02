@@ -14,7 +14,7 @@ const notifyJob = new CronJob('00 00 04 * * *',
     }
     ,null,	true,'Europe/Budapest');
     
-const archiveJob = new CronJob('00 00 22 * * *',
+const archiveJob = new CronJob('00 00 23 * * *',
     function() {
         autoArchiveReservations();
     }

@@ -14,20 +14,19 @@ module.exports = (req, res, next) => {
     Modal.find()
         .exec()
         .then( modals => {            
-            console.log(req.body.fromDate);
             for(modal of modals) {
                 if (
                     ((modal.fromDate <= new Date(req.body.fromDate) && new Date(req.body.fromDate) < modal.toDate)) ||
                     ((modal.toDate > new Date(req.body.toDate) && new Date(req.body.fromDate) >= modal.fromDate)) ||
                     ((modal.fromDate >= new Date(req.body.fromDate) && new Date(req.body.toDate) >= modal.toDate))
                 )
-                return res.status(500).json({
-                    error: {
-                        error: 'DATE_OVERLAPS'
-                    }
-                });
+                if (!modal._id.equals(req.params.modalId))
+                    return res.status(500).json({
+                        error: {
+                            error: 'DATE_OVERLAPS'
+                        }
+                    });
             }
-
             return next();
         })
         .catch(err => {
