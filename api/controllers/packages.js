@@ -126,7 +126,8 @@ exports.get_one = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-    Package.deleteOne({ _id: req.params.packageId })
+    Package.where('_id').in(req.body.ids)
+        .deleteMany()
         .exec()
         .then(result => {
             res.status(200).json({
@@ -143,6 +144,25 @@ exports.delete = (req, res, next) => {
         });
 };
 
+exports.disable = (req, res, next) => {
+    Package.where('_id').in(req.body.ids)
+        .updateMany({$set: {disabled: req.body.isDisabled}})
+        .exec()
+        .then(result => {
+            return res.status(200).json({
+                message: 'OK'
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'NOT_UPDATED',
+                    message: err
+                }
+            });
+        });
+};
+
 exports.update = (req, res, next) => {
     Package.findById(req.params.packageId )
         .exec()
@@ -153,8 +173,7 @@ exports.update = (req, res, next) => {
                         error: 'NOT_FOUND'
                     }
                 });
-            }
-            
+            }            
             package.name = req.body.name ? req.body.name : package.name;
             package.fromNumberLimit = req.body.fromNumberLimit ? req.body.fromNumberLimit : package.fromNumberLimit;
             package.toNumberLimit = req.body.toNumberLimit ? req.body.toNumberLimit : package.toNumberLimit;

@@ -24,9 +24,13 @@ router.patch('/:packageId',
     PackageController.update
 );
 
-router.delete('/:packageId',
+router.delete('/',
     checkAuth, checkAdmin,
     PackageController.delete
+);
+router.post('/disable', 
+    checkAuth, checkAdmin,
+    PackageController.disable
 );
 
 module.exports = router;
