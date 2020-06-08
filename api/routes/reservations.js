@@ -52,6 +52,11 @@ router.patch('/:reservationId',
     EmailController.client_reservaion_email, EmailController.send_to_client
 );
 
+router.post('/toggleArchived',
+    checkAuth, checkAdmin,
+    ReservationsController.toggleArchived
+);
+
 router.delete('/:reservationId',
     checkAuth, checkAdmin,
     deleteSubscription,

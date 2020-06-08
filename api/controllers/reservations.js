@@ -5,13 +5,12 @@ const Reservation = require('../models/reservation');
 
 exports.get_all = (req, res, next) => {
     Reservation.find()
-        .populate('packageId')
         .exec()
         .then( reservations => {
             res.status(200).json({
                 reservations: reservations.map(reservation => {
                     return {
-                        id: reservation._id,
+                        _id: reservation._id,
                         name: reservation.name,
                         email: reservation.email,
                         phoneNumber: reservation.phoneNumber,
@@ -41,6 +40,7 @@ exports.get_all_client = (req, res, next) => {
             res.status(200).json({
                 reservations: reservations.map(reservation => {
                     return {
+			_id: reservation._id,
                         playerNumber: reservation.playerNumber,
                         date: reservation.date,
                         packageId: reservation.packageId
@@ -179,6 +179,41 @@ exports.update = (req, res, next) => {
             }
         });
     });
+};
+
+exports.toggleArchived = (req, res, next) => {
+    // console.log('asasd')
+    // Reservation.find().where('_id').in(req.body.ids)
+    //     .exec()
+    //     .then((reservations) => {
+    //         console.log(reservations);
+    //         return res.status(200).json({message: 'OK'})
+    //     })
+    //     .catch(err => {
+    //         res.status(500).json({
+    //             error: {
+    //                 error: 'NOT_UPDATED_ARCHIVE',
+    //                 message: err
+    //             }
+    //         });
+    //     });
+    Reservation.where('_id').in(req.body.ids)
+        .updateMany({$set: {archived: req.body.isArchived}})
+        .exec()
+        .then(result => {
+            return res.status(200).json({
+                result: result,
+                message: 'updated'
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'NOT_UPDATED_ARCHIVE',
+                    message: err
+                }
+            });
+        });
 };
 
 exports.delete = (req, res, next) => {
