@@ -4,9 +4,7 @@ module.exports = (req, res, next) => {
     Operator.find()
         .exec()
         .then(operators => {
-
             for(const operator of operators) {
-
                 if (operator.subscriptions.includes(req.params.reservationId)) {
                     const i = operator.subscriptions.indexOf(req.params.reservationId);
                     operator.subscriptions.splice(i, 1);

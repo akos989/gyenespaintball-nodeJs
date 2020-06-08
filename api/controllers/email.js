@@ -2,14 +2,14 @@ const nodemailer = require('nodemailer');
 const Reservation = require('../models/reservation');
 
 exports.admin_reservation_email = (req, res, next) => {
-    const date = new Date(res.locals.reservationInfo.date.getUTCFullYear(),
+  const date = new Date(res.locals.reservationInfo.date.getUTCFullYear(),
     res.locals.reservationInfo.date.getUTCMonth(),
     res.locals.reservationInfo.date.getUTCDate(),
     res.locals.reservationInfo.date.getUTCHours(),
     res.locals.reservationInfo.date.getUTCMinutes());
-    date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
-    const hour = date.getUTCHours();
-    res.locals.emailBody = `
+  date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
+  const hour = date.getUTCHours();
+  res.locals.emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Új foglalás érkezett!</h1>
             <hr>
@@ -24,8 +24,8 @@ exports.admin_reservation_email = (req, res, next) => {
                 <div style="font-weight: bold;">Játékosszám:</div>
                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.playerNumber}</div>
                 <div style="font-weight: bold;">Dátum:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.date.toISOString().slice(0,10)}
-                ${(hour < 10) ? ('0' + hour) : hour}:${res.locals.reservationInfo.date.getMinutes() < 10 ? '0'+res.locals.reservationInfo.date.getMinutes() : res.locals.reservationInfo.date.getMinutes()}</div>
+                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.date.toISOString().slice(0, 10)}
+                ${(hour < 10) ? ('0' + hour) : hour}:${res.locals.reservationInfo.date.getMinutes() < 10 ? '0' + res.locals.reservationInfo.date.getMinutes() : res.locals.reservationInfo.date.getMinutes()}</div>
                 <div style="font-weight: bold;">Időtartam:</div>
                 <div style="padding-bottom: 10px;">${res.locals.package.duration} óra</div>
                 <div style="font-weight: bold;">Alapár:</div>
@@ -39,205 +39,310 @@ exports.admin_reservation_email = (req, res, next) => {
             </div>
         </div>
     `;
-    return next();
+  return next();
 };
+
+// exports.client_reservaion_email = (req, res, next) => {
+//   const date = new Date(res.locals.reservationInfo.date.getUTCFullYear(),
+//     res.locals.reservationInfo.date.getUTCMonth(),
+//     res.locals.reservationInfo.date.getUTCDate(),
+//     res.locals.reservationInfo.date.getUTCHours(),
+//     res.locals.reservationInfo.date.getUTCMinutes());
+//   date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
+//   res.locals.date = date;
+//   const hour = date.getUTCHours();
+//   res.locals.emailBody = `
+//         <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
+//         <div style="text-align: center;">
+//             <h1 style="padding-bottom: 30px;">Kedves ${res.locals.reservationInfo.name}!</h1>
+//             <h2 style="padding-bottom: 30px;"> ${res.locals.emailTitle} </h2>
+//             <div style="padding-bottom: 30px;">${res.locals.emailDetails}</div>
+//             <hr>
+//             <h2>Foglalás adatai:</h2>
+//             <div style="padding-bottom: 30px;">
+//                 <div style="font-weight: bold;">Név:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.name}</div>
+//                 <div style="font-weight: bold;">Email:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.email}</div>
+//                 <div style="font-weight: bold;">Telefonszám:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.phoneNumber}</div>
+//                 <div style="font-weight: bold;">Játékosszám:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.playerNumber}</div>
+//                 <div style="font-weight: bold;">Dátum:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.date.toISOString().slice(0, 10)}
+//                 ${(hour < 10) ? ('0' + hour) : hour}:${res.locals.reservationInfo.date.getMinutes() < 10 ? '0' + res.locals.reservationInfo.date.getMinutes() : res.locals.reservationInfo.date.getMinutes()}</div>
+//                 <div style="font-weight: bold;">Időtartam:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.package.duration} óra</div>
+//                 <div style="font-weight: bold;">Alapár:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.package.basePrice} Ft</div>
+//                 <div style="font-weight: bold;">Ft / lövedék:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.package.bulletPrice} Ft</div>
+//                 <div style="font-weight: bold;">Lövedék az árban:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.package.includedBullets} db</div>
+//                 <div style="font-weight: bold;">Megjegyzések:</div>
+//                 <div style="padding-bottom: 10px;">${res.locals.reservationInfo.notes ? res.locals.reservationInfo.notes : '-'}</div>
+//             </div>
+//         </div>
+//         <hr>  
+//         <div style="text-align:center;">
+//             <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
+//             <div>Balaton utca, Gyenesdiás</div><div>8315</div>
+//             <hr>
+//             <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
+//             <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
+//             <div>Email:</div>
+//             <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+//             <hr>
+//             <div style="padding-top: 5vh; padding-bottom: 5vh;">
+//                 <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
+//                 <a href="https://www.instagram.com/gyenespaintball/" target="_blank"><span style="margin-left: 30px;"><img src="cid:insta" alt="insta" style="height: 25px; width: 25px;"></span></a>
+//             </div> 
+//         </div>
+//     `;
+//   return next();
+//   // <div style="padding-bottom: 10px;">${res.locals.reservationInfo.date.toISOString().slice(0,10)}
+//   //             ${(hour < 10) ? ('0' + hour) : hour}:${res.locals.reservationInfo.date.getMinutes() < 10 ? '0'+res.locals.reservationInfo.date.getMinutes() : res.locals.reservationInfo.date.getMinutes()}</div>
+
+// };
 
 exports.client_reservaion_email = (req, res, next) => {
-    const date = new Date(res.locals.reservationInfo.date.getUTCFullYear(),
-    res.locals.reservationInfo.date.getUTCMonth(),
-    res.locals.reservationInfo.date.getUTCDate(),
-    res.locals.reservationInfo.date.getUTCHours(),
-    res.locals.reservationInfo.date.getUTCMinutes());
-    date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
-    res.locals.date = date;
-    const hour = date.getUTCHours();
-    res.locals.emailBody = `
-        <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
-        <div style="text-align: center;">
-            <h1 style="padding-bottom: 30px;">Kedves ${res.locals.reservationInfo.name}!</h1>
-            <h2 style="padding-bottom: 30px;"> ${res.locals.emailTitle} </h2>
-            <div style="padding-bottom: 30px;">${res.locals.emailDetails}</div>
-            <hr>
-            <h2>Foglalás adatai:</h2>
-            <div style="padding-bottom: 30px;">
-                <div style="font-weight: bold;">Név:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.name}</div>
-                <div style="font-weight: bold;">Email:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.email}</div>
-                <div style="font-weight: bold;">Telefonszám:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.phoneNumber}</div>
-                <div style="font-weight: bold;">Játékosszám:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.playerNumber}</div>
-                <div style="font-weight: bold;">Dátum:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.date.toISOString().slice(0,10)}
-                ${(hour < 10) ? ('0' + hour) : hour}:${res.locals.reservationInfo.date.getMinutes() < 10 ? '0'+res.locals.reservationInfo.date.getMinutes() : res.locals.reservationInfo.date.getMinutes()}</div>
-                <div style="font-weight: bold;">Időtartam:</div>
-                <div style="padding-bottom: 10px;">${res.locals.package.duration} óra</div>
-                <div style="font-weight: bold;">Alapár:</div>
-                <div style="padding-bottom: 10px;">${res.locals.package.basePrice} Ft</div>
-                <div style="font-weight: bold;">Ft / lövedék:</div>
-                <div style="padding-bottom: 10px;">${res.locals.package.bulletPrice} Ft</div>
-                <div style="font-weight: bold;">Lövedék az árban:</div>
-                <div style="padding-bottom: 10px;">${res.locals.package.includedBullets} db</div>
-                <div style="font-weight: bold;">Megjegyzések:</div>
-                <div style="padding-bottom: 10px;">${res.locals.reservationInfo.notes ? res.locals.reservationInfo.notes : '-'}</div>
-            </div>
-        </div>
-        <hr>  
-        <div style="text-align:center;">
-            <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
-            <div>Balaton utca, Gyenesdiás</div><div>8315</div>
-            <hr>
-            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
-            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
-            <div>Email:</div>
-            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
-            <hr>
-            <div style="padding-top: 5vh; padding-bottom: 5vh;">
-                <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
-                <a href="https://www.instagram.com/gyenespaintball/" target="_blank"><span style="margin-left: 30px;"><img src="cid:insta" alt="insta" style="height: 25px; width: 25px;"></span></a>
-            </div> 
-        </div>
-    `;
-    return next();
-    // <div style="padding-bottom: 10px;">${res.locals.reservationInfo.date.toISOString().slice(0,10)}
-    //             ${(hour < 10) ? ('0' + hour) : hour}:${res.locals.reservationInfo.date.getMinutes() < 10 ? '0'+res.locals.reservationInfo.date.getMinutes() : res.locals.reservationInfo.date.getMinutes()}</div>
-                
-};
+  if (res.locals.moreReservations) {
+    messages = [];
+    emailAddresses = [];
+    res.locals.reservations.forEach(reservation => {
+      emailAddresses.push(reservation.email);
+      messages.push(makeClientEmail(
+          reservation, 
+          reservation.packageId, 
+          res.locals.emailTitle, 
+          res.locals.emailDetails
+      ));
+    });
+    res.locals.emailAddresses = emailAddresses;
+    res.locals.emailBodies = messages;
+  } else {
+    res.locals.emailBody = makeClientEmail(
+      res.locals.reservationInfo, 
+      res.locals.package,
+      res.locals.emailTitle, 
+      res.locals.emailDetails
+    );
+  }  
+  return next();
+}
+function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
+  const date = new Date(reservationInfo.date.getUTCFullYear(),
+    reservationInfo.date.getUTCMonth(),
+    reservationInfo.date.getUTCDate(),
+    reservationInfo.date.getUTCHours(),
+    reservationInfo.date.getUTCMinutes());
+  date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
+  const hour = date.getUTCHours();
+  return `
+      <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
+      <div style="text-align: center;">
+          <h1 style="padding-bottom: 30px;">Kedves ${reservationInfo.name}!</h1>
+          <h2 style="padding-bottom: 30px;"> ${emailTitle} </h2>
+          <div style="padding-bottom: 30px;">${emailDetails}</div>
+          <hr>
+          <h2>Foglalás adatai:</h2>
+          <div style="padding-bottom: 30px;">
+              <div style="font-weight: bold;">Név:</div>
+              <div style="padding-bottom: 10px;">${reservationInfo.name}</div>
+              <div style="font-weight: bold;">Email:</div>
+              <div style="padding-bottom: 10px;">${reservationInfo.email}</div>
+              <div style="font-weight: bold;">Telefonszám:</div>
+              <div style="padding-bottom: 10px;">${reservationInfo.phoneNumber}</div>
+              <div style="font-weight: bold;">Játékosszám:</div>
+              <div style="padding-bottom: 10px;">${reservationInfo.playerNumber}</div>
+              <div style="font-weight: bold;">Dátum:</div>
+              <div style="padding-bottom: 10px;">${reservationInfo.date.toISOString().slice(0, 10)}
+              ${(hour < 10) ? ('0' + hour) : hour}:${reservationInfo.date.getMinutes() < 10 ? '0' + reservationInfo.date.getMinutes() : reservationInfo.date.getMinutes()}</div>
+              <div style="font-weight: bold;">Időtartam:</div>
+              <div style="padding-bottom: 10px;">${package.duration} óra</div>
+              <div style="font-weight: bold;">Alapár:</div>
+              <div style="padding-bottom: 10px;">${package.basePrice} Ft</div>
+              <div style="font-weight: bold;">Ft / lövedék:</div>
+              <div style="padding-bottom: 10px;">${package.bulletPrice} Ft</div>
+              <div style="font-weight: bold;">Lövedék az árban:</div>
+              <div style="padding-bottom: 10px;">${package.includedBullets} db</div>
+              <div style="font-weight: bold;">Megjegyzések:</div>
+              <div style="padding-bottom: 10px;">${reservationInfo.notes ? reservationInfo.notes : '-'}</div>
+          </div>
+      </div>
+      <hr>  
+      <div style="text-align:center;">
+          <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
+          <div>Balaton utca, Gyenesdiás</div><div>8315</div>
+          <hr>
+          <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
+          <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
+          <div>Email:</div>
+          <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+          <hr>
+          <div style="padding-top: 5vh; padding-bottom: 5vh;">
+              <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
+              <a href="https://www.instagram.com/gyenespaintball/" target="_blank"><span style="margin-left: 30px;"><img src="cid:insta" alt="insta" style="height: 25px; width: 25px;"></span></a>
+          </div> 
+      </div>
+  `;
+}
+
 
 exports.send_to_client = (req, res, next) => {
-    let transporter = nodemailer.createTransport({
-        host: "mail.szomato-coaching.hu",
-        port: 465,
-        secure: true, // true for 465, false for other ports
-        auth: {
-          user: "akos@szomato-coaching.hu", // generated ethereal user
-          pass: "Jasonderuloa1" // generated ethereal password
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-      });
-    
-      // send mail with defined transport object
-    
-      let mailOptions = {
-        from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
-        to: res.locals.reservationInfo.email, // list of receivers
-        subject: res.locals.emailSubject, // Subject line
-        text: "Új foglalás", // plain text body
-        html: res.locals.emailBody, // html body
-        attachments: [
-          {
-            filename: 'paintball-logo.png',
-            path: process.cwd() + '/email/paintball-logo.png',
-            cid: 'logo-png-email'
-          },
-          {
-            filename: 'instagram-sketched.png',
-            path: process.cwd() + '/email/instagram-sketched.png',
-            cid: 'insta'
-          },
-          {
-            filename: 'facebook.png',
-            path: process.cwd() + '/email/facebook.png',
-            cid: 'facebook'
-          }
-        ]
-      };
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log("Message sent: %s", info.messageId);
-      
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));        
-        if (res.locals.adminEmail)
-          return next();
-      }); 
+  let transporter = nodemailer.createTransport({
+    host: "mail.szomato-coaching.hu",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: "akos@szomato-coaching.hu", // generated ethereal user
+      pass: "Jasonderuloa1" // generated ethereal password
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  // send mail with defined transport object
+
+  if (res.locals.moreReservations) {
+    for(let i = 0; i < res.locals.emailAddresses.length; i++) {
+      if (!res.locals.reservations[i].archived)
+        sendEmailToClient(
+          transporter,
+          res.locals.emailAddresses[i],
+          res.locals.emailBodies[i],
+          res.locals.emailSubject
+        );
+    }
+  } else {
+    sendEmailToClient(
+      transporter,
+      res.locals.reservationInfo.email,
+      res.locals.emailBody,
+      res.locals.emailSubject
+      );
+  }  
+  if (res.locals.adminEmail)
+      return next();
 };
 
+function sendEmailToClient(transporter, receiver, body, subject) {
+  let mailOptions = {
+    from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
+    to: receiver, // list of receivers
+    subject: subject, // Subject line
+    text: "foglalás", // plain text body
+    html: body, // html body
+    attachments: [
+      {
+        filename: 'paintball-logo.png',
+        path: process.cwd() + '/email/paintball-logo.png',
+        cid: 'logo-png-email'
+      },
+      {
+        filename: 'instagram-sketched.png',
+        path: process.cwd() + '/email/instagram-sketched.png',
+        cid: 'insta'
+      },
+      {
+        filename: 'facebook.png',
+        path: process.cwd() + '/email/facebook.png',
+        cid: 'facebook'
+      }
+    ]
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log("Message sent: %s", info.messageId);
+
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  });
+}
+
 exports.send_to_admins = (req, res, next) => {
-    let transporter = nodemailer.createTransport({
-        host: "mail.szomato-coaching.hu",
-        port: 465,
-        secure: true, // true for 465, false for other ports
-        auth: {
-          user: "akos@szomato-coaching.hu", // generated ethereal user
-          pass: "Jasonderuloa1" // generated ethereal password
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-      });
-      // send mail with defined transport object
-      let mailOptions = {
-        from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
-        to: res.locals.adminEmails, // list of receivers
-        subject: res.locals.emailSubject, // Subject line
-        text: "Új foglalás", // plain text body
-        html: res.locals.emailBody
-      };
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log("Message sent: %s", info.messageId);
-      
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-      });
+  let transporter = nodemailer.createTransport({
+    host: "mail.szomato-coaching.hu",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: "akos@szomato-coaching.hu", // generated ethereal user
+      pass: "Jasonderuloa1" // generated ethereal password
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+  // send mail with defined transport object
+  let mailOptions = {
+    from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
+    to: res.locals.adminEmails, // list of receivers
+    subject: res.locals.emailSubject, // Subject line
+    text: "Új foglalás", // plain text body
+    html: res.locals.emailBody
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log("Message sent: %s", info.messageId);
+
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  });
 };
 
 
 exports.scheduled_email = (to, htmlBody, emailSubject) => {
   let transporter = nodemailer.createTransport({
-      host: "mail.szomato-coaching.hu",
-      port: 465,
-      secure: true, // true for 465, false for other ports
-      auth: {
-        user: "akos@szomato-coaching.hu", // generated ethereal user
-        pass: "Jasonderuloa1" // generated ethereal password
+    host: "mail.szomato-coaching.hu",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: "akos@szomato-coaching.hu", // generated ethereal user
+      pass: "Jasonderuloa1" // generated ethereal password
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  // send mail with defined transport object
+
+  let mailOptions = {
+    from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
+    to: to, // list of receivers
+    subject: emailSubject, // Subject line
+    text: "Emlékeztető", // plain text body
+    html: htmlBody, // html body
+    attachments: [
+      {
+        filename: 'paintball-logo.png',
+        path: process.cwd() + '/email/paintball-logo.png',
+        cid: 'logo-png-email'
       },
-      tls: {
-          rejectUnauthorized: false
+      {
+        filename: 'instagram-sketched.png',
+        path: process.cwd() + '/email/instagram-sketched.png',
+        cid: 'insta'
+      },
+      {
+        filename: 'facebook.png',
+        path: process.cwd() + '/email/facebook.png',
+        cid: 'facebook'
       }
-    });
-  
-    // send mail with defined transport object
-  
-    let mailOptions = {
-      from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
-      to: to, // list of receivers
-      subject: emailSubject, // Subject line
-      text: "Emlékeztető", // plain text body
-      html: htmlBody, // html body
-      attachments: [
-        {
-          filename: 'paintball-logo.png',
-          path: process.cwd() + '/email/paintball-logo.png',
-          cid: 'logo-png-email'
-        },
-        {
-          filename: 'instagram-sketched.png',
-          path: process.cwd() + '/email/instagram-sketched.png',
-          cid: 'insta'
-        },
-        {
-          filename: 'facebook.png',
-          path: process.cwd() + '/email/facebook.png',
-          cid: 'facebook'
-        }
-      ]
-    };
-   
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-          return console.log(error);
-      }
-      console.log("Message sent: %s", info.messageId);
-    
-      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-    }); 
+    ]
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log("Message sent: %s", info.messageId);
+
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  });
 };
 
 exports.scheduled_email_content = (reservation, package) => {
@@ -248,9 +353,9 @@ exports.scheduled_email_content = (reservation, package) => {
     reservation.date.getUTCHours(),
     reservation.date.getUTCMinutes()
   );
-    date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
-    const hour = date.getUTCHours();
-    const emailBody = `
+  date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
+  const hour = date.getUTCHours();
+  const emailBody = `
         <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
@@ -267,8 +372,8 @@ exports.scheduled_email_content = (reservation, package) => {
                 <div style="font-weight: bold;">Játékosszám:</div>
                 <div style="padding-bottom: 10px;">${reservation.playerNumber}</div>
                 <div style="font-weight: bold;">Dátum:</div>
-                <div style="padding-bottom: 10px;">${reservation.date.toISOString().slice(0,10)}
-                ${(hour < 10) ? ('0' + hour) : hour}:${reservation.date.getMinutes() < 10 ? '0'+reservation.date.getMinutes() : reservation.date.getMinutes()}</div>
+                <div style="padding-bottom: 10px;">${reservation.date.toISOString().slice(0, 10)}
+                ${(hour < 10) ? ('0' + hour) : hour}:${reservation.date.getMinutes() < 10 ? '0' + reservation.date.getMinutes() : reservation.date.getMinutes()}</div>
                 <div style="font-weight: bold;">Időtartam:</div>
                 <div style="padding-bottom: 10px;">${package.duration} óra</div>
                 <div style="font-weight: bold;">Alapár:</div>
@@ -301,7 +406,7 @@ exports.scheduled_email_content = (reservation, package) => {
 };
 
 exports.thanks_email_content = (reservation) => {
-    const emailBody = `
+  const emailBody = `
         <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
@@ -357,7 +462,7 @@ exports.client_message_create_body = (req, res, next) => {
             </div> 
         </div>
     `;
-    return next();
+  return next();
 };
 
 exports.admin_message_create_body = (req, res, next) => {
@@ -380,7 +485,7 @@ exports.admin_message_create_body = (req, res, next) => {
             </div>
         </div>
     `;
-    return next();
+  return next();
 };
 
 exports.client_message_reply_body = (req, res, next) => {
@@ -411,5 +516,5 @@ exports.client_message_reply_body = (req, res, next) => {
             </div> 
         </div>
     `;
-    return next();
+  return next();
 };

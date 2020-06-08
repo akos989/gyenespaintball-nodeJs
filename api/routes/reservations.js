@@ -11,7 +11,7 @@ const deleteSubscription = require('../middleware/subscriptions/delete_sub_with_
 const checkPackage = require('../middleware/package/check_package');
 const setUpNew = require('../middleware/reservations/setup_new_reservation');
 const findPackage = require('../middleware/package/find_package');
-const findReservation = require('../middleware/reservations/check_valid_id');
+const setUpForDelete = require('../middleware/reservations/setUpForDelete');
 
 const getAdmins = require('../middleware/operator/get_admins');
 
@@ -57,10 +57,10 @@ router.post('/toggleArchived',
     ReservationsController.toggleArchived
 );
 
-router.delete('/:reservationId',
+router.delete('/',
     checkAuth, checkAdmin,
-    deleteSubscription,
-    findReservation, findPackage,
+    // deleteSubscription,
+    setUpForDelete,
     ReservationsController.delete,
     EmailController.client_reservaion_email, EmailController.send_to_client
 );

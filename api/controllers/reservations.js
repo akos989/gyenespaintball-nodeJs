@@ -217,25 +217,19 @@ exports.toggleArchived = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-    Reservation.deleteOne({ _id: req.params.reservationId })
+    Reservation.where('_id').in(req.body.ids)
+        .deleteMany()
         .exec()
         .then(result => {
-            if (!res.locals.reservation.archived) {
-                res.locals.emailSubject = 'Törölt foglalás';
-                res.locals.emailTitle = 'Foglalását törölték!';
-                res.locals.emailDetails = 'A lenti foglalást törölték. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
-                res.locals.reservationInfo = res.locals.reservation;
-                res.locals.adminEmail = false;
-             
-                next();
-                res.status(200).json({
-                    message: 'DELETE_SUCCESFUL'
-                });
-            } else {
-                return res.status(200).json({
-                    message: 'DELETE_SUCCESFUL'
-                });
-            }
+            console.log(result)
+            res.locals.emailSubject = 'Törölt foglalás';
+            res.locals.emailTitle = 'Foglalását törölték!';
+            res.locals.emailDetails = 'A lenti foglalást törölték. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
+            res.locals.adminEmail = false;                
+            next();
+            res.status(200).json({
+                message: 'DELETE_SUCCESFUL'
+            });
         })
         .catch(err => {
             res.status(500).json({
@@ -245,6 +239,35 @@ exports.delete = (req, res, next) => {
                 }
             });
         });
+
+    // Reservation.deleteOne({ _id: req.params.reservationId })
+    //     .exec()
+    //     .then(result => {
+    //         if (!res.locals.reservation.archived) {
+    //             res.locals.emailSubject = 'Törölt foglalás';
+    //             res.locals.emailTitle = 'Foglalását törölték!';
+    //             res.locals.emailDetails = 'A lenti foglalást törölték. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
+    //             res.locals.reservationInfo = res.locals.reservation;
+    //             res.locals.adminEmail = false;
+             
+    //             next();
+    //             res.status(200).json({
+    //                 message: 'DELETE_SUCCESFUL'
+    //             });
+    //         } else {
+    //             return res.status(200).json({
+    //                 message: 'DELETE_SUCCESFUL'
+    //             });
+    //         }
+    //     })
+    //     .catch(err => {
+    //         res.status(500).json({
+    //             error: {
+    //                 error: 'NOT_DELETED',
+    //                 message: err
+    //             }
+    //         });
+    //     });
 };
 
 exports.get_for_month = (req, res, next) => {
