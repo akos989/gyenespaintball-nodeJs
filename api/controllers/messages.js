@@ -63,7 +63,8 @@ exports.create = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-    Message.deleteOne({_id: req.params.messageId})
+    Message.where('_id').in(req.body.ids)
+        .deleteMany()
         .then(result => {
             return res.status(200).json({
                 message: 'DELETE_SUCCESFUL'

@@ -89,7 +89,8 @@ exports.get_one = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-    Modal.deleteOne({ _id: req.params.modalId })
+    Modal.where('_id').in(req.body.ids)
+        .deleteMany()
         .exec()
         .then(result => {
             res.status(200).json({

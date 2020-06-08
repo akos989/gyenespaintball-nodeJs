@@ -21,7 +21,7 @@ router.post('/',
     EmailController.admin_message_create_body, EmailController.send_to_admins
 );
 
-router.delete('/:messageId',
+router.delete('/',
     checkAuth, checkAdmin,
     MessageController.delete
 );

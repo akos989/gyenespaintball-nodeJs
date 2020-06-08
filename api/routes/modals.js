@@ -56,7 +56,7 @@ router.patch('/:modalId',
     ModalController.update
 );
 
-router.delete('/:modalId',
+router.delete('/',
     checkAuth, checkAdmin,
     ModalController.delete
 );
