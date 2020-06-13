@@ -69,16 +69,16 @@ exports.create = (req, res, next) => {
             res.locals.adminEmail = true;
             next();
             res.status(201).json({
-                message: 'RESERVATION_CREATED',
                 reservation: {
-                    id: result._id,
+                    _id: result._id,
                     name: result.name,
                     email: result.email,
                     phoneNumber: result.phoneNumber,
                     playerNumber: result.playerNumber,
                     notes: result.notes,
                     date: result.date,
-                    packageId: result.packageId
+                    packageId: result.packageId,
+                    archived: result.archived
                 }                        
             });
         })
@@ -136,7 +136,7 @@ exports.update = (req, res, next) => {
             return res.status(200).json({
                 message: 'RESERVATION_UPDATED',
                 reservation: {
-                    id: result._id,
+                    _id: result._id,
                     name: result.name,
                     email: result.email,
                     phoneNumber: result.phoneNumber,
@@ -158,7 +158,7 @@ exports.update = (req, res, next) => {
             res.status(200).json({
                 message: 'RESERVATION_UPDATED',
                 reservation: {
-                    id: result._id,
+                    _id: result._id,
                     name: result.name,
                     email: result.email,
                     phoneNumber: result.phoneNumber,
@@ -206,7 +206,6 @@ exports.delete = (req, res, next) => {
         .deleteMany()
         .exec()
         .then(result => {
-            console.log(result)
             res.locals.emailSubject = 'Törölt foglalás';
             res.locals.emailTitle = 'Foglalását törölték!';
             res.locals.emailDetails = 'A lenti foglalást törölték. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';

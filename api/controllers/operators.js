@@ -148,7 +148,6 @@ exports.login = (req, res, next) => {
                         }
                     );
                     return res.status(200).json({
-                        message: 'AUTH_SUCCESSFUL',
                         token: token,
                         email: operator.email,
                         expiresIn: '3600',
