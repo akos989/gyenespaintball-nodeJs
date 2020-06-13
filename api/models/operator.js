@@ -23,7 +23,8 @@ const Operator = db.model('Operator', {
                 1
         )
     },
-    subscriptions: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }]
+    subscriptions: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }],
+    newReservations: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }]
 });
 
 module.exports = Operator;

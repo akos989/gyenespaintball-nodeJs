@@ -10,6 +10,7 @@ const checkEmail = require('../middleware/operator/check_email');
 const checkOldPass = require('../middleware/operator/check_old_pass');
 const hashPass = require('../middleware/operator/hash_pass');
 const checkOwn = require('../middleware/auth/check-own');
+const check_same_user = require('../middleware/auth/check-same-user');
 
 router.get('/', checkAuth, checkTemp, OperatorController.get_all);
 router.post('/create/:temp_operatorId',
@@ -32,8 +33,12 @@ router.get('/temporary',
     OperatorController.get_all_temporary
 );
 router.get('/my_account',
-    checkAuth,
+    checkAuth, check_same_user,
     OperatorController.get_my_account
+);
+router.post('/view_reservation',
+    checkAuth, check_same_user,
+    OperatorController.view_reservation
 );
 
 module.exports = router;

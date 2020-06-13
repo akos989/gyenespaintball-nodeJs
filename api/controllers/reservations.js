@@ -65,7 +65,7 @@ exports.create = (req, res, next) => {
             res.locals.emailSubject = 'Új foglalás';
             res.locals.emailTitle = 'Köszönjük a foglalást!';
             res.locals.emailDetails = 'A foglalásról a játék kezdete előtt 48 órával fog kapni egy email értesítőt. Lemondani a kezdés előtt 24 óráig díjmentesen lehet, utána ki kell fizetni a teljes alapárat.';
-		res.locals.reservationInfo = result;
+		    res.locals.reservationInfo = result;
             res.locals.adminEmail = true;
             next();
             res.status(201).json({

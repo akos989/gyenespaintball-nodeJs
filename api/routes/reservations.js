@@ -17,6 +17,7 @@ const getAdmins = require('../middleware/operator/get_admins');
 
 const EmailController = require('../controllers/email');
 const ReservationsController = require('../controllers/reservations');
+const OperatorController = require('../controllers/operators');
 
 router.get('/',
     checkAuth, checkTemp,
@@ -35,6 +36,7 @@ router.post('/',
     setUpNew, findPackage,
     checkDate, checkNoDates, checkPackage,
     ReservationsController.create,
+    OperatorController.new_reservation,
     EmailController.client_reservaion_email, EmailController.send_to_client,
     getAdmins, EmailController.admin_reservation_email, EmailController.send_to_admins
 );

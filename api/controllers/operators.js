@@ -151,7 +151,8 @@ exports.login = (req, res, next) => {
                         token: token,
                         email: operator.email,
                         expiresIn: '3600',
-                        localId: operator._id
+                        localId: operator._id,
+                        newReservations: operator.newReservations
                     });
                 }
                 res.status(401).json({
@@ -314,7 +315,8 @@ exports.get_my_account = (req, res, next) => {
                     phoneNumber: operator.phoneNumber,
                     admin: operator.admin,
                     temporary: operator.temporary,
-                    accessLimit: operator.accessLimit
+                    accessLimit: operator.accessLimit,
+                    newReservations: operator.newReservations
                 }
             });
         })
@@ -322,6 +324,35 @@ exports.get_my_account = (req, res, next) => {
             res.status(500).json({
                 error: {
                     error: 'FAILED',
+                    message: err
+                }
+            });
+        });
+};
+exports.new_reservation = (req, res, next) => {
+    Operator.update({ temporary: false }, { $push: { newReservations: res.locals.reservationInfo._id } })
+        .exec()
+        .then(result => {
+            return next();
+        })
+        .catch(err => {
+            return next();
+        });
+};
+exports.view_reservation = (req, res, next) => {
+    Operator.updateOne(
+        { _id: req.body.operatorId }, { $pull: { newReservations: req.body.reservationId } }
+        )
+        .exec()
+        .then(result => {
+            return res.status(200).json({
+                result: result
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'FAILEDed',
                     message: err
                 }
             });
