@@ -97,7 +97,8 @@ exports.update = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-    NOD.deleteOne({ _id: req.params.nodId })
+    NOD.where('_id').in(req.body.ids)
+        .deleteMany()
         .exec()
         .then(result => {
             return res.status(200).json({

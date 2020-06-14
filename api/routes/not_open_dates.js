@@ -21,7 +21,7 @@ router.patch('/:nodId',
     checkNoDate,
     NODController.update
 );
-router.delete('/:nodId',
+router.delete('/',
     checkAuth, checkAdmin, 
     NODController.delete
 );
