@@ -41,11 +41,12 @@ exports.create = (req, res, next) => {
     modal.save()
         .then(result => {
             res.status(201).json({
-                message: 'MODAL_CREATED',
                 _id: result._id,
                 name: result.name,
                 fromDate: result.fromDate,
-                toDate: result.toDate
+                modalImage: 'http://localhost:3000/'+result.modalImage,
+                toDate: result.toDate,
+                description: result.description
             });
         })
         .catch(err => {
@@ -57,37 +58,6 @@ exports.create = (req, res, next) => {
             });            
         });
 };
-
-exports.get_one = (req, res, next) => {
-    modal.findById(req.params.modalId)
-        .exec()
-        .then(modal => {
-            if (!modal) {
-                return res.status(404).json({
-                    error: {
-                        error: 'NOT_FOUND'
-                    }
-                });
-            }                                
-            return res.status(200).json({
-                _id: modal._id,
-                name: modal.name,
-                fromDate: modal.fromDate,
-                toDate: modal.toDate,
-                modalImage: 'http://localhost:3000/'+modal.modalImage,
-                description: modal.description
-            });               
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: {
-                    error: 'FAILED',
-                    message: err
-                }
-            });
-        });
-};
-
 exports.delete = (req, res, next) => {
     Modal.where('_id').in(req.body.ids)
         .deleteMany()
@@ -128,7 +98,6 @@ exports.update = (req, res, next) => {
             modal.save()
                 .then(modal => {                    
                     return res.status(200).json({
-                        message: 'SUCCESSFUL_UPDATE',
                         _id: modal._id,
                         name: modal.name,
                         fromDate: modal.fromDate,

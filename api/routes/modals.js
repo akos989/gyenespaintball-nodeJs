@@ -37,29 +37,19 @@ router.get('/',
 router.get('/today',
     ModalController.today
 );
-
 router.post('/',
     checkAuth,
     upload.single('modalImage'),
     checkAdmin, checkDates,
     ModalController.create
 );
-
-router.get('/:modalId',
-    checkAuth, checkAdmin,
-    ModalController.get_one
-);
-
 router.patch('/:modalId',
     checkAuth, checkAdmin, checkDates,
     upload.single('modalImage'),
     ModalController.update
 );
-
 router.delete('/',
     checkAuth, checkAdmin,
     ModalController.delete
 );
-
-
 module.exports = router;
