@@ -8,11 +8,13 @@ exports.get_all = (req, res, next) => {
             return res.status(200).json({
                 messages: messages.map(message => {
                     return {
-                        id: message._id,
+                        _id: message._id,
                         name: message.name,
                         email: message.email,
                         text: message.text,
-                        replied: message.replied
+                        replied: message.replied,
+			reply: message.reply,
+			timestamp: message._id.getTimestamp()
                     }
                 })
             });
@@ -45,11 +47,12 @@ exports.create = (req, res, next) => {
             next();
 
             res.status(201).json({
-                id: result._id,
+                _id: result._id,
                 name: result.name,
                 email: result.email,
                 text: result.text,
-                replied: result.replied
+                replied: result.replied,
+		reply: result.reply
             });
         })
         .catch(err => {
@@ -99,7 +102,8 @@ exports.reply = (req, res, next) => {
                 });
             }
 
-            message.replied = true;
+            message.replied = req.body.replier;
+	    message.reply = req.body.replyBody;
             message.save()
                 .then(result => {
                     res.locals.emailSubject = 'Válasz';
@@ -110,11 +114,13 @@ exports.reply = (req, res, next) => {
                     next();
 
                     res.status(201).json({
-                        id: result._id,
+                        _id: result._id,
                         name: result.name,
                         email: result.email,
                         text: result.text,
-                        replied: result.replied
+                        replied: result.replied,
+			reply: result.reply,
+			timestamp: result._id.getTimestamp()
                     });
                 })
                 .catch(err => {

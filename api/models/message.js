@@ -6,7 +6,8 @@ const Message = db.model('Message', {
     name: { type: String, required: true},
     email: { type: String, required: true },
     text: { type: String, required: true },
-    replied: { type: Boolean, default: false }
+    replied: { type: String, default: '' },
+    reply: { type: String, default: '' }
 });
 
 module.exports = Message;

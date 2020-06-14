@@ -11,25 +11,15 @@ const NODController = require('../controllers/not_open_dates');
 router.get('/',
     NODController.get_all
 );
-
-router.post('/allForMonth',
-    NODController.get_for_month
-);
-
 router.post('/',
     checkAuth, checkAdmin,
+    checkNoDate,
     NODController.create
-);
-router.get('/:nodId',
-    checkAuth, checkTemp,
-    NODController.get_one
 );
 router.patch('/:nodId',
     checkAuth, checkAdmin,
-   // checkNoDate,
-    NODController.update,
-    NODController.delete,
-    NODController.create
+    checkNoDate,
+    NODController.update
 );
 router.delete('/:nodId',
     checkAuth, checkAdmin, 

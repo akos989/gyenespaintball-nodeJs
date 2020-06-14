@@ -26,6 +26,7 @@ C|A    	    error!:
 ?|-         NO_FOR_TODAY
 +|-         DATE_FULL
 +|-         DATE_CLOSED
+0|-         NO_DATE_OVERLAPS
 +|-	    FAILED
 }
 

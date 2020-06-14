@@ -18,7 +18,8 @@ exports.get_all = (req, res, next) => {
                         notes: reservation.notes,
                         date: reservation.date,
                         packageId: reservation.packageId,
-                        archived: reservation.archived
+                        archived: reservation.archived,
+			timeStamp: reservation._id.getTimestamp()
                     }
                 })             
             });

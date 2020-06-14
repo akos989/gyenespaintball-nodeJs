@@ -7,13 +7,11 @@ const NotOpenDate = db.model('NotOpenDate', {
     fromDate: {
         type: Date,
         required: true,
-        unique: true,
-        min: Date.now()
+        unique: true
     },
     toDate: {
         type: Date,
-        required: true,
-        min: Date.now()
+        required: true
     }
 });
 

@@ -493,9 +493,10 @@ exports.client_message_reply_body = (req, res, next) => {
         <img src="cid:logo-png-email" alt="logo" style="width: 120px; position: relative; left: calc(50vw - 60px);">
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${res.locals.messageInfo.name}!</h1>
-            <div style="padding-bottom: 10px;">Köszönjük, hogy hagyott üzenetet!</div>
+            <div style="padding-bottom: 10px;">Köszönjük, hogy írtál nekünk!</div>
             <hr>
-            <div style="padding-bottom: 10px; text-align: left;">${res.locals.replyBody}</div>
+            <div style="padding-bottom: 5px; text-align: left;">${res.locals.replyBody}</div>
+		<div style="padding-bottom: 10px; text-align: left;">Üdv.: Gyenespaintball csapata</div>
             <hr>
             <div style="padding-top: 30px; padding-bottom: 10px;">Eredeti üzenet: </div>
             <div style="padding-bottom: 10px; text-align: left;">${res.locals.messageInfo.text}</div>

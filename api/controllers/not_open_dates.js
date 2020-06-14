@@ -52,36 +52,6 @@ exports.create = (req, res, next) => {
             });
         });
 };
-
-exports.get_one = (req, res, next) => {
-    NOD.findById(req.params.nodId)
-        .exec()
-        .then(noDate => {
-            if (!noDate) {
-                return res.status(404).json({
-                    error: {
-                        error: 'NOT_FOUND'
-                    }
-                });
-            }
-            res.status(200).json({
-                message: 'FOUND',
-                _id: noDate._id,
-                reason: noDate.reason,
-                fromDate: noDate.fromDate,
-                toDate: noDate.toDate
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: {
-                    error: 'FAILED',
-                    message: err
-                }
-            });
-        });
-};
-
 exports.update = (req, res, next) => {
     NOD.findById(req.params.nodId)
         .exec()
@@ -94,7 +64,6 @@ exports.update = (req, res, next) => {
                 original.save()
                     .then(result => {            
                         return res.status(201).json({
-                            message: 'UPDATED',
                             _id: result._id,
                             reason: result.reason,
                             fromDate: result.fromDate,
@@ -139,49 +108,6 @@ exports.delete = (req, res, next) => {
             res.status(500).json({
                 error: {
                     error: 'NOT_DELETED',
-                    message: err
-                }
-            });
-        });
-};
-
-exports.get_for_month = (req, res, next) => {
-    const date = new Date(req.body.date);
-    const startA = new Date(date.getFullYear(), date.getMonth(), 1).valueOf();
-    const endA = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23).valueOf();
-
-    NOD.find()
-        .exec()
-        .then(noDates => {
-            let intersectedPeriods = [];
-
-            for( const noDate of noDates ) {
-                const startB = noDate.fromDate.valueOf();
-                const endB = noDate.toDate.valueOf();
-
-                const min = (startA < startB ? [startA, endA] : [startB, endB]);
-                const max = ( (min[0] === startA && min[1] === endA) ? [startB, endB] : [startA, endA] );
-                if (!(min[1] <= max[0])) {
-                    intersectedPeriods.push(noDate);
-                }
-            }
-
-            return res.status(200).json({
-                noDates: intersectedPeriods.map(noDate => {
-                    return {
-                        noDate: {
-                            fromDate: noDate.fromDate,
-                            toDate: noDate.toDate,
-                            reason: noDate.reason
-                        }
-                    };
-                })
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: {
-                    error: 'FAILED',
                     message: err
                 }
             });

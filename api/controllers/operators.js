@@ -352,7 +352,7 @@ exports.view_reservation = (req, res, next) => {
         .catch(err => {
             res.status(500).json({
                 error: {
-                    error: 'FAILEDed',
+                    error: 'FAILED',
                     message: err
                 }
             });

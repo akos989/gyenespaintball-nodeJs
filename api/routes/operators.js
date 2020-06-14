@@ -32,7 +32,7 @@ router.get('/temporary',
     checkAuth, checkTemp,
     OperatorController.get_all_temporary
 );
-router.get('/my_account',
+router.post('/my_account',
     checkAuth, check_same_user,
     OperatorController.get_my_account
 );
