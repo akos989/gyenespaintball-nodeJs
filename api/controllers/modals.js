@@ -6,14 +6,15 @@ exports.get_all = (req, res, next) => {
     .exec()
     .then(modals => {
         res.status(200).json({
-            count: modals.length,
-            modal: modals.map(modal => {
+            modals: modals.map(modal => {
+                const path =
+                modal.modalImage !== '' ? 'http://localhost:3000/'+modal.modalImage : '';
                 return {
                     _id: modal._id,
                     name: modal.name,
                     fromDate: modal.fromDate,
                     toDate: modal.toDate,
-                    modalImage: 'http://localhost:3000/'+modal.modalImage,
+                    modalImgUrl: path,
                     description: modal.description
                 }
             })
@@ -30,21 +31,24 @@ exports.get_all = (req, res, next) => {
 };
 
 exports.create = (req, res, next) => {
+    const path = req.file ? req.file.path : '';
     const modal = new Modal({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         description: req.body.description,
-        modalImage: req.file.path,
+        modalImage: path,
         fromDate: req.body.fromDate,
         toDate: req.body.toDate
     });
     modal.save()
         .then(result => {
+            const path =
+                result.modalImage !== '' ? 'http://localhost:3000/'+result.modalImage : '';
             res.status(201).json({
                 _id: result._id,
                 name: result.name,
                 fromDate: result.fromDate,
-                modalImage: 'http://localhost:3000/'+result.modalImage,
+                modalImgUrl: path,
                 toDate: result.toDate,
                 description: result.description
             });
@@ -96,13 +100,15 @@ exports.update = (req, res, next) => {
             modal.toDate = req.body.toDate ? req.body.toDate : modal.toDate;
             
             modal.save()
-                .then(modal => {                    
+                .then(modal => {
+                    const path = modal.modalImage !== '' ? 
+                        'http://localhost:3000/'+modal.modalImage : '';                
                     return res.status(200).json({
                         _id: modal._id,
                         name: modal.name,
                         fromDate: modal.fromDate,
                         toDate: modal.toDate,
-                        modalImage: 'http://localhost:3000/'+modal.modalImage,
+                        modalImgUrl: path,
                         description: modal.description
                     });
                 })
@@ -151,11 +157,13 @@ exports.today = (req, res, next) => {
 		        }
                 });
             }
+            const path =
+                modal.modalImage !== '' ? 'http://localhost:3000/'+modal.modalImage : '';
             return res.status(200).json({
                 modal: {
                     name: modal.name,
                     description: modal.description,
-                    modalImgUrl: 'http://localhost:3000/'+modal.modalImage
+                    modalImgUrl: path
                 }
             });
         })

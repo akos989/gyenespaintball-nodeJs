@@ -279,7 +279,6 @@ exports.autoArchiveReservations = () => {
     const EmailController = require('./email');
     let today = new Date();
     today.setUTCDate(today.getUTCDate() + 1);
-console.log(today);
     Reservation.find({ date: { $lte: today}, archived: false})
         .exec()
         .then(reservations => {

@@ -1,6 +1,7 @@
 const Modal = require('../../models/modal');
 
 module.exports = (req, res, next) => {
+console.log(req.body)
     if ( req.params.modalId && ((!req.body.fromDate && req.body.toDate) || (req.body.fromDate && !req.body.toDate)) )  {
         return res.status(500).json({
             error: {

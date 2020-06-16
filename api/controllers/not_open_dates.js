@@ -8,7 +8,7 @@ exports.get_all = (req, res, next) => {
             res.status(200).json({
                     noDates: nods.map(nod => {
                         return {
-                            id: nod._id,
+                            _id: nod._id,
                             reason: nod.reason,
                             fromDate: nod.fromDate,
                             toDate: nod.toDate
@@ -26,17 +26,17 @@ exports.get_all = (req, res, next) => {
         });
 };
 
-exports.create = (req, res, next) => {    
+exports.create = (req, res, next) => {
     const noDate = new NOD({
         _id: new mongoose.Types.ObjectId(),
         reason: req.body.reason,
         fromDate: req.body.fromDate,
         toDate: req.body.toDate
     });
+
     noDate.save()
         .then(result => {            
             res.status(201).json({
-                message: 'CREATED',
                 _id: result._id,
                 reason: result.reason,
                 fromDate: result.fromDate,
