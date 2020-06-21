@@ -8,7 +8,7 @@ exports.get_all = (req, res, next) => {
         res.status(200).json({
             modals: modals.map(modal => {
                 const path =
-                modal.modalImage !== '' ? 'http://localhost:3000/'+modal.modalImage : '';
+                modal.modalImage !== '' ? modal.modalImage : '';
                 return {
                     _id: modal._id,
                     name: modal.name,
@@ -43,7 +43,7 @@ exports.create = (req, res, next) => {
     modal.save()
         .then(result => {
             const path =
-                result.modalImage !== '' ? 'http://localhost:3000/'+result.modalImage : '';
+                result.modalImage !== '' ? result.modalImage : '';
             res.status(201).json({
                 _id: result._id,
                 name: result.name,
@@ -101,8 +101,7 @@ exports.update = (req, res, next) => {
             
             modal.save()
                 .then(modal => {
-                    const path = modal.modalImage !== '' ? 
-                        'http://localhost:3000/'+modal.modalImage : '';                
+                    const path = modal.modalImage !== '' ? modal.modalImage : '';                
                     return res.status(200).json({
                         _id: modal._id,
                         name: modal.name,
@@ -158,7 +157,7 @@ exports.today = (req, res, next) => {
                 });
             }
             const path =
-                modal.modalImage !== '' ? 'http://localhost:3000/'+modal.modalImage : '';
+                modal.modalImage !== '' ? modal.modalImage : '';
             return res.status(200).json({
                 modal: {
                     name: modal.name,

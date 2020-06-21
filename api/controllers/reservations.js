@@ -19,7 +19,7 @@ exports.get_all = (req, res, next) => {
                         date: reservation.date,
                         packageId: reservation.packageId,
                         archived: reservation.archived,
-			timeStamp: reservation._id.getTimestamp()
+			            timeStamp: reservation._id.getTimestamp()
                     }
                 })             
             });
@@ -79,7 +79,8 @@ exports.create = (req, res, next) => {
                     notes: result.notes,
                     date: result.date,
                     packageId: result.packageId,
-                    archived: result.archived
+                    archived: result.archived,
+                    timeStamp: reservation._id.getTimestamp()
                 }                        
             });
         })
@@ -93,49 +94,12 @@ exports.create = (req, res, next) => {
         });
 };
 
-exports.get_one = (req, res, next) => {
-    Reservation.findById(req.params.reservationId)
-        .populate('packageId')
-        .exec()
-        .then(reservation => {
-            if (!reservation) {
-                return res.status(404).json({
-                    error: {
-                        error: 'NO_RESERVATION_FOR_INDEX'
-                    }
-                });
-            }
-            res.status(200).json({
-                message: 'RESERVATION_FOUND',
-                reservation: {
-                    id: reservation._id,
-                    name: reservation.name,
-                    email: reservation.email,
-                    phoneNumber: reservation.phoneNumber,
-                    playerNumber: reservation.playerNumber,
-                    notes: reservation.notes,
-                    date: reservation.date,
-                    packageId: reservation.packageId
-                }
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: {
-                    error: 'FAILED',
-                    message: err
-                }
-            });
-        });
-};
-
 exports.update = (req, res, next) => {
    const reservation = res.locals.reservation;
    reservation.save()
     .then(result => {
         if (result.archived) {
             return res.status(200).json({
-                message: 'RESERVATION_UPDATED',
                 reservation: {
                     _id: result._id,
                     name: result.name,
@@ -145,7 +109,8 @@ exports.update = (req, res, next) => {
                     notes: result.notes,
                     date: result.date,
                     packageId: result.packageId,
-                    archived: result.archived
+                    archived: result.archived,
+                    timeStamp: reservation._id.getTimestamp()
                 }
             });
         } else {
@@ -278,7 +243,7 @@ exports.notify_reservations = () => {
 exports.autoArchiveReservations = () => {
     const EmailController = require('./email');
     let today = new Date();
-    today.setUTCDate(today.getUTCDate() + 1);
+    today.setUTCDate(today.getUTCDate());
     Reservation.find({ date: { $lte: today}, archived: false})
         .exec()
         .then(reservations => {

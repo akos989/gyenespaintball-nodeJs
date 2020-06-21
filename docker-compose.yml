@@ -1,0 +1,33 @@
+version: '3'
+services: 
+    node-server:
+        container_name: node-server
+        restart: always
+        build: .
+        ports: 
+            - '3000:3000'
+        links: 
+            - mongodb
+    mongodb:
+        container_name: mongodb
+        image: mongo:3.6
+        ports: 
+            - '27017:27017'
+        volumes: 
+            - ../db/data:/data/db
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=akos989
+            - MONGO_INITDB_ROOT_PASSWORD=Boriska26
+        command: mongod
+    webserver:
+        container_name: webserver
+        image: nginx
+        restart: unless-stopped
+        ports: 
+            - "80:80"
+        volumes: 
+            - ../gyeneswebapp:/usr/share/nginx/html
+            - ../nginx:/etc/nginx/conf.d
+        depends_on:
+            - node-server
+            

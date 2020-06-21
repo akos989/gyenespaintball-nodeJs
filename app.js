@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const operatorRoutes = require('./api/routes/operators');
 const tempOperatorRoutes = require('./api/routes/temp_operators');
@@ -13,11 +14,12 @@ const packageTypeRoutes = require('./api/routes/package-type');
 const modalRoutes = require('./api/routes/modals');
 const messageRoutes = require('./api/routes/messages');
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+const corsOptions = {
+    origin: 'http://gyenespaintball.hu:80',
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 app.use(morgan('dev'));
 app.use('/uploads', express.static('uploads'));
