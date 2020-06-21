@@ -330,7 +330,7 @@ exports.get_my_account = (req, res, next) => {
         });
 };
 exports.new_reservation = (req, res, next) => {
-    Operator.update({ temporary: false }, { $push: { newReservations: res.locals.reservationInfo._id } })
+    Operator.updateMany({ temporary: false }, { $push: { newReservations: res.locals.reservationInfo._id } })
         .exec()
         .then(result => {
             return next();

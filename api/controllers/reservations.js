@@ -63,9 +63,9 @@ exports.create = (req, res, next) => {
     const reservation = res.locals.reservation;
     reservation.save()
         .then(result => {
-            res.locals.emailSubject = 'Új foglalás';
+            res.locals.emailSubject = 'Paintball foglalás';
             res.locals.emailTitle = 'Köszönjük a foglalást!';
-            res.locals.emailDetails = 'A foglalásról a játék kezdete előtt 48 órával fog kapni egy email értesítőt. Lemondani a kezdés előtt 24 óráig díjmentesen lehet, utána ki kell fizetni a teljes alapárat.';
+            res.locals.emailDetails = 'A foglalásról a foglalt időpont előtt 48 órával fog kapni egy emlékeztető emailt. Amennyiben lemondaná a foglalást kérjük 24 órával az időpont előtt jelezze.';
 		    res.locals.reservationInfo = result;
             res.locals.adminEmail = true;
             next();
@@ -115,7 +115,7 @@ exports.update = (req, res, next) => {
             });
         } else {
             res.locals.emailSubject = 'Módosított foglalás';
-            res.locals.emailTitle = 'Foglalását módosították!';
+            res.locals.emailTitle = 'Foglalási adatai módosítva lettek!';
             res.locals.emailDetails = 'A lenti foglalás adatai megváltoztak. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
             res.locals.reservationInfo = result;
             res.locals.adminEmail = false;
@@ -175,7 +175,7 @@ exports.delete = (req, res, next) => {
             res.locals.emailSubject = 'Törölt foglalás';
             res.locals.emailTitle = 'Foglalását törölték!';
             res.locals.emailDetails = 'A lenti foglalást törölték. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
-            res.locals.adminEmail = false;                
+            res.locals.adminEmail = false; 
             next();
             res.status(200).json({
                 message: 'DELETE_SUCCESFUL'

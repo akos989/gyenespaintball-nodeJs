@@ -11,7 +11,7 @@ const Package = db.model('Package', {
     duration: { type: Number, default: 2, min: 0},
     disabled: {type: Boolean, default: false},
     includedBullets: {type: Number, default: 0},
-    description: { type: String }
+    description: { type: String, default: "" }
 });
 
 module.exports = Package;

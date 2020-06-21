@@ -30,8 +30,8 @@ exports.admin_reservation_email = (req, res, next) => {
                 <div style="padding-bottom: 10px;">${res.locals.package.duration} óra</div>
                 <div style="font-weight: bold;">Alapár:</div>
                 <div style="padding-bottom: 10px;">${res.locals.package.basePrice} Ft</div>
-                <div style="font-weight: bold;">Ft / lövedék:</div>
-                <div style="padding-bottom: 10px;">${res.locals.package.bulletPrice} Ft</div>
+                <div style="font-weight: bold;">Golyó ára:</div>
+                <div style="padding-bottom: 10px;">${res.locals.package.bulletPrice} Ft/db</div>
                 <div style="font-weight: bold;">Lövedék az árban:</div>
                 <div style="padding-bottom: 10px;">${res.locals.package.includedBullets} db</div>
                 <div style="font-weight: bold;">Megjegyzések:</div>
@@ -98,8 +98,8 @@ function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
               <div style="padding-bottom: 10px;">${package.duration} óra</div>
               <div style="font-weight: bold;">Alapár:</div>
               <div style="padding-bottom: 10px;">${package.basePrice} Ft</div>
-              <div style="font-weight: bold;">Ft / lövedék:</div>
-              <div style="padding-bottom: 10px;">${package.bulletPrice} Ft</div>
+              <div style="font-weight: bold;">Golyó ára:</div>
+              <div style="padding-bottom: 10px;">${package.bulletPrice} Ft/db</div>
               <div style="font-weight: bold;">Lövedék az árban:</div>
               <div style="padding-bottom: 10px;">${package.includedBullets} db</div>
               <div style="font-weight: bold;">Megjegyzések:</div>
@@ -111,9 +111,10 @@ function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
           <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
           <div>Balaton utca, Gyenesdiás</div><div>8315</div>
           <hr>
-          <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
-          <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
-          <div>Email:</div>
+          <div> Tel:</div>
+          <div><a href="tel:+36208028647">+36208028647</a></div>
+          <div><a href="tel:+36306083283">+36306083283</a></div>
+          <div style="padding-top: 2vh;">Email:</div>
           <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
           <hr>
           <div style="padding-top: 5vh; padding-bottom: 5vh;">
@@ -127,12 +128,12 @@ function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
 
 exports.send_to_client = (req, res, next) => {
   let transporter = nodemailer.createTransport({
-    host: "mail.szomato-coaching.hu",
+    host: process.env.EMAIL_HOST,
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "akos@szomato-coaching.hu", // generated ethereal user
-      pass: "Jasonderuloa1" // generated ethereal password
+      user: process.env.EMAIL_ADDR, // generated ethereal user
+      pass: process.env.EMAIL_PASS // generated ethereal password
     },
     tls: {
       rejectUnauthorized: false
@@ -165,7 +166,7 @@ exports.send_to_client = (req, res, next) => {
 
 function sendEmailToClient(transporter, receiver, body, subject) {
   let mailOptions = {
-    from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
+    from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
     to: receiver, // list of receivers
     subject: subject, // Subject line
     text: "foglalás", // plain text body
@@ -195,20 +196,22 @@ function sendEmailToClient(transporter, receiver, body, subject) {
 
 exports.send_to_admins = (req, res, next) => {
   let transporter = nodemailer.createTransport({
-    host: "mail.szomato-coaching.hu",
+    host: process.env.EMAIL_HOST,
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "akos@szomato-coaching.hu", // generated ethereal user
-      pass: "Jasonderuloa1" // generated ethereal password
+      user: process.env.EMAIL_ADDR, // generated ethereal user
+      pass: process.env.EMAIL_PASS // generated ethereal password
     },
     tls: {
       rejectUnauthorized: false
     }
   });
+
   // send mail with defined transport object
+
   let mailOptions = {
-    from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
+    from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
     to: res.locals.adminEmails, // list of receivers
     subject: res.locals.emailSubject, // Subject line
     text: "Új foglalás", // plain text body
@@ -227,12 +230,12 @@ exports.send_to_admins = (req, res, next) => {
 
 exports.scheduled_email = (to, htmlBody, emailSubject) => {
   let transporter = nodemailer.createTransport({
-    host: "mail.szomato-coaching.hu",
+    host: process.env.EMAIL_HOST,
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "akos@szomato-coaching.hu", // generated ethereal user
-      pass: "Jasonderuloa1" // generated ethereal password
+      user: process.env.EMAIL_ADDR, // generated ethereal user
+      pass: process.env.EMAIL_PASS // generated ethereal password
     },
     tls: {
       rejectUnauthorized: false
@@ -242,7 +245,7 @@ exports.scheduled_email = (to, htmlBody, emailSubject) => {
   // send mail with defined transport object
 
   let mailOptions = {
-    from: '"Gyenespaintball" <akos@szomato-coaching.hu>', // sender address
+    from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
     to: to, // list of receivers
     subject: emailSubject, // Subject line
     text: "Emlékeztető", // plain text body
@@ -284,7 +287,7 @@ exports.scheduled_email_content = (reservation, package) => {
   const emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
-            <div style="padding-bottom: 30px;"> Emlékeztetjük, hogy korábban foglalt Paintball időpontja 48 órán belül esedékes. A foglalással kapcsolatos adatokat lent megtalálja.</div>
+            <div style="padding-bottom: 30px;"> Emlékeztetjük, hogy korábban foglalt paintball időpontja 48 órán belül esedékes. A foglalással kapcsolatos adatokat lent megtalálja.</div>
             <hr>
             <h2>Foglalás adatai:</h2>
             <div style="padding-bottom: 30px;">
@@ -303,8 +306,8 @@ exports.scheduled_email_content = (reservation, package) => {
                 <div style="padding-bottom: 10px;">${package.duration} óra</div>
                 <div style="font-weight: bold;">Alapár:</div>
                 <div style="padding-bottom: 10px;">${package.basePrice} Ft</div>
-                <div style="font-weight: bold;">Ft / lövedék:</div>
-                <div style="padding-bottom: 10px;">${package.bulletPrice} Ft</div>
+                <div style="font-weight: bold;">Golyó ára:</div>
+                <div style="padding-bottom: 10px;">${package.bulletPrice} Ft/db</div>
                 <div style="font-weight: bold;">Lövedék az árban:</div>
                 <div style="padding-bottom: 10px;">${package.includedBullets} db</div>
                 <div style="font-weight: bold;">Megjegyzések:</div>
@@ -316,9 +319,10 @@ exports.scheduled_email_content = (reservation, package) => {
             <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
             <div>Balaton utca, Gyenesdiás</div><div>8315</div>
             <hr>
-            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
-            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
-            <div>Email:</div>
+            <div> Tel:</div>
+            <div><a href="tel:+36208028647">+36208028647</a></div>
+            <div><a href="tel:+36306083283">+36306083283</a></div>
+            <div style="padding-top: 2vh;">Email:</div>
             <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">
@@ -334,8 +338,11 @@ exports.thanks_email_content = (reservation) => {
   const emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
-            <div style="padding-bottom: 10px;">Köszönjük, hogy ma velünk tartottál...</div>
-            <div style="padding-bottom: 10px;">Reméljük, hogy egy jó élménnyel lettél gazdagabb. Lájkolj facebookon, hagy review-et google-en :D</div>        
+            <div style="padding-bottom: 10px;">KÖSZÖNJÜK, HOGY VELÜNK JÁTSZOTTÁL!</div>
+            <div style="padding-bottom: 10px;">Kedves Vendégünk! Köszönjük szépen, hogy nálunk játszottatok, reméljük, hogy csapatoddal együtt jól éreztétek magatokat és tetszett a játék!</div>        
+            <div style="padding-bottom: 10px;">Fontos számunkra a visszajelzés, kérlek értekelj minket itt:</div>
+            <a href="https://g.page/r/CcYr0A3xLg7FEAg/review">
+              <button>Értékelés</button></a>
             <div style="padding-bottom: 30px;">Találkozzunk legközelebb is!</div>
         </div>
         <hr>
@@ -343,9 +350,10 @@ exports.thanks_email_content = (reservation) => {
             <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
             <div>Balaton utca, Gyenesdiás</div><div>8315</div>
             <hr>
-            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
-            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
-            <div>Email:</div>
+            <div> Tel:</div>
+            <div><a href="tel:+36208028647">+36208028647</a></div>
+            <div><a href="tel:+36306083283">+36306083283</a></div>
+            <div style="padding-top: 2vh;">Email:</div>
             <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">
@@ -365,7 +373,7 @@ exports.client_message_create_body = (req, res, next) => {
             <hr>
             <div style="padding-bottom: 30px; font-weight: bold;">Használt email cím: ${res.locals.messageInfo.email}</div>        
             <div style="padding-bottom: 10px; font-weight: bold;">Üzenet: </div>
-            <div style="padding-bottom: 10px; text-align: left;">${res.locals.messageInfo.text}</div>
+            <div style="padding-bottom: 10px; text-align: center;">${res.locals.messageInfo.text}</div>
             <hr>
             <div style="padding-bottom: 30px;">Munkatársaink mihamarabb felveszik veled a kapcsolatot!</div>
         </div>
@@ -374,9 +382,10 @@ exports.client_message_create_body = (req, res, next) => {
             <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
             <div>Balaton utca, Gyenesdiás</div><div>8315</div>
             <hr>
-            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
-            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
-            <div>Email:</div>
+            <div> Tel:</div>
+            <div><a href="tel:+36208028647">+36208028647</a></div>
+            <div><a href="tel:+36306083283">+36306083283</a></div>
+            <div style="padding-top: 2vh;">Email:</div>
             <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">
@@ -399,10 +408,10 @@ exports.admin_message_create_body = (req, res, next) => {
             <div style="padding-bottom: 10px;">Név: </div>
             <div style="padding-bottom: 10px;">${res.locals.messageInfo.name}</div>     
             <div style="padding-bottom: 10px;">Üzenet: </div>
-            <div style="padding-bottom: 10px; text-align: left;">${res.locals.messageInfo.text}</div>
+            <div style="padding-bottom: 10px; text-align: center;">${res.locals.messageInfo.text}</div>
             <hr>
             <div style="padding-top: 30px; padding-bottom: 30px;">
-            <a href="https://www.gyenespaintball.hu/operator/message/reply/${res.locals.messageInfo._id}">
+            <a href="http://www.gyenespaintball.hu/operators/messages">
               <button>Válaszolok</button>
             </a>
             </div>
@@ -415,22 +424,21 @@ exports.client_message_reply_body = (req, res, next) => {
   res.locals.emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${res.locals.messageInfo.name}!</h1>
-            <div style="padding-bottom: 10px;">Köszönjük, hogy írtál nekünk!</div>
-            <hr>
             <div style="padding-bottom: 5px; text-align: left;">${res.locals.replyBody}</div>
 		<div style="padding-bottom: 10px; text-align: left;">Üdv.: Gyenespaintball csapata</div>
             <hr>
             <div style="padding-top: 30px; padding-bottom: 10px;">Eredeti üzenet: </div>
-            <div style="padding-bottom: 10px; text-align: left;">${res.locals.messageInfo.text}</div>
+            <div style="padding-bottom: 10px; text-align: center;">${res.locals.messageInfo.text}</div>
         </div>
         <hr>
         <div style="text-align:center;">
             <div>Gyenes</div><div style="padding-bottom: 5vh;">Paintball</div>
             <div>Balaton utca, Gyenesdiás</div><div>8315</div>
             <hr>
-            <div> Tel: <a href="tel:+36208028647">+36208028647</a></div>
-            <div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="tel:+36306083283">+36306083283</a></div>
-            <div>Email:</div>
+            <div> Tel:</div>
+            <div><a href="tel:+36208028647">+36208028647</a></div>
+            <div><a href="tel:+36306083283">+36306083283</a></div>
+            <div style="padding-top: 2vh;">Email:</div>
             <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">

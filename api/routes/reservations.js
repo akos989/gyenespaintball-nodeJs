@@ -40,12 +40,6 @@ router.post('/',
     EmailController.client_reservaion_email, EmailController.send_to_client,
     getAdmins, EmailController.admin_reservation_email, EmailController.send_to_admins
 );
-
-router.get('/:reservationId',
-    checkReservationAuth, 
-    ReservationsController.get_one
-);
-
 router.patch('/:reservationId',
     checkAuth, checkAdmin,
     setUpNew, findPackage,
@@ -64,6 +58,7 @@ router.delete('/',
     // deleteSubscription,
     setUpForDelete,
     ReservationsController.delete,
+    OperatorController.view_reservation,
     EmailController.client_reservaion_email, EmailController.send_to_client
 );
 

@@ -37,6 +37,7 @@ app.use('/api/packages', packageRoutes);
 app.use('/api/modals', modalRoutes);
 app.use('/api/packages_type', packageTypeRoutes);
 app.use('/api/messages', messageRoutes);
+app.get('/favicon.ico', (req, res) => res.status(204));
 
 // let reporter = function (type, ...rest)
 // {
