@@ -340,8 +340,8 @@ exports.new_reservation = (req, res, next) => {
         });
 };
 exports.delete_not_viewed = (req, res, next) => {
-    Operator.updateOne(
-        { _id: req.userData.operatorId }, { $pull: { newReservations: { $in: req.body.ids } } }
+    Operator.updateMany(
+        { temporary: false }, { $pull: { newReservations: { $in: req.body.ids } } }
     )
     .exec()
     .then(res => {
