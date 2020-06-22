@@ -58,7 +58,7 @@ router.delete('/',
     // deleteSubscription,
     setUpForDelete,
     ReservationsController.delete,
-    OperatorController.view_reservation,
+    OperatorController.delete_not_viewed,
     EmailController.client_reservaion_email, EmailController.send_to_client
 );
 

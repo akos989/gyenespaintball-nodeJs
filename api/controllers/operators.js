@@ -339,6 +339,23 @@ exports.new_reservation = (req, res, next) => {
             return next();
         });
 };
+exports.delete_not_viewed = (req, res, next) => {
+    Operator.updateOne(
+        { _id: req.userData.operatorId }, { $pull: { newReservations: { $in: req.body.ids } } }
+    )
+    .exec()
+    .then(res => {
+        return next();
+    })
+    .catch(err => {
+        return res.status(500).json({
+            error: {
+                error: 'FAILED',
+                message: err
+            }
+        });
+    });
+};
 exports.view_reservation = (req, res, next) => {
     Operator.updateOne(
         { _id: req.body.operatorId }, { $pull: { newReservations: req.body.reservationId } }
