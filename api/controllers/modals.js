@@ -32,13 +32,17 @@ exports.get_all = (req, res, next) => {
 
 exports.create = (req, res, next) => {
     const path = req.file ? req.file.path : '';
+    let fromDate = new Date(req.body.fromDate);
+    fromDate.setHours(fromDate.getUTCHours() - 2);
+    let toDate = new Date(req.body.toDate);
+    toDate.setHours(toDate.getUTCHours() - 2);
     const modal = new Modal({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         description: req.body.description,
         modalImage: path,
-        fromDate: req.body.fromDate,
-        toDate: req.body.toDate
+        fromDate: fromDate,
+        toDate: toDate
     });
     modal.save()
         .then(result => {
@@ -82,6 +86,12 @@ exports.delete = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
+    let fromDate = req.body.fromDate ? new Date(req.body.fromDate) : null;
+    if (fromDate)
+        fromDate.setHours(fromDate.getUTCHours() - 2);
+    let toDate = req.body.toDate ? new Date(req.body.toDate) : null;
+    if (toDate)
+        toDate.setHours(toDate.getUTCHours() - 2);
     Modal.findById(req.params.modalId )
         .exec()
         .then(modal => {
@@ -96,8 +106,8 @@ exports.update = (req, res, next) => {
             modal.description = req.body.description ? req.body.description : modal.description;
             if (req.file)
                 modal.modalImage = req.file.path ? req.file.path : modal.modalImage;
-            modal.fromDate = req.body.fromDate ? req.body.fromDate : modal.fromDate;
-            modal.toDate = req.body.toDate ? req.body.toDate : modal.toDate;
+            modal.fromDate = fromDate ? fromDate : modal.fromDate;
+            modal.toDate = toDate ? toDate : modal.toDate;
             
             modal.save()
                 .then(modal => {

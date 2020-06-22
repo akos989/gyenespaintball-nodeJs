@@ -27,13 +27,16 @@ exports.get_all = (req, res, next) => {
 };
 
 exports.create = (req, res, next) => {
+    let fromDate = new Date(req.body.fromDate);
+    fromDate.setHours(fromDate.getUTCHours() - 2);
+    let toDate = new Date(req.body.toDate);
+    toDate.setHours(toDate.getUTCHours() - 2);
     const noDate = new NOD({
         _id: new mongoose.Types.ObjectId(),
         reason: req.body.reason,
-        fromDate: req.body.fromDate,
-        toDate: req.body.toDate
+        fromDate: fromDate,
+        toDate: toDate
     });
-
     noDate.save()
         .then(result => {            
             res.status(201).json({
@@ -53,13 +56,19 @@ exports.create = (req, res, next) => {
         });
 };
 exports.update = (req, res, next) => {
+    let fromDate = req.body.fromDate ? new Date(req.body.fromDate) : null;
+    if (fromDate)
+        fromDate.setHours(fromDate.getUTCHours() - 2);
+    let toDate = req.body.toDate ? new Date(req.body.toDate) : null;
+    if (toDate)
+        toDate.setHours(toDate.getUTCHours() - 2);
     NOD.findById(req.params.nodId)
         .exec()
         .then(original => {
             if (original) {
                 original.reason = req.body.reason ? req.body.reason : original.reason;                
-                original.fromDate = req.body.fromDate ? req.body.fromDate : original.fromDate;
-                original.toDate = req.body.toDate ? req.body.toDate : original.toDate;
+                original.fromDate = fromDate ? fromDate : original.fromDate;
+                original.toDate = toDate ? toDate : original.toDate;
 
                 original.save()
                     .then(result => {            
