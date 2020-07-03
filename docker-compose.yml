@@ -6,6 +6,8 @@ services:
         build: .
         ports: 
             - '3000:3000'
+        volumes: 
+            - ./uploads/modals:/uploads/modals
         links: 
             - mongodb
     mongodb:
@@ -16,18 +18,39 @@ services:
         volumes: 
             - ../db/data:/data/db
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=akos989
-            - MONGO_INITDB_ROOT_PASSWORD=Boriska26
+            - MONGO_INITDB_ROOT_USERNAME="${DB_USER}"
+            - MONGO_INITDB_ROOT_PASSWORD="${DB_PASS}"
         command: mongod
     webserver:
         container_name: webserver
         image: nginx
         restart: unless-stopped
-        ports: 
+        ports:
             - "80:80"
         volumes: 
             - ../gyeneswebapp:/usr/share/nginx/html
             - ../nginx:/etc/nginx/conf.d
+            - certbot-etc:/etc/letsencrypt
+            - certbot-var:/var/lib/letsencrypt
         depends_on:
             - node-server
-            
+    certbot:
+        container_name: certbot
+        image: certbot/certbot
+        volumes:
+            - certbot-etc:/etc/letsencrypt
+            - certbot-var:/var/lib/letsencrypt
+            - ../gyeneswebapp:/var/www/html
+        depends_on:
+            - webserver
+        command: certonly --webroot --webroot-path=/var/www/html --email morvaiakos1998@gmail.com --agree-tos --no-eff-email --staging -d gyenespaintball.hu  -d www.gyenespaintball.hu
+
+volumes: 
+    certbot-etc:
+    certbot-var:
+    dhparam:
+        driver: local
+        driver_opts:
+            type: none
+            device: /home/morvaiakos1998/app/dhparam/
+            o: bind
