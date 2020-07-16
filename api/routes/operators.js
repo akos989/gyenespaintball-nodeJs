@@ -40,5 +40,9 @@ router.post('/view_reservation',
     checkAuth, check_same_user,
     OperatorController.view_reservation
 );
+router.post('/set_google_token',
+    checkAuth, check_same_user,
+    OperatorController.set_token
+);
 
 module.exports = router;

@@ -24,7 +24,8 @@ const Operator = db.model('Operator', {
         )
     },
     subscriptions: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }],
-    newReservations: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }]
+    newReservations: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }],
+    googleCalendarToken: { type: String, default: '' }
 });
 
 module.exports = Operator;

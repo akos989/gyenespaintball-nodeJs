@@ -375,3 +375,50 @@ exports.view_reservation = (req, res, next) => {
             });
         });
 };
+exports.getRefreshTokens = (next) => {
+    Operator.find()
+        .exec()
+        .then(operators => {
+            let refreshTokens = operators.map(o => {return o.googleCalendarToken}).filter(t => {return (t !== '')});            
+            next(refreshTokens);
+        })
+        .catch(err => {
+            next(refreshTokens);
+        });
+};
+exports.set_token = (req, res, next) => {
+    Operator.findById(req.body.operatorId)
+        .exec()
+        .then(operator => {
+            if (!operator)
+                return res.status(404).json({
+                    error: {
+                        error: 'NOT_FOUND'
+                    }
+                });
+            operator.googleCalendarToken = req.body.googletoken;
+            operator.save()
+                .then(result => {
+                    return res.status(200).json({
+                        message: 'OK',
+                        operator: result
+                    });
+                })
+                .catch(err => {
+                    return res.status(500).json({
+                        error: {
+                            error: 'FAILED',
+                            message: err
+                        }
+                    });
+                });
+        })
+        .catch(err => {
+            return res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
+                }
+            });
+        });
+};

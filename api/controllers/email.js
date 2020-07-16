@@ -160,8 +160,7 @@ exports.send_to_client = (req, res, next) => {
       res.locals.emailSubject
       );
   }  
-  if (res.locals.adminEmail)
-      return next();
+ return next();
 };
 
 function sendEmailToClient(transporter, receiver, body, subject) {
@@ -225,6 +224,7 @@ exports.send_to_admins = (req, res, next) => {
 
     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
   });
+  return next();
 };
 
 
