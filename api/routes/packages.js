@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const PackageController = require('../controllers/packages');
+const PackageTypeController = require('../controllers/package-types');
 const checkAuth = require('../middleware/auth/check-auth');
 const checkAdmin = require('../middleware/auth/check-admin');
-const checkTemp = require('../middleware/auth/check_temp');
 
 router.get('/',
     PackageController.get_all
@@ -12,7 +12,9 @@ router.get('/',
 
 router.post('/',
     checkAuth, checkAdmin,
-    PackageController.create
+    PackageTypeController.typeExists,
+    PackageController.create,
+    PackageTypeController.add_packages
 );
 
 router.get('/:packageId',
@@ -26,7 +28,9 @@ router.patch('/:packageId',
 
 router.delete('/',
     checkAuth, checkAdmin,
-    PackageController.delete
+    PackageTypeController.typeExists,
+    PackageController.delete,
+    PackageTypeController.delete_packages
 );
 router.post('/disable', 
     checkAuth, checkAdmin,

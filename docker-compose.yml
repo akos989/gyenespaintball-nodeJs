@@ -7,7 +7,8 @@ services:
         ports: 
             - '3000:3000'
         volumes: 
-            - ./uploads/modals:/uploads/modals
+            - ./uploads/modals:/usr/src/app/uploads/modals
+            - certbot-etc:/usr/src/app/letsencrypt
         links: 
             - mongodb
     mongodb:

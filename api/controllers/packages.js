@@ -59,18 +59,20 @@ exports.create = (req, res, next) => {
             });
             package.save()
                 .then(package => {
-                    res.status(201).json({
-                        _id: package._id,
-                        name: package.name,
-                        fromNumberLimit: package.fromNumberLimit,
-                        toNumberLimit: package.toNumberLimit,
-                        bulletPrice: package.bulletPrice,
-                        basePrice: package.basePrice,
-                        duration: package.duration,
-                        disabled: package.disabled,
-                        includedBullets: package.includedBullets,
-                        description: package.description
-                    });
+                    req.body.packageIdArray = [package._id];
+                    return next();
+                    // res.status(201).json({
+                    //     _id: package._id,
+                    //     name: package.name,
+                    //     fromNumberLimit: package.fromNumberLimit,
+                    //     toNumberLimit: package.toNumberLimit,
+                    //     bulletPrice: package.bulletPrice,
+                    //     basePrice: package.basePrice,
+                    //     duration: package.duration,
+                    //     disabled: package.disabled,
+                    //     includedBullets: package.includedBullets,
+                    //     description: package.description
+                    // });
                 })
                 .catch(err => {
                     res.status(500).json({
@@ -130,9 +132,8 @@ exports.delete = (req, res, next) => {
         .deleteMany()
         .exec()
         .then(result => {
-            res.status(200).json({
-                message: 'DELETE_SUCCESFUL'
-            });
+            req.body.packageIdArray = req.body.ids;
+            return next();
         })
         .catch(err => {
             res.status(500).json({
@@ -187,7 +188,6 @@ exports.update = (req, res, next) => {
             package.save()
                 .then(package => {                    
                     return res.status(200).json({
-                        message: 'SUCCESSFUL_UPDATE',
                         _id: package._id,
                         name: package.name,
                         fromNumberLimit: package.fromNumberLimit,

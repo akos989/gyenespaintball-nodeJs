@@ -49,7 +49,8 @@ exports.create = (req, res, next) => {
                     res.status(201).json({
                         _id: packageType._id,
                         name: packageType.name,
-                        sale: packageType.sale
+                        sale: packageType.sale,
+                        packages: []
                     });
                 })
                 .catch(err => {
@@ -88,6 +89,30 @@ exports.delete = (req, res, next) => {
             });
         });
 };
+exports.typeExists = (req, res, next) => {
+    console.log(req.body)
+    PackageType.findById(req.body.packageTypeId)
+        .exec()
+        .then(type => {
+            console.log(type)
+            if (!type) {
+                return res.status(404).json({
+                    error: {
+                        error: 'NOT_FOUND'
+                    }
+                })
+            }
+            return next();
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
+                }
+            });
+        });
+};
 
 exports.update = (req, res, next) => {
     PackageType.findById(req.params.packageTypeId )
@@ -107,7 +132,6 @@ exports.update = (req, res, next) => {
             packageType.save()
                 .then(packageType => {                    
                     return res.status(200).json({
-                        message: 'SUCCESSFUL_UPDATE',
                         _id: packageType._id,
                         name: packageType.name,
                         sale: packageType.sale,
@@ -134,7 +158,7 @@ exports.update = (req, res, next) => {
 };
 
 exports.delete_packages = (req, res, next) => {
-    PackageType.findById(req.params.packageTypeId)
+    PackageType.findById(req.body.packageTypeId)
         .exec()
         .then(packageType => {
             if (!packageType) {
@@ -152,7 +176,6 @@ exports.delete_packages = (req, res, next) => {
             packageType.save()
             .then(packageType => {                    
                 return res.status(200).json({
-                    message: 'SUCCESSFUL_UPDATE',
                     _id: packageType._id,
                     name: packageType.name,
                     sale: packageType.sale,
@@ -179,7 +202,7 @@ exports.delete_packages = (req, res, next) => {
 };
 
 exports.add_packages = (req,res, next) => {
-    PackageType.findById(req.params.packageTypeId)
+    PackageType.findById(req.body.packageTypeId)
         .exec()
         .then(packageType => {
             if (!packageType) {
@@ -195,7 +218,6 @@ exports.add_packages = (req,res, next) => {
             packageType.save()
             .then(packageType => {                    
                 return res.status(200).json({
-                    message: 'SUCCESSFUL_UPDATE',
                     _id: packageType._id,
                     name: packageType.name,
                     sale: packageType.sale,

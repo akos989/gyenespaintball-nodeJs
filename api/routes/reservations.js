@@ -45,7 +45,8 @@ router.patch('/:reservationId',
     setUpNew, findPackage,
     checkDate, checkNoDates, checkPackage,
     ReservationsController.update,
-    EmailController.client_reservaion_email, EmailController.send_to_client
+    EmailController.client_reservaion_email, EmailController.send_to_client,
+    CalendarController.syncCalendar
 );
 
 router.post('/toggleArchived',
@@ -59,7 +60,8 @@ router.delete('/',
     setUpForDelete,
     ReservationsController.delete,
     OperatorController.delete_not_viewed,
-    EmailController.client_reservaion_email, EmailController.send_to_client
+    EmailController.client_reservaion_email, EmailController.send_to_client,
+    CalendarController.syncCalendar
 );
 
 module.exports = router;

@@ -383,7 +383,8 @@ exports.getRefreshTokens = (next) => {
             next(refreshTokens);
         })
         .catch(err => {
-            next(refreshTokens);
+            console.log(err)
+            next([]);
         });
 };
 exports.set_token = (req, res, next) => {
@@ -396,10 +397,12 @@ exports.set_token = (req, res, next) => {
                         error: 'NOT_FOUND'
                     }
                 });
+            res.locals.prevToken = operator.googleCalendarToken;
             operator.googleCalendarToken = req.body.googletoken;
             operator.save()
                 .then(result => {
-                    return res.status(200).json({
+                    // next();
+                    res.status(200).json({
                         message: 'OK',
                         operator: result
                     });

@@ -2,6 +2,17 @@ const {google} = require('googleapis');
 const {OAuth2} = google.auth;
 const {getRefreshTokens} = require('./operators');
 
+exports.toggleSync = (req, res, next) => {
+    const prevToken = res.locals.prevToken;
+    console.log(prevToken)
+    res.locals.reservations.forEach(res => {
+        if (req.body.googletoken !== '')
+            this.addEvent(req.body.googletoken, res, res.packageId);
+        else if (prevToken)
+            this.deleteEvent(prevToken, res._id.toString());
+    });
+};
+
 exports.syncCalendar = (req, res, next) => {
     getRefreshTokens(tokens => {
         switch(res.locals.calendarEvent) {
@@ -10,35 +21,54 @@ exports.syncCalendar = (req, res, next) => {
                     this.addEvent(token, res.locals.reservationInfo, res.locals.package);
                 });
                 break;
-            case 'update': 
+            case 'update':
+                if (!res.locals.reservationInfo.archived) {
+                    tokens.forEach(token => {
+                        this.updateEvent(token, res.locals.reservationInfo, res.locals.package);
+                    });
+                }
                 break;
-            case 'delete': 
+            case 'delete':
+                tokens.forEach(token => {
+                    res.locals.reservations.forEach(reservation => {
+                        if (!reservation.archived)
+                            this.deleteEvent(token, reservation._id.toString());
+                    });
+                });
                 break;
         }
     } );
 };
 
 exports.addEvent = (token, reservation, package) => {
-    console.log(token, reservation, package)
     const oAuth2Client = new OAuth2(
         process.env.GOOGLE_CALENDAR_CLIENT_ID,
         process.env.GOOGLE_CALENDAR_SECRET
     );
     oAuth2Client.setCredentials({refresh_token: token});
     const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
+    console.log(reservation._id, reservation._id.toString())
 
     let eventStartTime = new Date(reservation.date);
     let eventEndTime = new Date(reservation.date);
     eventStartTime.setHours(eventEndTime.getUTCHours());
     eventEndTime.setHours(eventEndTime.getUTCHours() + package.duration);
-    // const eventStartTime = new Date(2020, 7, 30, 10);
-    // const eventEndTime = new Date(2020, 7, 30, 12);
-    console.log(eventStartTime, eventEndTime)
 
     const event = {
-        summary: 'Foglalás - ' + reservation.name,
+        summary: 'Foglalás - ' + ''+reservation.playerNumber +' fő - ' + reservation.name,
         location: 'Gyenesdiás, Balaton u., 8315',
-        description: 'Új foglalás',
+        description: `
+            Név: ${reservation.name}\n
+            Email: ${reservation.email}\n
+            Létszám: ${reservation.playerNumber} fő\n
+            Telefonszám: ${reservation.phoneNumber}\n
+            Jegyzetek: ${reservation.notes}\n
+            Csomag:\n
+                Golyó ár: ${package.bulletPrice} Ft/db\n
+                Alapár: ${package.basePrice} Ft\n
+                Időtartam: ${package.duration} óra\n
+                Tartalmazott golyók: ${package.includedBullets} db
+        `,
         start: {
             dateTime: eventStartTime,
             timeZone: 'Europe/Budapest'
@@ -58,37 +88,51 @@ exports.addEvent = (token, reservation, package) => {
     );
 };
 
-exports.deleteEvent = (token, reservation) => {
+exports.deleteEvent = (token, reservationId) => {
+    console.log(reservationId)
     const oAuth2Client = new OAuth2(
         process.env.GOOGLE_CALENDAR_CLIENT_ID,
         process.env.GOOGLE_CALENDAR_SECRET
     );
-    oAuth2Client.setCredentials({refresh_token: '1//0fAG2l41W7UrHCgYIARAAGA8SNwF-L9IrOVuylMDYeYYzxa71ZINMpYq82bsgdYDrd5iHpJBgJ37DyY5k0fD0XiFI6zYH-NhvRiY'});
+    oAuth2Client.setCredentials({refresh_token: token});
     const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
 
     calendar.events.delete(
-        { calendarId: 'primary', eventId: reservation._id },
+        { calendarId: 'primary', eventId: reservationId },
         (err) => {
             if (err) console.log(err);
         }
     );
 };
 
-exports.updateEvent = (token, reservation) => {
+exports.updateEvent = (token, reservation, package) => {
     const oAuth2Client = new OAuth2(
         process.env.GOOGLE_CALENDAR_CLIENT_ID,
         process.env.GOOGLE_CALENDAR_SECRET
     );
-    oAuth2Client.setCredentials({refresh_token: '1//0fAG2l41W7UrHCgYIARAAGA8SNwF-L9IrOVuylMDYeYYzxa71ZINMpYq82bsgdYDrd5iHpJBgJ37DyY5k0fD0XiFI6zYH-NhvRiY'});
+    oAuth2Client.setCredentials({refresh_token: token});
     const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
 
-    const eventStartTime = new Date(2020, 7, 30, 10);
-    const eventEndTime = new Date(2020, 7, 30, 12);
+    let eventStartTime = new Date(reservation.date);
+    let eventEndTime = new Date(reservation.date);
+    eventStartTime.setHours(eventEndTime.getUTCHours());
+    eventEndTime.setHours(eventEndTime.getUTCHours() + package.duration);
 
     const event = {
-        summary: 'Ez most egy updated (2)',
+        summary: 'Foglalás - ' + ''+reservation.playerNumber +' fő - ' + reservation.name,
         location: 'Gyenesdiás, Balaton u., 8315',
-        description: 'Új foglalás',
+        description: `
+            Név: ${reservation.name}\n
+            Email: ${reservation.email}\n
+            Létszám: ${reservation.playerNumber} fő\n
+            Telefonszám: ${reservation.phoneNumber}\n
+            Jegyzetek: ${reservation.notes}\n
+            Csomag:\n
+                Golyó ár: ${package.bulletPrice} Ft/db\n
+                Alapár: ${package.basePrice} Ft\n
+                Időtartam: ${package.duration} óra\n
+                Tartalmazott golyók: ${package.includedBullets} db
+        `,
         start: {
             dateTime: eventStartTime,
             timeZone: 'Europe/Budapest'
@@ -100,7 +144,7 @@ exports.updateEvent = (token, reservation) => {
         colorId: 9
     };
     calendar.events.update(
-        { calendarId: 'primary', eventId: reservation._id, resource: event },
+        { calendarId: 'primary', eventId: reservation._id.toString(), resource: event },
         err => {
             if (err) console.log(err);
         }

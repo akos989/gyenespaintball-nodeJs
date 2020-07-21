@@ -9,22 +9,18 @@ const checkPackageIds = require('../middleware/package/check_package_ids');
 router.get('/',
     PackageTypeController.get_all
 );
-
 router.post('/',
     checkAuth, checkAdmin,
     PackageTypeController.create
 );
-
 router.patch('/:packageTypeId',
     checkAuth, checkAdmin,
     PackageTypeController.update
 );
-
 router.delete('/:packageTypeId',
     checkAuth, checkAdmin,
     PackageTypeController.delete
 );
-
 router.post('/delete_packages/:packageTypeId',
     checkAuth, checkAdmin,
     PackageTypeController.delete_packages

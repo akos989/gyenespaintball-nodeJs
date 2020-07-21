@@ -3,6 +3,7 @@ const router = express.Router();
 
 const OperatorController = require('../controllers/operators');
 const TempOperatorController = require('../controllers/temp_operators');
+const CalendarController = require('../controllers/google-calendar');
 const checkAuth = require('../middleware/auth/check-auth');
 const checkAdmin = require('../middleware/auth/check-admin');
 const checkTemp = require('../middleware/auth/check_temp');
@@ -11,6 +12,7 @@ const checkOldPass = require('../middleware/operator/check_old_pass');
 const hashPass = require('../middleware/operator/hash_pass');
 const checkOwn = require('../middleware/auth/check-own');
 const check_same_user = require('../middleware/auth/check-same-user');
+const get_active_reservations = require('../middleware/reservations/get_active');
 
 router.get('/', checkAuth, checkTemp, OperatorController.get_all);
 router.post('/create/:temp_operatorId',
@@ -43,6 +45,7 @@ router.post('/view_reservation',
 router.post('/set_google_token',
     checkAuth, check_same_user,
     OperatorController.set_token
+    // get_active_reservations, CalendarController.toggleSync
 );
 
 module.exports = router;
