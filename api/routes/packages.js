@@ -11,7 +11,7 @@ router.get('/',
 );
 
 router.post('/',
-    checkAuth, checkAdmin,
+    // checkAuth, checkAdmin,
     PackageTypeController.typeExists,
     PackageController.create,
     PackageTypeController.add_packages
@@ -22,18 +22,18 @@ router.get('/:packageId',
 );
 
 router.patch('/:packageId',
-    checkAuth, checkAdmin,
+    // checkAuth, checkAdmin,
     PackageController.update
 );
 
 router.delete('/',
-    checkAuth, checkAdmin,
+    // checkAuth, checkAdmin,
     PackageTypeController.typeExists,
     PackageController.delete,
     PackageTypeController.delete_packages
 );
 router.post('/disable', 
-    checkAuth, checkAdmin,
+    // checkAuth, checkAdmin,
     PackageController.disable
 );
 

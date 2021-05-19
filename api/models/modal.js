@@ -1,13 +1,25 @@
-const Schema = require('mongoose').Schema;
-const db = require('../config/db');
+const {DataTypes} = require('sequelize');
+const db = require('../config/database');
 
-const Modal = db.model('Modal', {
-    _id: Schema.Types.ObjectId,
-    name: { type: String, required: true},
-    description: { type: String, default: '' },
-    modalImage: { type: String, default: '' },
-    fromDate: { type: Date, required: true },
-    toDate: { type: Date, required: true }
+module.exports = Modal = db.define('Modal', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.STRING,
+        defaultValue: ''
+    },
+    modalImage: {
+        type: DataTypes.STRING,
+        defaultValue: ''
+    },
+    fromDate: {
+        type: DataTypes.DATE,
+        allowNull: false
+    },
+    toDate: {
+        type: DataTypes.DATE,
+        allowNull: false
+    },
 });
-
-module.exports = Modal;

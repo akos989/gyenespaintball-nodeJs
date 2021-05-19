@@ -12,16 +12,15 @@ module.exports = (req, res, next) => {
                 error: 'FROM_>_TO'
             }
         });
-    NOD.find()
-        .exec()
+    NOD.findAll()
         .then(noDates => {
-            for( const noDate of noDates ) {
+            for (const noDate of noDates) {
                 const startB = noDate.fromDate.valueOf();
                 const endB = noDate.toDate.valueOf();
 
                 const min = (startA < startB ? [startA, endA] : [startB, endB]);
-                const max = ( (min[0] === startA && min[1] === endA) ? [startB, endB] : [startA, endA] );
-                if (!(min[1] < max[0]) && !noDate._id.equals(req.params.nodId)) {
+                const max = ((min[0] === startA && min[1] === endA) ? [startB, endB] : [startA, endA]);
+                if (!(min[1] < max[0]) && noDate.id.toString() !== req.params.nodId) {
                     return res.status(500).json({
                         error: {
                             error: 'NO_DATE_OVERLAPS'

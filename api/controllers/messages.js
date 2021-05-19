@@ -1,20 +1,18 @@
-const mongoose = require('mongoose');
 const Message = require("../models/message");
 
-exports.get_all = (req, res, next) => {
-    Message.find()
-        .exec()
+exports.get_all = (req, res, _) => {
+    Message.findAll()
         .then(messages => {
             return res.status(200).json({
                 messages: messages.map(message => {
                     return {
-                        _id: message._id,
+                        _id: message.id,
                         name: message.name,
                         email: message.email,
                         text: message.text,
                         replied: message.replied,
-			reply: message.reply,
-			timestamp: message._id.getTimestamp()
+                        reply: message.reply,
+                        timestamp: message.createdAt
                     }
                 })
             });
@@ -30,8 +28,7 @@ exports.get_all = (req, res, next) => {
 };
 
 exports.create = (req, res, next) => {
-    const message = new Message({
-        _id: new mongoose.Types.ObjectId(),
+    const message = Message.build({
         name: req.body.name,
         email: req.body.email,
         text: req.body.text
@@ -47,12 +44,12 @@ exports.create = (req, res, next) => {
             next();
 
             res.status(201).json({
-                _id: result._id,
+                _id: result.id,
                 name: result.name,
                 email: result.email,
                 text: result.text,
                 replied: result.replied,
-		reply: result.reply
+                reply: result.reply
             });
         })
         .catch(err => {
@@ -65,10 +62,11 @@ exports.create = (req, res, next) => {
         });
 };
 
-exports.delete = (req, res, next) => {
-    Message.where('_id').in(req.body.ids)
-        .deleteMany()
-        .then(result => {
+exports.delete = (req, res, _) => {
+    Message.destroy({
+        where: {id: req.body.ids}
+    })
+        .then(() => {
             return res.status(200).json({
                 message: 'DELETE_SUCCESFUL'
             });
@@ -91,8 +89,7 @@ exports.reply = (req, res, next) => {
             }
         });
     }
-    Message.findById(req.params.messageId)
-        .exec()
+    Message.findByPk(req.params.messageId)
         .then(message => {
             if (!message) {
                 return res.status(404).json({
@@ -103,7 +100,7 @@ exports.reply = (req, res, next) => {
             }
 
             message.replied = req.body.replier;
-	    message.reply = req.body.replyBody;
+            message.reply = req.body.replyBody;
             message.save()
                 .then(result => {
                     res.locals.emailSubject = 'Válasz';
@@ -111,17 +108,17 @@ exports.reply = (req, res, next) => {
                     res.locals.messageInfo = result;
                     res.locals.reservationInfo = result;
                     res.locals.adminEmail = false;
-                    next();
 
                     res.status(201).json({
-                        _id: result._id,
+                        _id: result.id,
                         name: result.name,
                         email: result.email,
                         text: result.text,
                         replied: result.replied,
-			reply: result.reply,
-			timestamp: result._id.getTimestamp()
+                        reply: result.reply,
+                        timestamp: result.createdAt
                     });
+                    return next();
                 })
                 .catch(err => {
                     return res.status(500).json({

@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 
 module.exports = (req, res, next) => {
     if (req.params.reservationId) {
-        Reservation.findById(req.params.reservationId)
-            .exec()
+        Reservation.findByPk(req.params.reservationId)
             .then( original => {
                 if (original) {
                     res.locals.original = original;
@@ -35,8 +34,7 @@ module.exports = (req, res, next) => {
                 });
             });
     } else {
-        const reservation = new Reservation({
-            _id: new mongoose.Types.ObjectId(),
+        res.locals.reservation = Reservation.build({
             name: req.body.name,
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
@@ -45,8 +43,6 @@ module.exports = (req, res, next) => {
             date: req.body.date,
             packageId: req.body.packageId
         });
-        res.locals.reservation = reservation;
         return next();
     }
-   
 };

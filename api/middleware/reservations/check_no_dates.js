@@ -1,8 +1,7 @@
 const NOD = require('../../models/not_open_date');
 
 module.exports = (req, res, next) => {
-    NOD.find()
-        .exec()
+    NOD.findAll()
         .then(noDates => {
             const reservation = res.locals.reservation;
             for (const nod of noDates) {

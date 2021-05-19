@@ -1,17 +1,42 @@
-const Schema = require('mongoose').Schema;
-const db = require('../config/db');
+const {DataTypes} = require('sequelize');
+const db = require('../config/database');
 
-const Package = db.model('Package', {
-    _id: Schema.Types.ObjectId,
-    name: { type: String, required: true},
-    fromNumberLimit: {type: Number, required: true, min: 0},
-    toNumberLimit: {type: Number, required: true, min: 0},
-    bulletPrice: {type: Number, required: true, min: 0},
-    basePrice: {type: Number, required: true, min: 0},
-    duration: { type: Number, default: 2, min: 0},
-    disabled: {type: Boolean, default: false},
-    includedBullets: {type: Number, default: 0},
-    description: { type: String, default: "" }
+module.exports = Packages = db.define('Packages', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    fromNumberLimit: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    toNumberLimit: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    bulletPrice: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    basePrice: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    duration: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    disabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
+    },
+    includedBullets: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.STRING,
+        defaultValue: ''
+    },
+
 });
-
-module.exports = Package;

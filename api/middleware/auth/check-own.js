@@ -1,13 +1,12 @@
 const Operator = require('../../models/operator');
 
 module.exports = (req, res, next) => {
-    if (req.userData.operatorId == req.params.operatorId ||
-        req.userData.operatorId == req.body.operatorId) 
+    if (req.userData.operatorId === req.params.operatorId ||
+        req.userData.operatorId === req.body.operatorId)
         {
         return next();
     }
-    Operator.findById(req.userData.operatorId)
-        .exec()
+    Operator.findByPk(req.userData.operatorId)
         .then( operator => {
             if (!operator) {
                 return res.status(401).json({

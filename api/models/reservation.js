@@ -1,25 +1,37 @@
-const Schema = require('mongoose').Schema;
-const db = require('../config/db');
+const {DataTypes} = require('sequelize');
+const db = require('../config/database');
 
-const Reservation = db.model('Reservation', {
-    _id: Schema.Types.ObjectId,
-    name: { type: String, required: true },
-    email: { 
-        type: String,
-        required: true,
-        match: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ 
+module.exports = Reservations = db.define('Reservations', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
-    phoneNumber: {type:String, required: true },
-    playerNumber: {type:Number, required: true },
-    notes: { type:String },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        match: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    },
+    phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    playerNumber: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    notes: {
+        type: DataTypes.STRING,
+        defaultValue: ''
+    },
     date: {
-        type: Date,
-        required: true,
-        unique: false,
-        min: new Date()
+        type: DataTypes.DATE,
+        allowNull: false
     },
-    packageId: { type: Schema.Types.ObjectId, required: true, ref: 'Package' },
-    archived: { type: Boolean, default: false }
+    archived: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    packageId: {
+        type: DataTypes.NUMBER
+    }
 });
-
-module.exports = Reservation;

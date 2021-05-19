@@ -16,7 +16,6 @@ const getAdmins = require('../middleware/operator/get_admins');
 const EmailController = require('../controllers/email');
 const ReservationsController = require('../controllers/reservations');
 const OperatorController = require('../controllers/operators');
-const CalendarController = require('../controllers/google-calendar');
 
 router.get('/',
     checkAuth, checkTemp,
@@ -36,17 +35,16 @@ router.post('/',
     checkDate, checkNoDates, checkPackage,
     ReservationsController.create,
     OperatorController.new_reservation,
+    getAdmins,
     EmailController.client_reservaion_email, EmailController.send_to_client,
-    getAdmins, EmailController.admin_reservation_email, EmailController.send_to_admins,
-    CalendarController.syncCalendar
+    EmailController.admin_reservation_email, EmailController.send_to_admins
 );
 router.patch('/:reservationId',
     checkAuth, checkAdmin,
     setUpNew, findPackage,
     checkDate, checkNoDates, checkPackage,
     ReservationsController.update,
-    EmailController.client_reservaion_email, EmailController.send_to_client,
-    CalendarController.syncCalendar
+    EmailController.client_reservaion_email, EmailController.send_to_client
 );
 
 router.post('/toggleArchived',
@@ -56,12 +54,9 @@ router.post('/toggleArchived',
 
 router.delete('/',
     checkAuth, checkAdmin,
-    // deleteSubscription,
     setUpForDelete,
     ReservationsController.delete,
-    OperatorController.delete_not_viewed,
-    EmailController.client_reservaion_email, EmailController.send_to_client,
-    CalendarController.syncCalendar
+    EmailController.client_reservaion_email, EmailController.send_to_client
 );
 
 module.exports = router;

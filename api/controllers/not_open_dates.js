@@ -1,21 +1,19 @@
-const mongoose = require('mongoose');
 const NOD = require('../models/not_open_date');
 
 exports.get_all = (req, res, next) => {
-    NOD.find()
-        .exec()
-        .then( nods => {
+    NOD.findAll()
+        .then(nods => {
             res.status(200).json({
-                    noDates: nods.map(nod => {
-                        return {
-                            _id: nod._id,
-                            reason: nod.reason,
-                            fromDate: nod.fromDate,
-                            toDate: nod.toDate
-                        }
-                    })
+                noDates: nods.map(nod => {
+                    return {
+                        _id: nod.id,
+                        reason: nod.reason,
+                        fromDate: nod.fromDate,
+                        toDate: nod.toDate
+                    }
+                })
             });
-        } )
+        })
         .catch(err => {
             res.status(500).json({
                 error: {
@@ -26,24 +24,19 @@ exports.get_all = (req, res, next) => {
         });
 };
 
-exports.create = (req, res, next) => {
-    let fromDate = new Date(req.body.fromDate);
-    fromDate.setHours(fromDate.getUTCHours() - 2);
-    let toDate = new Date(req.body.toDate);
-    toDate.setHours(toDate.getUTCHours() - 2);
-    const noDate = new NOD({
-        _id: new mongoose.Types.ObjectId(),
+exports.create = (req, res, _) => {
+    const noDate = NOD.build({
         reason: req.body.reason,
-        fromDate: fromDate,
-        toDate: toDate
+        fromDate: req.body.fromDate,
+        toDate: req.body.toDate
     });
     noDate.save()
-        .then(result => {            
+        .then(result => {
             res.status(201).json({
-                _id: result._id,
+                _id: result.id,
                 reason: result.reason,
                 fromDate: result.fromDate,
-                toDate: result.toDate                      
+                toDate: result.toDate
             });
         })
         .catch(err => {
@@ -55,28 +48,21 @@ exports.create = (req, res, next) => {
             });
         });
 };
-exports.update = (req, res, next) => {
-    let fromDate = req.body.fromDate ? new Date(req.body.fromDate) : null;
-    if (fromDate)
-        fromDate.setHours(fromDate.getUTCHours() - 2);
-    let toDate = req.body.toDate ? new Date(req.body.toDate) : null;
-    if (toDate)
-        toDate.setHours(toDate.getUTCHours() - 2);
-    NOD.findById(req.params.nodId)
-        .exec()
+exports.update = (req, res, _) => {
+    NOD.findByPk(req.params.nodId)
         .then(original => {
             if (original) {
-                original.reason = req.body.reason ? req.body.reason : original.reason;                
-                original.fromDate = fromDate ? fromDate : original.fromDate;
-                original.toDate = toDate ? toDate : original.toDate;
+                original.reason = req.body.reason ? req.body.reason : original.reason;
+                original.fromDate = req.body.fromDate ? req.body.fromDate : original.fromDate;
+                original.toDate = req.body.toDate ? req.body.toDate : original.toDate;
 
                 original.save()
-                    .then(result => {            
+                    .then(result => {
                         return res.status(201).json({
-                            _id: result._id,
+                            _id: result.id,
                             reason: result.reason,
                             fromDate: result.fromDate,
-                            toDate: result.toDate                      
+                            toDate: result.toDate
                         });
                     })
                     .catch(err => {
@@ -87,13 +73,13 @@ exports.update = (req, res, next) => {
                             }
                         });
                     });
-                } else {                    
-                    return res.status(404).json({
-                        error: {
-                            error: 'NOT_FOUND'
-                        }
-                    });
-                }
+            } else {
+                return res.status(404).json({
+                    error: {
+                        error: 'NOT_FOUND'
+                    }
+                });
+            }
         })
         .catch(err => {
             res.status(500).json({
@@ -105,11 +91,11 @@ exports.update = (req, res, next) => {
         });
 };
 
-exports.delete = (req, res, next) => {
-    NOD.where('_id').in(req.body.ids)
-        .deleteMany()
-        .exec()
-        .then(result => {
+exports.delete = (req, res, _) => {
+    NOD.destroy({
+        where: {id: req.body.ids}
+    })
+        .then(() => {
             return res.status(200).json({
                 message: 'DELETED'
             });

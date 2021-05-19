@@ -1,8 +1,7 @@
 const Package = require('../../models/package');
 
 module.exports = (req, res, next) => {
-    Package.findById(res.locals.reservation.packageId)
-        .exec()
+    Package.findByPk(res.locals.reservation.packageId)
         .then(package => {
             if (package) {
                 res.locals.package = package;
