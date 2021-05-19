@@ -1,17 +1,18 @@
 const Reservation = require('../../models/reservation');
 
 module.exports = (req, res, next) => {
-    Reservation.findByPk(req.params.reservationId)
+    Reservation.findByPk(req.body.reservationId)
         .then(reservation => {
-            if (!reservation) {
-                return res.status(404).json({
-                    error: {
-                        error: 'RESERVATION_NOT_FOUND'
-                    }
-                });
+            if (reservation) {
+                res.locals.reservation = reservation;
+                return next();
             }
-            res.locals.reservation = reservation;
-            return next();
+            return res.status(404).json({
+                error: {
+                    error: 'NOT_FOUND',
+                    message: err
+                }
+            });
         })
         .catch(err => {
             return res.status(500).json({

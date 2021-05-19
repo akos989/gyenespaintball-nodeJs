@@ -1,50 +1,49 @@
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const Operator = require('../models/operator');
+const Reservations = require('../models/reservation');
 
-exports.get_all = (req, res, next) => {
-    Operator.find()
-    .select("_id name email phoneNumber admin temporary accessLimit")
-    .exec()
-    .then(operators => {
-        res.status(200).json({
-            count: operators.length,
-            operator: operators.map(operator => {
-                return {
-                    _id: operator._id,
-                    name: operator.name,
-                    email: operator.email,
-                    phoneNumber: operator.phoneNumber,
-                    admin: operator.admin,
-                    temporary: operator.temporary,
-                    accessLimit: operator.accessLimit
+exports.get_all = (req, res, _) => {
+    Operator.findAll()
+        .then(operators => {
+            res.status(200).json({
+                count: operators.length,
+                operator: operators.map(operator => {
+                    return {
+                        _id: operator.id,
+                        name: operator.name,
+                        email: operator.email,
+                        phoneNumber: operator.phoneNumber,
+                        admin: operator.admin,
+                        temporary: operator.temporary,
+                        accessLimit: operator.accessLimit
+                    }
+                })
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
                 }
-            })
+            });
         });
-    })
-    .catch(err => {
-        res.status(500).json({
-            error: {
-                error: 'FAILED',
-                message: err
-            }
-        });
-    });
 };
 
 exports.create = (req, res, next) => {
-    Operator.find({email: req.body.email})
-        .exec()
-        .then(docs => {
-            if (docs.length >= 1 && req.params.operatorId != docs[0]._id) {
+    Operator.findOne({
+        where: {email: req.body.email}
+    })
+        .then(doc => {
+            if (doc) {
                 return res.status(409).json({
                     error: {
                         error: 'EMAIL_EXISTS'
                     }
                 });
-            } 
+            }
             if (req.body.password !== req.body.confirm) {
                 return res.status(409).json({
                     error: {
@@ -61,8 +60,7 @@ exports.create = (req, res, next) => {
                         }
                     });
                 } else {
-                    const operator = new Operator({        
-                        _id: new mongoose.Types.ObjectId(),
+                    const operator = Operator.build({
                         email: req.body.email,
                         password: hash,
                         admin: res.locals.admin,
@@ -75,7 +73,7 @@ exports.create = (req, res, next) => {
                         .then(result => {
                             const token = jwt.sign(
                                 {
-                                    operatorId: result._id,
+                                    operatorId: result.id,
                                     email: result.email
                                 },
                                 process.env.JWT_KEY,
@@ -85,7 +83,7 @@ exports.create = (req, res, next) => {
                             );
                             res.locals.operator = result;
                             res.locals.token = token;
-                            
+
                             return next();
                         })
                         .catch(err => {
@@ -94,11 +92,10 @@ exports.create = (req, res, next) => {
                                     error: 'CREATION_FAILED',
                                     message: err
                                 }
-                            });                    
-                        }); 
+                            });
+                        });
                 }
-            });    
-            
+            });
         })
         .catch(err => {
             res.status(500).json({
@@ -106,13 +103,15 @@ exports.create = (req, res, next) => {
                     error: 'CREATION_FAILED',
                     message: err
                 }
-            });                    
-        }); 
+            });
+        });
 };
 
-exports.login = (req, res, next) => {
-    Operator.findOne({email: req.body.email})
-        .exec()
+exports.login = (req, res, _) => {
+    Operator.findOne({
+        where: {email: req.body.email},
+        include: 'newReservations'
+    })
         .then(operator => {
             if (!operator) {
                 return res.status(401).json({
@@ -126,7 +125,7 @@ exports.login = (req, res, next) => {
                     error: {
                         error: 'TEMP_OPERATOR_EXPIRED'
                     }
-                }); 
+                });
             }
             bcrypt.compare(req.body.password, operator.password, (err, result) => {
                 if (err) {
@@ -134,12 +133,12 @@ exports.login = (req, res, next) => {
                         error: {
                             error: 'AUTH_FAILED'
                         }
-                    }); 
+                    });
                 }
                 if (result) {
                     const token = jwt.sign(
                         {
-                            operatorId: operator._id,
+                            operatorId: operator.id,
                             email: operator.email
                         },
                         process.env.JWT_KEY,
@@ -151,7 +150,7 @@ exports.login = (req, res, next) => {
                         token: token,
                         email: operator.email,
                         expiresIn: '3600',
-                        localId: operator._id,
+                        localId: operator.id,
                         newReservations: operator.newReservations
                     });
                 }
@@ -171,9 +170,10 @@ exports.login = (req, res, next) => {
         });
 };
 
-exports.delete = (req, res, next) => {
-    Operator.deleteOne({ _id: req.params.operatorId })
-        .exec()
+exports.delete = (req, res, _) => {
+    Operator.destroy({
+        where: {id: req.params.operatorId}
+    })
         .then(result => {
             res.status(200).json({
                 message: 'DELETE_SUCCESFUL'
@@ -190,8 +190,7 @@ exports.delete = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
-    Operator.findById(req.params.operatorId )
-        .exec()
+    Operator.findByPk(req.params.operatorId)
         .then(operator => {
             if (!operator) {
                 return res.status(404).json({
@@ -204,8 +203,9 @@ exports.update = (req, res, next) => {
             operator.email = req.body.email ? req.body.email : operator.email;
             operator.phoneNumber = req.body.phoneNumber ? req.body.phoneNumber : operator.phoneNumber;
             if (res.locals.hash) {
-                operator.password = hash;
+                operator.password = res.locals.hash;
             }
+            console.log('asdf')
             if (res.locals.isAdmin) {
                 operator.admin = req.body.admin ? req.body.admin : operator.admin;
                 operator.accessLimit = req.body.accessLimit ? req.body.accessLimit : operator.accessLimit;
@@ -213,10 +213,10 @@ exports.update = (req, res, next) => {
             }
             operator.save()
                 .then(operator => {
-                    if (operator._id != req.userData.operatorId) {
+                    if (operator.id !== req.userData.operatorId) {
                         return res.status(200).json({
                             message: 'SUCCESSFUL_UPDATE',
-                            _id: operator._id,
+                            _id: operator.id,
                             name: operator.name,
                             email: operator.email,
                             phoneNumber: operator.phoneNumber,
@@ -227,7 +227,7 @@ exports.update = (req, res, next) => {
                     }
                     const token = jwt.sign(
                         {
-                            operatorId: operator._id,
+                            operatorId: operator.id,
                             email: operator.email
                         },
                         process.env.JWT_KEY,
@@ -237,7 +237,7 @@ exports.update = (req, res, next) => {
                     );
                     return res.status(200).json({
                         message: 'SUCCESSFUL_UPDATE',
-                        _id: operator._id,
+                        _id: operator.id,
                         name: operator.name,
                         email: operator.email,
                         phoneNumber: operator.phoneNumber,
@@ -267,15 +267,16 @@ exports.update = (req, res, next) => {
         });
 };
 
-exports.get_all_temporary = (req, res, next) => {
-    Operator.find({ temporary: true })
-        .exec()
+exports.get_all_temporary = (req, res, _) => {
+    Operator.findAll({
+        where: {temporary: true}
+    })
         .then(operators => {
             res.status(200).json({
                 count: operators.length,
                 operator: operators.map(operator => {
                     return {
-                        _id: operator._id,
+                        _id: operator.id,
                         name: operator.name,
                         email: operator.email,
                         phoneNumber: operator.phoneNumber,
@@ -296,12 +297,13 @@ exports.get_all_temporary = (req, res, next) => {
         });
 };
 
-exports.get_my_account = (req, res, next) => {
-    Operator.findById(req.userData.operatorId)
-        .exec()
+exports.get_my_account = (req, res, _) => {
+    Operator.findByPk(req.userData.operatorId, {
+        include: 'newReservations'
+    })
         .then(operator => {
             if (!operator) {
-                return res.status(404).josn({
+                return res.status(404).json({
                     error: {
                         error: 'NOT_FOUND'
                     }
@@ -309,7 +311,7 @@ exports.get_my_account = (req, res, next) => {
             }
             res.status(200).json({
                 operator: {
-                    _id: operator._id,
+                    _id: operator.id,
                     name: operator.name,
                     email: operator.email,
                     phoneNumber: operator.phoneNumber,
@@ -330,81 +332,34 @@ exports.get_my_account = (req, res, next) => {
         });
 };
 exports.new_reservation = (req, res, next) => {
-    Operator.updateMany({ temporary: false }, { $push: { newReservations: res.locals.reservationInfo._id } })
-        .exec()
-        .then(result => {
-            return next();
-        })
-        .catch(err => {
-            return next();
-        });
-};
-exports.delete_not_viewed = (req, res, next) => {
-    Operator.updateMany(
-        { temporary: false }, { $pull: { newReservations: { $in: req.body.ids } } }
-    )
-    .exec()
-    .then(res => {
-        return next();
+    console.log(res.locals.reservationInfo)
+    Operator.findAll({
+        where: {temporary: false},
+        include: {
+            model: Reservations,
+            as: 'newReservations'
+        }
     })
-    .catch(err => {
-        return res.status(500).json({
-            error: {
-                error: 'FAILED',
-                message: err
-            }
-        });
-    });
-};
-exports.view_reservation = (req, res, next) => {
-    Operator.updateOne(
-        { _id: req.body.operatorId }, { $pull: { newReservations: req.body.reservationId } }
-        )
-        .exec()
-        .then(result => {
-            return res.status(200).json({
-                result: result
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: {
-                    error: 'FAILED',
-                    message: err
-                }
-            });
-        });
-};
-exports.getRefreshTokens = (next) => {
-    Operator.find()
-        .exec()
         .then(operators => {
-            let refreshTokens = operators.map(o => {return o.googleCalendarToken}).filter(t => {return (t !== '')});            
-            next(refreshTokens);
+            operators.forEach(o => {
+                o.addNewReservation(res.locals.reservationInfo)
+                    .then(result => {})
+                    .catch(err => console.log(err));
+            });
+            return next();
         })
         .catch(err => {
             console.log(err)
-            next([]);
+            return next();
         });
 };
-exports.set_token = (req, res, next) => {
-    Operator.findById(req.body.operatorId)
-        .exec()
+exports.view_reservation = (req, res, _) => {
+    Operator.findByPk(req.params.operatorId)
         .then(operator => {
-            if (!operator)
-                return res.status(404).json({
-                    error: {
-                        error: 'NOT_FOUND'
-                    }
-                });
-            res.locals.prevToken = operator.googleCalendarToken;
-            operator.googleCalendarToken = req.body.googletoken;
-            operator.save()
-                .then(result => {
-                    // next();
-                    res.status(200).json({
-                        message: 'OK',
-                        operator: result
+            operator.removeNewReservation(res.locals.reservation)
+                .then(o => {
+                    return res.status(200).json({
+                        result: o
                     });
                 })
                 .catch(err => {
@@ -414,10 +369,10 @@ exports.set_token = (req, res, next) => {
                             message: err
                         }
                     });
-                });
+                })
         })
         .catch(err => {
-            return res.status(500).json({
+            res.status(500).json({
                 error: {
                     error: 'FAILED',
                     message: err

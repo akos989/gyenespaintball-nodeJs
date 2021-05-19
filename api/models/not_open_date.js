@@ -1,18 +1,17 @@
-const Schema = require('mongoose').Schema;
-const db = require('../config/db');
+const {DataTypes} = require('sequelize');
+const db = require('../config/database');
 
-const NotOpenDate = db.model('NotOpenDate', {
-    _id: Schema.Types.ObjectId,
-    reason: { type: String },
+module.exports = NotOpenDates = db.define('NotOpenDates', {
+    reason: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     fromDate: {
-        type: Date,
-        required: true,
-        unique: true
+        type: DataTypes.DATE,
+        allowNull: false
     },
     toDate: {
-        type: Date,
-        required: true
-    }
+        type: DataTypes.DATE,
+        allowNull: false
+    },
 });
-
-module.exports = NotOpenDate;

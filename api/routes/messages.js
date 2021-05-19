@@ -16,8 +16,8 @@ router.get('/',
 
 router.post('/',
     MessageController.create,
-    EmailController.client_message_create_body, EmailController.send_to_client,
     getAdmins,
+    EmailController.client_message_create_body, EmailController.send_to_client,
     EmailController.admin_message_create_body, EmailController.send_to_admins
 );
 

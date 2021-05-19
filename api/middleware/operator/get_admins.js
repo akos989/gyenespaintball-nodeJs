@@ -1,9 +1,10 @@
 const Operator = require('../../models/operator');
 
 module.exports = (req, res, next) => {
-    Operator.find({ admin: true })
-        .exec()
-        .then( operators => {
+    Operator.findAll({
+        where: {admin: true}
+    })
+        .then(operators => {
             const adminsEmails = [];
             for (const operator of operators) {
                 adminsEmails.push(operator.email);

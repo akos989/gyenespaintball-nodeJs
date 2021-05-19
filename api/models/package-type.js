@@ -1,11 +1,13 @@
-const Schema = require('mongoose').Schema;
-const db = require('../config/db');
+const {DataTypes} = require('sequelize');
+const db = require('../config/database');
 
-const PackageType = db.model('PackageType', {
-    _id: Schema.Types.ObjectId,
-    name: { type: String, required: true },    
-    packages: [{ type: Schema.Types.ObjectId, ref: 'Package' }],
-    sale: { type: Boolean, default: false }
+module.exports = PackageTypes = db.define('PackageTypes', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    sale: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    }
 });
-
-module.exports = PackageType;

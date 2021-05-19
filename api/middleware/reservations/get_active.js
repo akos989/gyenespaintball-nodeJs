@@ -1,9 +1,10 @@
 const Reservation = require('../../models/reservation');
 
 module.exports = (req, res, next) => {
-    Reservation.find({archived: false})
-        .populate('packageId')
-        .exec()
+    Reservation.findAll({
+        where: {archived: false},
+        include: 'Packages'
+    })
         .then(reservations => {
             res.locals.reservations = reservations;
             return next();

@@ -1,10 +1,8 @@
 const Package = require('../../models/package');
 
 module.exports = (req, res, next) => {
-
     for (const packageId of req.body.packageIdArray) {
-        Package.findById( packageId )
-            .exec()
+        Package.findByPk( packageId )
             .then(package => {
                 if (!package) {
                     return res.status(500).json({

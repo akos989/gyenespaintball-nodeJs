@@ -1,15 +1,14 @@
 const nodemailer = require('nodemailer');
-const Reservation = require('../models/reservation');
 
 exports.admin_reservation_email = (req, res, next) => {
-  const date = new Date(res.locals.reservationInfo.date.getUTCFullYear(),
-    res.locals.reservationInfo.date.getUTCMonth(),
-    res.locals.reservationInfo.date.getUTCDate(),
-    res.locals.reservationInfo.date.getUTCHours(),
-    res.locals.reservationInfo.date.getUTCMinutes());
-  date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
-  const hour = date.getUTCHours();
-  res.locals.emailBody = `
+    const date = new Date(res.locals.reservationInfo.date.getUTCFullYear(),
+        res.locals.reservationInfo.date.getUTCMonth(),
+        res.locals.reservationInfo.date.getUTCDate(),
+        res.locals.reservationInfo.date.getUTCHours(),
+        res.locals.reservationInfo.date.getUTCMinutes());
+    date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
+    const hour = date.getUTCHours();
+    res.locals.emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Új foglalás érkezett!</h1>
             <hr>
@@ -39,43 +38,44 @@ exports.admin_reservation_email = (req, res, next) => {
             </div>
         </div>
     `;
-  return next();
+    return next();
 };
 
 exports.client_reservaion_email = (req, res, next) => {
-  if (res.locals.moreReservations) {
-    messages = [];
-    emailAddresses = [];
-    res.locals.reservations.forEach(reservation => {
-      emailAddresses.push(reservation.email);
-      messages.push(makeClientEmail(
-          reservation, 
-          reservation.packageId, 
-          res.locals.emailTitle, 
-          res.locals.emailDetails
-      ));
-    });
-    res.locals.emailAddresses = emailAddresses;
-    res.locals.emailBodies = messages;
-  } else {
-    res.locals.emailBody = makeClientEmail(
-      res.locals.reservationInfo, 
-      res.locals.package,
-      res.locals.emailTitle, 
-      res.locals.emailDetails
-    );
-  }  
-  return next();
+    if (res.locals.moreReservations) {
+        messages = [];
+        emailAddresses = [];
+        res.locals.reservations.forEach(reservation => {
+            emailAddresses.push(reservation.email);
+            messages.push(makeClientEmail(
+                reservation,
+                reservation.packageId,
+                res.locals.emailTitle,
+                res.locals.emailDetails
+            ));
+        });
+        res.locals.emailAddresses = emailAddresses;
+        res.locals.emailBodies = messages;
+    } else {
+        res.locals.emailBody = makeClientEmail(
+            res.locals.reservationInfo,
+            res.locals.package,
+            res.locals.emailTitle,
+            res.locals.emailDetails
+        );
+    }
+    return next();
 }
+
 function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
-  const date = new Date(reservationInfo.date.getUTCFullYear(),
-    reservationInfo.date.getUTCMonth(),
-    reservationInfo.date.getUTCDate(),
-    reservationInfo.date.getUTCHours(),
-    reservationInfo.date.getUTCMinutes());
-  date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
-  const hour = date.getUTCHours();
-  return `
+    const date = new Date(reservationInfo.date.getUTCFullYear(),
+        reservationInfo.date.getUTCMonth(),
+        reservationInfo.date.getUTCDate(),
+        reservationInfo.date.getUTCHours(),
+        reservationInfo.date.getUTCMinutes());
+    date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
+    const hour = date.getUTCHours();
+    return `
       <div style="text-align: center;">
           <h1 style="padding-bottom: 30px;">Kedves ${reservationInfo.name}!</h1>
           <h2 style="padding-bottom: 30px;"> ${emailTitle} </h2>
@@ -127,164 +127,165 @@ function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
 
 
 exports.send_to_client = (req, res, next) => {
-  let transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: 465,
-    secure: true, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_ADDR, // generated ethereal user
-      pass: process.env.EMAIL_PASS // generated ethereal password
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
+    let transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAIL_ADDR, // generated ethereal user
+            pass: process.env.EMAIL_PASS // generated ethereal password
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
 
-  // send mail with defined transport object
+    // send mail with defined transport object
 
-  if (res.locals.moreReservations) {
-    for(let i = 0; i < res.locals.emailAddresses.length; i++) {
-      if (!res.locals.reservations[i].archived)
+    if (res.locals.moreReservations) {
+        for (let i = 0; i < res.locals.emailAddresses.length; i++) {
+            if (!res.locals.reservations[i].archived)
+                sendEmailToClient(
+                    transporter,
+                    res.locals.emailAddresses[i],
+                    res.locals.emailBodies[i],
+                    res.locals.emailSubject
+                );
+        }
+    } else {
         sendEmailToClient(
-          transporter,
-          res.locals.emailAddresses[i],
-          res.locals.emailBodies[i],
-          res.locals.emailSubject
+            transporter,
+            res.locals.reservationInfo.email,
+            res.locals.emailBody,
+            res.locals.emailSubject
         );
     }
-  } else {
-    sendEmailToClient(
-      transporter,
-      res.locals.reservationInfo.email,
-      res.locals.emailBody,
-      res.locals.emailSubject
-      );
-  }  
- return next();
+    if (res.locals.adminEmails) {
+        return next();
+    }
 };
 
 function sendEmailToClient(transporter, receiver, body, subject) {
-  let mailOptions = {
-    from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
-    to: receiver, // list of receivers
-    subject: subject, // Subject line
-    text: "foglalás", // plain text body
-    html: body, // html body
-    attachments: [
-      {
-        filename: 'instagram-sketched.png',
-        path: process.cwd() + '/email/instagram-sketched.png',
-        cid: 'insta'
-      },
-      {
-        filename: 'facebook.png',
-        path: process.cwd() + '/email/facebook.png',
-        cid: 'facebook'
-      }
-    ]
-  };
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.log(error);
-    }
-    console.log("Message sent: %s", info.messageId);
+    let mailOptions = {
+        from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
+        to: receiver, // list of receivers
+        subject: subject, // Subject line
+        text: "foglalás", // plain text body
+        html: body, // html body
+        attachments: [
+            {
+                filename: 'instagram-sketched.png',
+                path: process.cwd() + '/email/instagram-sketched.png',
+                cid: 'insta'
+            },
+            {
+                filename: 'facebook.png',
+                path: process.cwd() + '/email/facebook.png',
+                cid: 'facebook'
+            }
+        ]
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log("Message sent: %s", info.messageId);
 
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  });
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    });
 }
 
 exports.send_to_admins = (req, res, next) => {
-  let transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: 465,
-    secure: true, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_ADDR, // generated ethereal user
-      pass: process.env.EMAIL_PASS // generated ethereal password
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
+    let transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAIL_ADDR, // generated ethereal user
+            pass: process.env.EMAIL_PASS // generated ethereal password
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
 
-  // send mail with defined transport object
+    // send mail with defined transport object
 
-  let mailOptions = {
-    from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
-    to: res.locals.adminEmails, // list of receivers
-    subject: res.locals.emailSubject, // Subject line
-    text: "Új foglalás", // plain text body
-    html: res.locals.emailBody
-  };
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.log(error);
-    }
-    console.log("Message sent: %s", info.messageId);
+    let mailOptions = {
+        from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
+        to: res.locals.adminEmails, // list of receivers
+        subject: res.locals.emailSubject, // Subject line
+        text: "Új foglalás", // plain text body
+        html: res.locals.emailBody
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log("Message sent: %s", info.messageId);
 
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  });
-  return next();
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    });
 };
 
 
 exports.scheduled_email = (to, htmlBody, emailSubject) => {
-  let transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: 465,
-    secure: true, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_ADDR, // generated ethereal user
-      pass: process.env.EMAIL_PASS // generated ethereal password
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
+    let transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAIL_ADDR, // generated ethereal user
+            pass: process.env.EMAIL_PASS // generated ethereal password
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
 
-  // send mail with defined transport object
+    // send mail with defined transport object
 
-  let mailOptions = {
-    from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
-    to: to, // list of receivers
-    subject: emailSubject, // Subject line
-    text: "Emlékeztető", // plain text body
-    html: htmlBody, // html body
-    attachments: [
-      {
-        filename: 'instagram-sketched.png',
-        path: process.cwd() + '/email/instagram-sketched.png',
-        cid: 'insta'
-      },
-      {
-        filename: 'facebook.png',
-        path: process.cwd() + '/email/facebook.png',
-        cid: 'facebook'
-      }
-    ]
-  };
+    let mailOptions = {
+        from: '"Gyenespaintball" <kapcsolat@gyenespaintball.hu>', // sender address
+        to: to, // list of receivers
+        subject: emailSubject, // Subject line
+        text: "Emlékeztető", // plain text body
+        html: htmlBody, // html body
+        attachments: [
+            {
+                filename: 'instagram-sketched.png',
+                path: process.cwd() + '/email/instagram-sketched.png',
+                cid: 'insta'
+            },
+            {
+                filename: 'facebook.png',
+                path: process.cwd() + '/email/facebook.png',
+                cid: 'facebook'
+            }
+        ]
+    };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.log(error);
-    }
-    console.log("Message sent: %s", info.messageId);
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log("Message sent: %s", info.messageId);
 
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  });
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    });
 };
 
 exports.scheduled_email_content = (reservation, package) => {
-  const date = new Date(
-    reservation.date.getUTCFullYear(),
-    reservation.date.getUTCMonth(),
-    reservation.date.getUTCDate(),
-    reservation.date.getUTCHours(),
-    reservation.date.getUTCMinutes()
-  );
-  date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
-  const hour = date.getUTCHours();
-  const emailBody = `
+    const date = new Date(
+        reservation.date.getUTCFullYear(),
+        reservation.date.getUTCMonth(),
+        reservation.date.getUTCDate(),
+        reservation.date.getUTCHours(),
+        reservation.date.getUTCMinutes()
+    );
+    date.setUTCMinutes(date.getUTCMinutes() - date.getTimezoneOffset());
+    const hour = date.getUTCHours();
+    const emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
             <div style="padding-bottom: 30px;"> Emlékeztetjük, hogy korábban foglalt paintball időpontja 48 órán belül esedékes. A foglalással kapcsolatos adatokat lent megtalálja.</div>
@@ -331,11 +332,11 @@ exports.scheduled_email_content = (reservation, package) => {
             </div> 
         </div>
     `;
-  return emailBody;
+    return emailBody;
 };
 
 exports.thanks_email_content = (reservation) => {
-  const emailBody = `
+    const emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
             <div style="padding-bottom: 10px;">KÖSZÖNJÜK, HOGY VELÜNK JÁTSZOTTÁL!</div>
@@ -362,11 +363,11 @@ exports.thanks_email_content = (reservation) => {
             </div> 
         </div>
     `;
-  return emailBody;
+    return emailBody;
 };
 
 exports.client_message_create_body = (req, res, next) => {
-  res.locals.emailBody = `
+    res.locals.emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${res.locals.messageInfo.name}!</h1>
             <div style="padding-bottom: 10px;">${res.locals.emailTitle}</div>
@@ -394,11 +395,11 @@ exports.client_message_create_body = (req, res, next) => {
             </div> 
         </div>
     `;
-  return next();
+    return next();
 };
 
 exports.admin_message_create_body = (req, res, next) => {
-  res.locals.emailBody = `
+    res.locals.emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Új üzenet érkezett!</h1>
             <hr>
@@ -417,11 +418,11 @@ exports.admin_message_create_body = (req, res, next) => {
             </div>
         </div>
     `;
-  return next();
+    return next();
 };
 
 exports.client_message_reply_body = (req, res, next) => {
-  res.locals.emailBody = `
+    res.locals.emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${res.locals.messageInfo.name}!</h1>
             <div style="padding-bottom: 5px; text-align: left;">${res.locals.replyBody}</div>
@@ -447,5 +448,5 @@ exports.client_message_reply_body = (req, res, next) => {
             </div> 
         </div>
     `;
-  return next();
+    return next();
 };

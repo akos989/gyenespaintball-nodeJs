@@ -4,8 +4,7 @@ module.exports = (req, res, next) => {
     if (req.userData.reservationId) {
         return next();
     }
-    Operator.findById(req.userData.operatorId)
-        .exec()
+    Operator.findByPk(req.userData.operatorId)
         .then(operator => {
             if (operator.temporary) {
                 return res.status(500).json({

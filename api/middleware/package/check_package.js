@@ -1,8 +1,8 @@
 const Package = require('../../models/package');
 
 module.exports = (req, res, next) => {
-    Package.findById( res.locals.reservation.packageId )
-        .exec()
+    console.log('check package')
+    Package.findByPk( res.locals.reservation.packageId )
         .then(package => {
             if (!package) {
                 return res.status(500).json({

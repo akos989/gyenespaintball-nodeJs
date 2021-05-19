@@ -6,8 +6,7 @@ module.exports = (req, res, next) => {
         return next();
     }
 
-    Operator.findById( req.params.operatorId )
-        .exec()
+    Operator.findByPk( req.params.operatorId )
         .then(operator => {
             if (!operator) {
                 return res.status(404).json({

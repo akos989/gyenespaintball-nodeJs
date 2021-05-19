@@ -1,10 +1,9 @@
-const mongoose = require('mongoose');
-
 const TempOperator = require('../models/temp_operator');
 
-exports.create = (req, res, next) => {
-    TempOperator.findOne({email: req.body.email})
-        .exec()
+exports.create = (req, res, _) => {
+    TempOperator.findOne({
+        where: {email: req.body.email}
+    })
         .then(doc => {
             if (doc) {
                 return res.status(409).json({
@@ -19,16 +18,16 @@ exports.create = (req, res, next) => {
                 req.body.accessLimit = date;
             }
             let addition = 1;
-            if (new Date().getUTCHours === 23) {
+            if (new Date().getUTCHours() === 23) {
                 addition = 2;
             }
             const minDate = new Date(
-                    new Date().getUTCFullYear(),
-                    new Date().getUTCMonth(),
-                    new Date().getUTCDate() + addition,
-                    1
+                new Date().getUTCFullYear(),
+                new Date().getUTCMonth(),
+                new Date().getUTCDate() + addition,
+                1
             );
-            
+
             if (req.body.accessLimit <= minDate) {
                 return res.status(500).json({
                     error: {
@@ -36,9 +35,8 @@ exports.create = (req, res, next) => {
                     }
                 });
             }
-            
-            const tOperator = new TempOperator({
-                _id: new mongoose.Types.ObjectId(),
+
+            const tOperator = TempOperator.build({
                 email: req.body.email,
                 admin: req.body.admin,
                 temporary: req.body.temporary,
@@ -72,9 +70,8 @@ exports.create = (req, res, next) => {
         });
 };
 
-exports.can_validate = (req, res, next) => {
-    TempOperator.findById(req.params.operatorId)
-        .exec()
+exports.can_validate = (req, res, _) => {
+    TempOperator.findByPk(req.params.operatorId)
         .then(operator => {
             if (!operator) {
                 return res.status(500).json({
@@ -88,11 +85,11 @@ exports.can_validate = (req, res, next) => {
                     error: {
                         error: 'TEMP_OPERATOR_EXPIRED'
                     }
-                }); 
+                });
             }
             res.status(200).json({
                 message: 'READY_TO_VALIDATE',
-                operatorId: operator._id,
+                operatorId: operator.id,
                 email: operator.email
             });
         })
@@ -107,8 +104,7 @@ exports.can_validate = (req, res, next) => {
 };
 
 exports.validate = (req, res, next) => {
-    TempOperator.findById(req.params.temp_operatorId)
-        .exec()
+    TempOperator.findByPk(req.params.temp_operatorId)
         .then(doc => {
             if (!doc) {
                 return res.status(404).json({
@@ -134,16 +130,17 @@ exports.validate = (req, res, next) => {
         });
 };
 
-exports.delete_validated = (req, res, next) => {
-    TempOperator.deleteOne({ _id: req.params.temp_operatorId })
-        .exec()
+exports.delete_validated = (req, res, _) => {
+    TempOperator.destroy({
+        where: {id: req.params.temp_operatorId}
+    })
         .then(result => {
             res.status(201).json({
                 message: 'OPERATOR_CREATED',
                 token: res.locals.token,
                 email: res.locals.operator.email,
                 expiresIn: '3600',
-                localId: res.locals.operator._id
+                localId: res.locals.operator.id
             });
         })
         .catch(err => {
@@ -152,7 +149,7 @@ exports.delete_validated = (req, res, next) => {
                 token: res.locals.token,
                 email: res.locals.operator.email,
                 expiresIn: '3600',
-                localId: res.locals.operator._id,
+                localId: res.locals.operator.id,
 
                 error: {
                     error: 'TEMP_NOT_DELETED',

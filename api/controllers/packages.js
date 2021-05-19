@@ -1,42 +1,40 @@
-const mongoose = require('mongoose');
-
 const Package = require('../models/package');
 
-exports.get_all = (req, res, next) => {
-    Package.find()
-    .exec()
-    .then(packages => {
-        res.status(200).json({
-            count: packages.length,
-            packages: packages.map(package => {
-                return {
-                    id: package._id,
-                    name: package.name,
-                    fromNumberLimit: package.fromNumberLimit,
-                    toNumberLimit: package.toNumberLimit,
-                    bulletPrice: package.bulletPrice,
-                    basePrice: package.basePrice,
-                    duration: package.duration,
-                    disabled: package.disabled,
-                    includedBullets: package.includedBullets,
-                    description: package.description
+exports.get_all = (req, res, _) => {
+    Package.findAll()
+        .then(packages => {
+            res.status(200).json({
+                count: packages.length,
+                packages: packages.map(pack => {
+                    return {
+                        id: pack.id,
+                        name: pack.name,
+                        fromNumberLimit: pack.fromNumberLimit,
+                        toNumberLimit: pack.toNumberLimit,
+                        bulletPrice: pack.bulletPrice,
+                        basePrice: pack.basePrice,
+                        duration: pack.duration,
+                        disabled: pack.disabled,
+                        includedBullets: pack.includedBullets,
+                        description: pack.description
+                    }
+                })
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
                 }
-            })
+            });
         });
-    })
-    .catch(err => {
-        res.status(500).json({
-            error: {
-                error: 'FAILED',
-                message: err
-            }
-        });
-    });
 };
 
 exports.create = (req, res, next) => {
-    Package.findOne({ name: req.body.name })
-        .exec()
+    Package.findOne({
+        where: {name: req.body.name}
+    })
         .then(result => {
             if (result) {
                 return res.status(500).json({
@@ -45,8 +43,7 @@ exports.create = (req, res, next) => {
                     }
                 });
             }
-            const package = new Package({
-                _id: new mongoose.Types.ObjectId(),
+            const pack = Package.build({
                 name: req.body.name,
                 fromNumberLimit: req.body.fromNumberLimit,
                 toNumberLimit: req.body.toNumberLimit,
@@ -57,22 +54,10 @@ exports.create = (req, res, next) => {
                 includedBullets: req.body.includedBullets,
                 description: req.body.description
             });
-            package.save()
+            pack.save()
                 .then(package => {
-                    req.body.packageIdArray = [package._id];
+                    req.body.packageIdArray = [package.id];
                     return next();
-                    // res.status(201).json({
-                    //     _id: package._id,
-                    //     name: package.name,
-                    //     fromNumberLimit: package.fromNumberLimit,
-                    //     toNumberLimit: package.toNumberLimit,
-                    //     bulletPrice: package.bulletPrice,
-                    //     basePrice: package.basePrice,
-                    //     duration: package.duration,
-                    //     disabled: package.disabled,
-                    //     includedBullets: package.includedBullets,
-                    //     description: package.description
-                    // });
                 })
                 .catch(err => {
                     res.status(500).json({
@@ -94,8 +79,7 @@ exports.create = (req, res, next) => {
 };
 
 exports.get_one = (req, res, next) => {
-    Package.findById(req.params.packageId)
-        .exec()
+    Package.findByPk(req.params.packageId)
         .then(package => {
             if (!package) {
                 return res.status(404).json({
@@ -103,9 +87,9 @@ exports.get_one = (req, res, next) => {
                         error: 'NOT_FOUND'
                     }
                 });
-            }                                
+            }
             return res.status(200).json({
-                _id: package._id,
+                _id: package.id,
                 name: package.name,
                 fromNumberLimit: package.fromNumberLimit,
                 toNumberLimit: package.toNumberLimit,
@@ -115,7 +99,7 @@ exports.get_one = (req, res, next) => {
                 disabled: package.disabled,
                 includedBullets: package.includedBullets,
                 description: package.description
-            });               
+            });
         })
         .catch(err => {
             res.status(500).json({
@@ -128,10 +112,10 @@ exports.get_one = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-    Package.where('_id').in(req.body.ids)
-        .deleteMany()
-        .exec()
-        .then(result => {
+    Package.destroy({
+        where: {id: req.body.ids}
+    })
+        .then(() => {
             req.body.packageIdArray = req.body.ids;
             return next();
         })
@@ -145,11 +129,12 @@ exports.delete = (req, res, next) => {
         });
 };
 
-exports.disable = (req, res, next) => {
-    Package.where('_id').in(req.body.ids)
-        .updateMany({$set: {disabled: req.body.isDisabled}})
-        .exec()
-        .then(result => {
+exports.disable = (req, res, _) => {
+    Package.update(
+        {disabled: req.body.isDisabled},
+        {where: {id: req.body.ids}}
+    )
+        .then(() => {
             return res.status(200).json({
                 message: 'OK'
             });
@@ -165,8 +150,7 @@ exports.disable = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
-    Package.findById(req.params.packageId )
-        .exec()
+    Package.findByPk(req.params.packageId)
         .then(package => {
             if (!package) {
                 return res.status(404).json({
@@ -174,21 +158,21 @@ exports.update = (req, res, next) => {
                         error: 'NOT_FOUND'
                     }
                 });
-            }            
+            }
             package.name = req.body.name ? req.body.name : package.name;
             package.fromNumberLimit = req.body.fromNumberLimit ? req.body.fromNumberLimit : package.fromNumberLimit;
             package.toNumberLimit = req.body.toNumberLimit ? req.body.toNumberLimit : package.toNumberLimit;
             package.bulletPrice = req.body.bulletPrice ? req.body.bulletPrice : package.bulletPrice;
             package.basePrice = req.body.basePrice ? req.body.basePrice : package.basePrice;
             package.duration = req.body.duration ? req.body.duration : package.duration;
-            package.disabled = req.body.disabled ? req.body.disabled : package.disabled; 
+            package.disabled = req.body.disabled != null ? req.body.disabled : package.disabled;
             package.includedBullets = req.body.includedBullets ? req.body.includedBullets : package.includedBullets;
             package.description = req.body.description ? req.body.description : package.description;
-            
+
             package.save()
-                .then(package => {                    
+                .then(package => {
                     return res.status(200).json({
-                        _id: package._id,
+                        _id: package.id,
                         name: package.name,
                         fromNumberLimit: package.fromNumberLimit,
                         toNumberLimit: package.toNumberLimit,

@@ -1,36 +1,36 @@
-const mongoose = require('mongoose');
-
 const PackageType = require('../models/package-type');
+const Packages = require('../models/package');
 
-exports.get_all = (req, res, next) => {
-    PackageType.find()
-    .populate("packages")
-    .exec()
-    .then(packageTypes => {
-        res.status(200).json({
-            types: packageTypes.map(packageType => {
-                return {
-                    id: packageType._id,
-                    name: packageType.name,
-                    sale: packageType.sale,
-                    packages: packageType.packages
-                }
-            })
-        });
+exports.get_all = (req, res, _) => {
+    PackageType.findAll({
+    include: Packages
     })
-    .catch(err => {
-        res.status(500).json({
-            error: {
-                error: 'FAILED',
-                message: err
-            }
+        .then(packageTypes => {
+            res.status(200).json({
+                types: packageTypes.map(packageType => {
+                    return {
+                        id: packageType.id,
+                        name: packageType.name,
+                        sale: packageType.sale,
+                        packages: packageType.Packages
+                    }
+                })
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: {
+                    error: 'FAILED',
+                    message: err
+                }
+            });
         });
-    });
 };
 
-exports.create = (req, res, next) => {
-    PackageType.findOne({ name: req.body.name })
-        .exec()
+exports.create = (req, res, _) => {
+    PackageType.findOne({
+        where: {name: req.body.name}
+    })
         .then(result => {
             if (result) {
                 return res.status(500).json({
@@ -39,15 +39,14 @@ exports.create = (req, res, next) => {
                     }
                 });
             }
-            const packageType = new PackageType({
-                _id: new mongoose.Types.ObjectId(),
+            const packageType = PackageType.build({
                 name: req.body.name,
                 sale: req.body.sale
             });
             packageType.save()
                 .then(packageType => {
                     res.status(201).json({
-                        _id: packageType._id,
+                        _id: packageType.id,
                         name: packageType.name,
                         sale: packageType.sale,
                         packages: []
@@ -72,10 +71,11 @@ exports.create = (req, res, next) => {
         });
 };
 
-exports.delete = (req, res, next) => {
-    PackageType.deleteOne({ _id: req.params.packageTypeId })
-        .exec()
-        .then(result => {
+exports.delete = (req, res, _) => {
+    PackageType.destroy({
+        where: {id: req.params.packageTypeId}
+    })
+        .then(() => {
             res.status(200).json({
                 message: 'DELETE_SUCCESFUL'
             });
@@ -90,11 +90,8 @@ exports.delete = (req, res, next) => {
         });
 };
 exports.typeExists = (req, res, next) => {
-    console.log(req.body)
-    PackageType.findById(req.body.packageTypeId)
-        .exec()
+    PackageType.findByPk(req.body.packageTypeId)
         .then(type => {
-            console.log(type)
             if (!type) {
                 return res.status(404).json({
                     error: {
@@ -114,9 +111,10 @@ exports.typeExists = (req, res, next) => {
         });
 };
 
-exports.update = (req, res, next) => {
-    PackageType.findById(req.params.packageTypeId )
-        .exec()
+exports.update = (req, res, _) => {
+    PackageType.findByPk(req.params.packageTypeId, {
+        include: 'Packages'
+    })
         .then(packageType => {
             if (!packageType) {
                 return res.status(404).json({
@@ -125,14 +123,12 @@ exports.update = (req, res, next) => {
                     }
                 });
             }
-            
             packageType.name = req.body.name ? req.body.name : packageType.name;
-            packageType.sale = req.body.sale ? req.body.sale : packageType.sale;            
-            
+            packageType.sale = req.body.sale != null ? req.body.sale : packageType.sale;
             packageType.save()
-                .then(packageType => {                    
+                .then(packageType => {
                     return res.status(200).json({
-                        _id: packageType._id,
+                        _id: packageType.id,
                         name: packageType.name,
                         sale: packageType.sale,
                         packages: packageType.packages
@@ -157,9 +153,11 @@ exports.update = (req, res, next) => {
         });
 };
 
-exports.delete_packages = (req, res, next) => {
-    PackageType.findById(req.body.packageTypeId)
-        .exec()
+exports.delete_packages = async (req, res, _) => {
+    const packages = await Packages.findAll({
+        where: {id: req.body.packageIdArray}
+    });
+    PackageType.findByPk(req.body.packageTypeId)
         .then(packageType => {
             if (!packageType) {
                 return res.status(404).json({
@@ -168,28 +166,18 @@ exports.delete_packages = (req, res, next) => {
                     }
                 });
             }
-            for (const packageId of req.body.packageIdArray) {
-                const idx = packageType.packages.indexOf(packageId);
-                if (idx !== -1)
-                    packageType.packages.splice(idx, 1);
-            }
-            packageType.save()
-            .then(packageType => {                    
-                return res.status(200).json({
-                    _id: packageType._id,
-                    name: packageType.name,
-                    sale: packageType.sale,
-                    packages: packageType.packages
+            packageType.removePackages(packages)
+                .then(() => {
+                    return res.status(200).json();
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: {
+                            error: 'FAILED',
+                            message: err
+                        }
+                    });
                 });
-            })
-            .catch(err => {
-                res.status(500).json({
-                    error: {
-                        error: 'FAILED',
-                        message: err
-                    }
-                });
-            });
         })
         .catch(err => {
             res.status(500).json({
@@ -201,9 +189,13 @@ exports.delete_packages = (req, res, next) => {
         });
 };
 
-exports.add_packages = (req,res, next) => {
-    PackageType.findById(req.body.packageTypeId)
-        .exec()
+exports.add_packages = async (req, res, _) => {
+    const packages = await Packages.findAll({
+        where: {id: req.body.packageIdArray}
+    });
+    PackageType.findByPk(req.body.packageTypeId, {
+        include: Packages
+    })
         .then(packageType => {
             if (!packageType) {
                 return res.status(404).json({
@@ -212,26 +204,23 @@ exports.add_packages = (req,res, next) => {
                     }
                 });
             }
-            for (const packageId of req.body.packageIdArray) {
-                packageType.packages.push(packageId);
-            }
-            packageType.save()
-            .then(packageType => {                    
-                return res.status(200).json({
-                    _id: packageType._id,
-                    name: packageType.name,
-                    sale: packageType.sale,
-                    packages: packageType.packages
+            packageType.addPackages(packages)
+                .then(packageType => {
+                    return res.status(200).json({
+                        _id: packageType.id,
+                        name: packageType.name,
+                        sale: packageType.sale,
+                        packages: packageType.Packages
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: {
+                            error: 'FAILED',
+                            message: err
+                        }
+                    });
                 });
-            })
-            .catch(err => {
-                res.status(500).json({
-                    error: {
-                        error: 'FAILED',
-                        message: err
-                    }
-                });
-            });
         })
         .catch(err => {
             res.status(500).json({

@@ -1,9 +1,11 @@
 const Reservation = require('../../models/reservation');
+const Packages = require('../../models/package');
 
 module.exports = (req, res, next) => {
-    Reservation.find().where('_id').in(req.body.ids)
-        .populate('packageId')
-        .exec()
+    Reservation.findAll({
+        where: {id: req.body.ids},
+        include: Packages
+    })
         .then(reservations => {
             res.locals.moreReservations = true;
             res.locals.reservations = reservations;
