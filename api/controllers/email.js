@@ -189,9 +189,9 @@ function sendEmailToClient(transporter, receiver, body, subject) {
         if (error) {
             return console.log(error);
         }
-        console.log("Message sent: %s", info.messageId);
+        // console.log("Message sent: %s", info.messageId);
 
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     });
 }
 
@@ -222,9 +222,9 @@ exports.send_to_admins = (req, res, next) => {
         if (error) {
             return console.log(error);
         }
-        console.log("Message sent: %s", info.messageId);
+        // console.log("Message sent: %s", info.messageId);
 
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     });
 };
 
@@ -269,9 +269,9 @@ exports.scheduled_email = (to, htmlBody, emailSubject) => {
         if (error) {
             return console.log(error);
         }
-        console.log("Message sent: %s", info.messageId);
+        // console.log("Message sent: %s", info.messageId);
 
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     });
 };
 

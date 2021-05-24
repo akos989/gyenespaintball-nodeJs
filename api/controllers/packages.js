@@ -7,7 +7,7 @@ exports.get_all = (req, res, _) => {
                 count: packages.length,
                 packages: packages.map(pack => {
                     return {
-                        id: pack.id,
+                        _id: pack.id,
                         name: pack.name,
                         fromNumberLimit: pack.fromNumberLimit,
                         toNumberLimit: pack.toNumberLimit,

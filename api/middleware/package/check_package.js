@@ -1,7 +1,6 @@
 const Package = require('../../models/package');
 
 module.exports = (req, res, next) => {
-    console.log('check package')
     Package.findByPk( res.locals.reservation.packageId )
         .then(package => {
             if (!package) {
