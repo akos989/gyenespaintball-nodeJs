@@ -151,7 +151,7 @@ exports.login = (req, res, _) => {
                         email: operator.email,
                         expiresIn: '3600',
                         localId: operator.id,
-                        newReservations: operator.newReservations
+                        newReservations: operator.newReservations.map(r => r.id)
                     });
                 }
                 res.status(401).json({
@@ -205,7 +205,6 @@ exports.update = (req, res, next) => {
             if (res.locals.hash) {
                 operator.password = res.locals.hash;
             }
-            console.log('asdf')
             if (res.locals.isAdmin) {
                 operator.admin = req.body.admin ? req.body.admin : operator.admin;
                 operator.accessLimit = req.body.accessLimit ? req.body.accessLimit : operator.accessLimit;
@@ -318,7 +317,7 @@ exports.get_my_account = (req, res, _) => {
                     admin: operator.admin,
                     temporary: operator.temporary,
                     accessLimit: operator.accessLimit,
-                    newReservations: operator.newReservations
+                    newReservations: operator.newReservations.map(r => r.id)
                 }
             });
         })
@@ -332,7 +331,6 @@ exports.get_my_account = (req, res, _) => {
         });
 };
 exports.new_reservation = (req, res, next) => {
-    console.log(res.locals.reservationInfo)
     Operator.findAll({
         where: {temporary: false},
         include: {

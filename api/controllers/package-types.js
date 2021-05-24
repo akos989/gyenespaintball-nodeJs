@@ -12,7 +12,20 @@ exports.get_all = (req, res, _) => {
                         id: packageType.id,
                         name: packageType.name,
                         sale: packageType.sale,
-                        packages: packageType.Packages
+                        packages: packageType.Packages.map(pack => {
+                            return {
+                                _id: pack.id,
+                                name: pack.name,
+                                fromNumberLimit: pack.fromNumberLimit,
+                                toNumberLimit: pack.toNumberLimit,
+                                bulletPrice: pack.bulletPrice,
+                                basePrice: pack.basePrice,
+                                duration: pack.duration,
+                                disabled: pack.disabled,
+                                includedBullets: pack.includedBullets,
+                                description: pack.description
+                            }
+                        })
                     }
                 })
             });

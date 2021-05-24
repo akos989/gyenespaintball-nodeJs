@@ -89,7 +89,6 @@ exports.update = (req, res, _) => {
                     }
                 });
             }
-            console.log(req.body)
             modal.name = req.body.name ? req.body.name : modal.name;
             modal.description = req.body.description ? req.body.description : modal.description;
             if (req.file)

@@ -28,7 +28,6 @@ module.exports = (req, res, next) => {
                     reservation.date.getMonth() === doc.date.getMonth() &&
                     reservation.date.getDate() === doc.date.getDate()
                 ) {
-                    console.log(reservation.name)
                     const min = (startA < startB ? [startA, endA] : [startB, endB]);
                     const max = ((min[0] === startA && min[1] === endA) ? [startB, endB] : [startA, endA]);
                     if (!(min[1] <= max[0]) && doc.id !== reservation.id) {
