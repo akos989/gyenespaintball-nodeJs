@@ -17,7 +17,7 @@ const db = require('./api/config/database');
 const {setUpAssociations} = require('./api/config/db_associations');
 
 setUpAssociations();
-// db.sync({alter: true});
+db.sync({alter: true});
 
 const server = http.createServer(app);
 

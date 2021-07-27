@@ -31,27 +31,27 @@ const checkAdmin = require('../middleware/auth/check-admin');
 const checkDates = require('../middleware/modal/check-date');
 
 router.get('/',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     ModalController.get_all
 );
 router.get('/today',
     ModalController.today
 );
 router.post('/',
-    // checkAuth,
+    checkAuth,
     upload.single('modalImage'),
-    // checkAdmin,
+    checkAdmin,
     checkDates,
     ModalController.create
 );
 router.patch('/:modalId',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     upload.single('modalImage'),
     checkDates,
     ModalController.update
 );
 router.delete('/',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     ModalController.delete
 );
 module.exports = router;
