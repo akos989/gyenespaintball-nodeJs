@@ -11,17 +11,17 @@ router.get('/',
     NODController.get_all
 );
 router.post('/',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     checkNoDate,
     NODController.create
 );
 router.patch('/:nodId',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     checkNoDate,
     NODController.update
 );
 router.delete('/',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     NODController.delete
 );
 
