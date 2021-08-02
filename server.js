@@ -1,17 +1,10 @@
 const http = require('http');
-// const https = require('https');
-// const fs = require('fs');
 const app = require('./app');
 const CronJob = require('cron').CronJob;
 
 const {notify_reservations, autoArchiveReservations} = require('./api/controllers/reservations');
 
 const port = process.env.PORT | 3000;
-
-// const options = {
-//     key: fs.readFileSync('cert/key.pem'),
-//     cert: fs.readFileSync('cert/cert.pem')
-// };
 
 const db = require('./api/config/database');
 const {setUpAssociations} = require('./api/config/db_associations');
