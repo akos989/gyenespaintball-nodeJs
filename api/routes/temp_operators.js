@@ -8,7 +8,7 @@ const checkTemp = require('../middleware/auth/check_temp');
 const TempOperatorController = require('../controllers/temp_operators');
 
 router.post('/create',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     TempOperatorController.create
 );
 router.get('/can_validate/:operatorId',

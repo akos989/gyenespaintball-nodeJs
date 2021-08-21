@@ -37,6 +37,5 @@ module.exports = Packages = db.define('Packages', {
     description: {
         type: DataTypes.STRING,
         defaultValue: ''
-    },
-
+    }
 });

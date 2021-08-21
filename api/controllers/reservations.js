@@ -79,7 +79,7 @@ exports.create = (req, res, next) => {
                     playerNumber: result.playerNumber,
                     notes: result.notes,
                     date: result.date,
-                    packageId: result.packageId,
+                    packageId: req.body.packageId,
                     archived: result.archived,
                     timeStamp: reservation.createdAt
                 }
@@ -99,6 +99,7 @@ exports.update = (req, res, next) => {
     const reservation = res.locals.reservation;
     reservation.save()
         .then(result => {
+            result.setPackage(res.locals.package);
             if (result.archived) {
                 return res.status(200).json({
                     reservation: {

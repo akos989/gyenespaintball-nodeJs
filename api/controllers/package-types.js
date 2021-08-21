@@ -218,12 +218,12 @@ exports.add_packages = async (req, res, _) => {
                 });
             }
             packageType.addPackages(packages)
-                .then(packageType => {
+                .then(pType => {
                     return res.status(200).json({
-                        _id: packageType.id,
-                        name: packageType.name,
-                        sale: packageType.sale,
-                        packages: packageType.Packages
+                        _id: pType.id,
+                        name: pType.name,
+                        sale: pType.sale,
+                        packages: pType.Packages
                     });
                 })
                 .catch(err => {

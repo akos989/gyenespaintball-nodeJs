@@ -12,7 +12,6 @@ module.exports = (req, res, next) => {
                     original.phoneNumber = req.body.phoneNumber ? req.body.phoneNumber : original.phoneNumber;
                     original.playerNumber = req.body.playerNumber ? req.body.playerNumber : original.playerNumber;
                     original.notes = req.body.notes ? req.body.notes : original.notes;                
-                    original.packageId = req.body.packageId ? req.body.packageId : original.packageId; 
                     original.date = req.body.date ? req.body.date : original.date;
                     original.archived = req.body.archived ? req.body.archived : original.archived;
                     
@@ -41,7 +40,6 @@ module.exports = (req, res, next) => {
             playerNumber: req.body.playerNumber,
             notes: req.body.notes,
             date: req.body.date,
-            packageId: req.body.packageId
         });
         return next();
     }

@@ -49,7 +49,7 @@ exports.client_reservaion_email = (req, res, next) => {
             emailAddresses.push(reservation.email);
             messages.push(makeClientEmail(
                 reservation,
-                reservation.packageId,
+                res.locals.package,
                 res.locals.emailTitle,
                 res.locals.emailDetails
             ));

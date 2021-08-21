@@ -4,11 +4,8 @@ const Packages = require('../models/package');
 const PackageTypes = require('../models/package-type');
 
 exports.setUpAssociations = () => {
-    Packages.hasMany(Reservations, {
-        foreignKey: 'packageId'
-    });
-    Reservations.belongsTo(Packages);
-    Packages.belongsTo(PackageTypes);
+    Packages.hasMany(Reservations);
+    Reservations.belongsTo(Packages)
     PackageTypes.hasMany(Packages);
     Operators.belongsToMany(Reservations, {through: 'New_Reservations', as: 'newReservations'});
     Reservations.belongsToMany(Operators, {through: 'New_Reservations'});

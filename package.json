@@ -2,7 +2,7 @@
   "name": "gyenespaintball-nodejs",
   "version": "1.0.0",
   "description": "RESTful API for Gyenespaintball.hu",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -23,7 +23,6 @@
     "cors": "^2.8.5",
     "cron": "^1.8.2",
     "express": "^4.17.1",
-    "googleapis": "^47.0.0",
     "jsonwebtoken": "^8.5.1",
     "moment-timezone": "^0.5.28",
     "mongodb": "^3.5.5",

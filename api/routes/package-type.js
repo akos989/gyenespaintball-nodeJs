@@ -10,23 +10,23 @@ router.get('/',
     PackageTypeController.get_all
 );
 router.post('/',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     PackageTypeController.create
 );
 router.patch('/:packageTypeId',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     PackageTypeController.update
 );
 router.delete('/:packageTypeId',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     PackageTypeController.delete
 );
 router.post('/delete_packages/:packageTypeId',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     PackageTypeController.delete_packages
 );
 router.post('/add_packages/:packageTypeId',
-    // checkAuth, checkAdmin,
+    checkAuth, checkAdmin,
     checkPackageIds,
     PackageTypeController.add_packages
 );
