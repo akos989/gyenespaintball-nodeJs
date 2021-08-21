@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 
 const operatorRoutes = require('./api/routes/operators');
 const tempOperatorRoutes = require('./api/routes/temp_operators');
@@ -13,31 +12,10 @@ const packageTypeRoutes = require('./api/routes/package-type');
 const modalRoutes = require('./api/routes/modals');
 const messageRoutes = require('./api/routes/messages');
 
-const whitelist = [
-    'http://gyenespaintball.hu', 
-    'http://www.gyenespaintball.hu',
-    'https://gyenespaintball.hu', 
-    'https://www.gyenespaintball.hu',
-    'http://gyenespaintball.hu:80' 
-]
-
-const corsOptions = {
-    origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    }
-  }
-
-app.use(cors());
-
 app.use(morgan('dev'));
 app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-
 
 //Routes to handle
 app.use('/api/temp_operators', tempOperatorRoutes);

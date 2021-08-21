@@ -30,8 +30,5 @@ module.exports = Reservations = db.define('Reservations', {
     archived: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
-    },
-    packageId: {
-        type: DataTypes.NUMBER
     }
 });
