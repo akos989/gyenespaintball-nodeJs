@@ -288,7 +288,7 @@ exports.scheduled_email_content = (reservation, package) => {
     const emailBody = `
         <div style="text-align: center;">
             <h1 style="padding-bottom: 30px;">Kedves ${reservation.name}!</h1>
-            <div style="padding-bottom: 30px;"> Emlékeztetjük, hogy korábban foglalt paintball időpontja 48 órán belül esedékes. A foglalással kapcsolatos adatokat lent megtalálja.</div>
+            <div style="padding-bottom: 30px;"> Emlékeztetjük, hogy korábban foglalt paintball időpontja 2 napon belül esedékes. A foglalással kapcsolatos adatokat lent megtalálja.</div>
             <hr>
             <h2>Foglalás adatai:</h2>
             <div style="padding-bottom: 30px;">
