@@ -4,7 +4,9 @@ const Reservation = require('../models/reservation');
 const Packages = require('../models/package');
 
 exports.get_all = (req, res, next) => {
-    Reservation.findAll()
+    Reservation.findAll({
+        include: Packages
+    })
         .then(reservations => {
             res.status(200).json({
                 reservations: reservations.map(reservation => {
@@ -16,7 +18,7 @@ exports.get_all = (req, res, next) => {
                         playerNumber: reservation.playerNumber,
                         notes: reservation.notes,
                         date: reservation.date,
-                        packageId: reservation.packageId,
+                        packageId: reservation.Package.id,
                         archived: reservation.archived,
                         timeStamp: reservation.createdAt
                     }
@@ -35,16 +37,17 @@ exports.get_all = (req, res, next) => {
 
 exports.get_all_client = (req, res, next) => {
     Reservation.findAll({
-        where: {archived: false}
+        where: {archived: false},
+        include: Packages
     })
         .then(reservations => {
             res.status(200).json({
                 reservations: reservations.map(reservation => {
                     return {
-                        _id: reservation._id,
+                        _id: reservation.id,
                         playerNumber: reservation.playerNumber,
                         date: reservation.date,
-                        packageId: reservation.packageId
+                        packageId: reservation.Package.id
                     }
                 })
             });
@@ -69,6 +72,8 @@ exports.create = (req, res, next) => {
             res.locals.reservationInfo = result;
             res.locals.calendarEvent = 'create';
             res.locals.adminEmail = true;
+            result.setPackage(res.locals.package)
+                .then().catch();
             next();
             res.status(201).json({
                 reservation: {
@@ -110,7 +115,7 @@ exports.update = (req, res, next) => {
                         playerNumber: result.playerNumber,
                         notes: result.notes,
                         date: result.date,
-                        packageId: result.packageId,
+                        packageId: res.locals.package.id,
                         archived: result.archived,
                         timeStamp: result.createdAt
                     }
@@ -134,7 +139,7 @@ exports.update = (req, res, next) => {
                         playerNumber: result.playerNumber,
                         notes: result.notes,
                         date: result.date,
-                        packageId: result.packageId,
+                        packageId: res.locals.package.id,
                         archived: result.archived
                     }
                 });
@@ -202,7 +207,8 @@ exports.get_for_month = (req, res, _) => {
 
     Reservation.findAll({
         where: {
-            date: {[Op.between]: [fromDate, toDate]}
+            date: {[Op.between]: [fromDate, toDate]},
+            include: Packages
         }
     })
         .then(reservations => {
@@ -211,7 +217,7 @@ exports.get_for_month = (req, res, _) => {
                     return {
                         playerNumber: reservation.playerNumber,
                         date: reservation.date,
-                        packageId: reservation.packageId
+                        packageId: reservation.Package.id
                     }
                 })
             });
@@ -229,9 +235,9 @@ exports.get_for_month = (req, res, _) => {
 exports.notify_reservations = () => {
     const EmailController = require('./email');
     let tomorrowDate = new Date();
-    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1);
+    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 2);
     let laterDate = new Date();
-    laterDate.setUTCDate(laterDate.getUTCDate() + 2);
+    laterDate.setUTCDate(laterDate.getUTCDate() + 3);
     Reservation.findAll({
         where: {
             date: {[Op.between]: [tomorrowDate, laterDate]},

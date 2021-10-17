@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const operatorRoutes = require('./api/routes/operators');
 const tempOperatorRoutes = require('./api/routes/temp_operators');
@@ -12,8 +13,29 @@ const packageTypeRoutes = require('./api/routes/package-type');
 const modalRoutes = require('./api/routes/modals');
 const messageRoutes = require('./api/routes/messages');
 
-app.use(morgan('dev'));
+const whitelist = [
+    'http://gyenespaintball.hu',
+    'http://www.gyenespaintball.hu',
+    'https://gyenespaintball.hu',
+    'https://www.gyenespaintball.hu',
+    'http://gyenespaintball.hu:80'
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        console.log('CORS origin:', origin);
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+            console.log('Allowed by CORS')
+        } else {
+            callback(new Error('Not allowed by CORS'));
+            console.log('Not allowed by CORS')
+        }
+    }
+}
 app.use('/uploads', express.static('uploads'));
+app.use(cors(corsOptions));
+app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
