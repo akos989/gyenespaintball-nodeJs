@@ -248,7 +248,7 @@ exports.notify_reservations = () => {
         .then(reservations => {
             reservations.forEach((reservation) => {
                 const htmlBody = EmailController
-                    .scheduled_email_content(reservation, reservation.packageId);
+                    .scheduled_email_content(reservation, reservation.Package);
                 EmailController.scheduled_email(
                     reservation.email, htmlBody, 'Foglalási emlékeztető'
                 );

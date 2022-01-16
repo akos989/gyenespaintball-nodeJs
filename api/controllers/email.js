@@ -115,7 +115,7 @@ function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
           <div><a href="tel:+36208028647">+36208028647</a></div>
           <div><a href="tel:+36306083283">+36306083283</a></div>
           <div style="padding-top: 2vh;">Email:</div>
-          <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+          <div><a href="mailto:kapcsolat@gyenespaintball.hu">kapcsolat@gyenespaintball.hu</a></div>
           <hr>
           <div style="padding-top: 5vh; padding-bottom: 5vh;">
               <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
@@ -324,7 +324,7 @@ exports.scheduled_email_content = (reservation, package) => {
             <div><a href="tel:+36208028647">+36208028647</a></div>
             <div><a href="tel:+36306083283">+36306083283</a></div>
             <div style="padding-top: 2vh;">Email:</div>
-            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+            <div><a href="mailto:kapcsolat@gyenespaintball.hu">kapcsolat@gyenespaintball.hu</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">
                 <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
@@ -355,7 +355,7 @@ exports.thanks_email_content = (reservation) => {
             <div><a href="tel:+36208028647">+36208028647</a></div>
             <div><a href="tel:+36306083283">+36306083283</a></div>
             <div style="padding-top: 2vh;">Email:</div>
-            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+            <div><a href="mailto:kapcsolat@gyenespaintball.hu">kapcsolat@gyenespaintball.hu</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">
                 <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
@@ -387,7 +387,7 @@ exports.client_message_create_body = (req, res, next) => {
             <div><a href="tel:+36208028647">+36208028647</a></div>
             <div><a href="tel:+36306083283">+36306083283</a></div>
             <div style="padding-top: 2vh;">Email:</div>
-            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+            <div><a href="mailto:kapcsolat@gyenespaintball.hu">kapcsolat@gyenespaintball.hu</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">
                 <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
@@ -440,7 +440,7 @@ exports.client_message_reply_body = (req, res, next) => {
             <div><a href="tel:+36208028647">+36208028647</a></div>
             <div><a href="tel:+36306083283">+36306083283</a></div>
             <div style="padding-top: 2vh;">Email:</div>
-            <div><a href="mailto:gyenespaintball@gmail.com">gyenespaintball@gmail.com</a></div>
+            <div><a href="mailto:kapcsolat@gyenespaintball.hu">kapcsolat@gyenespaintball.hu</a></div>
             <hr>
             <div style="padding-top: 5vh; padding-bottom: 5vh;">
                 <a href="https://www.facebook.com/gyenespaintball" target="_blank"><span style="margin-right: 30px;"><img src="cid:facebook" alt="fb" style="height: 25px; width: 25px;"></span></a>
