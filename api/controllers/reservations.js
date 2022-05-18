@@ -3,6 +3,8 @@ const {Op} = require("sequelize");
 const Reservation = require('../models/reservation');
 const Packages = require('../models/package');
 
+const logger = require('../../logger');
+
 exports.get_all = (req, res, next) => {
     Reservation.findAll({
         include: Packages
@@ -238,6 +240,8 @@ exports.notify_reservations = () => {
     tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 2);
     let laterDate = new Date();
     laterDate.setUTCDate(laterDate.getUTCDate() + 3);
+    logger.info(`CronJob_4 tomorrow: ${tomorrowDate}`);
+    logger.info(`CronJob_4 later: ${laterDate}`);
     Reservation.findAll({
         where: {
             date: {[Op.between]: [tomorrowDate, laterDate]},
@@ -246,15 +250,18 @@ exports.notify_reservations = () => {
         include: Packages
     })
         .then(reservations => {
+            logger.info(`CronJob_4 reservations: ${JSON.stringify(reservations)}`);
             reservations.forEach((reservation) => {
                 const htmlBody = EmailController
                     .scheduled_email_content(reservation, reservation.Package);
                 EmailController.scheduled_email(
                     reservation.email, htmlBody, 'Foglalási emlékeztető'
                 );
+                logger.info(`CronJob_4 htmlBody: ${JSON.stringify(htmlBody)}`);
             });
         })
         .catch(err => {
+            logger.error(`CronJob_4 error: ${JSON.stringify(err)}`);
         });
 };
 
@@ -262,6 +269,8 @@ exports.autoArchiveReservations = () => {
     const EmailController = require('./email');
     let today = new Date();
     today.setUTCDate(today.getUTCDate());
+    logger.info(`CronJob_21: ${today}`);
+
     Reservation.findAll({
         where: {
             date: {[Op.lte]: today},
@@ -269,20 +278,25 @@ exports.autoArchiveReservations = () => {
         }
     })
         .then(reservations => {
+            logger.info(`CronJob_21: ${JSON.stringify(reservations)}`);
             reservations.forEach(reservation => {
                 reservation.archived = true;
                 reservation.save()
                     .then(result => {
+                        logger.info(`CronJob_21 save finished: ${JSON.stringify(result)}`);
                     })
                     .catch(err => {
+                        logger.error(`CronJob_21 save error: ${JSON.stringify(err)}`);
                     });
                 const htmlBody = EmailController
                     .thanks_email_content(reservation);
                 EmailController.scheduled_email(
                     reservation.email, htmlBody, 'Köszönet'
                 );
+                logger.info(`CronJob_21 htmlBody: ${JSON.stringify(htmlBody)}`);
             });
         })
         .catch(err => {
+            logger.error(`CronJob_21 error: ${JSON.stringify(err)}`);
         })
 };

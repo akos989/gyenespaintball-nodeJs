@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const hbs = require('nodemailer-express-handlebars')
 
 exports.admin_reservation_email = (req, res, next) => {
     const date = new Date(res.locals.reservationInfo.date.getUTCFullYear(),
@@ -125,7 +126,6 @@ function makeClientEmail(reservationInfo, package, emailTitle, emailDetails) {
   `;
 }
 
-
 exports.send_to_client = (req, res, next) => {
     let transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
@@ -228,7 +228,6 @@ exports.send_to_admins = (req, res, next) => {
     });
 };
 
-
 exports.scheduled_email = (to, htmlBody, emailSubject) => {
     let transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
@@ -269,7 +268,7 @@ exports.scheduled_email = (to, htmlBody, emailSubject) => {
         if (error) {
             return console.log(error);
         }
-        // console.log("Message sent: %s", info.messageId);
+        console.log("Message sent: %s", info.messageId);
 
         // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     });

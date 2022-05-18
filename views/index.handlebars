@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        @font-face {
+            font-family: roboto;
+            src: url(./Roboto-Regular.ttf);
+            font-weight: normal;
+        }
+        @font-face {
+            font-family: roboto;
+            src: url(./Roboto-Medium.ttf);
+            font-weight: bold;
+        }
+        body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            color: #FFEBCD;
+            font-family: roboto;
+        }
+        .container {
+            width: 100%;
+            background-color: #202020;
+        }
+        @media only screen and (min-width: 600px) {
+            .container {
+                width: 600px;
+                margin: 0 auto;
+            }
+        }
+        .header {
+            background-color: black;
+            height: 60px;
+            width: 100%;
+        }
+        .header img {
+            margin-top: 10px;
+            height: 40px;
+            width: auto;
+        }
+        .header a:first-child {
+            margin-left: 20px;
+        }
+        .header a:last-child {
+            margin-right: 20px;
+            float: right;
+        }
+
+        .greeting {
+            position: relative;
+        }
+        .greeting img {
+            width: 100%;
+            -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+        }
+        .greeting .text {
+            width: 100%;
+            position: absolute;
+            bottom: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .greeting .text div:first-child {
+            font-size: 30px;
+        }
+        .greeting .text div:last-child {
+            font-size: 25px;
+        }
+        .body {
+            margin: 15px;
+        }
+        .justified {
+            text-align: justify;
+            margin-bottom: 30px;
+        }
+        .detail-header {
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .table {
+            background-color: #333534;
+            padding: 15px 5px;
+            border-radius: 10px;
+            font-size: 14px;
+            word-break: break-word;
+        }
+        .table div {
+            display: flex;
+        }
+        .table div span:first-child {
+            text-align: right;
+            float: left;
+            width: 35%;
+            padding-right: 10px;
+        }
+        .table div span:last-child {
+            padding-left: 10px;
+            text-align: left;
+            float: right;
+            width: 65%;
+            border-left: 1px solid #FFEBCD;
+            padding-bottom: 20px;
+        }
+        a {
+            color: #d3531a;
+        }
+        .footer {
+            text-align: center;
+            line-height: 21px;
+            padding-bottom: 10px;
+        }
+        .footer img {
+            width: 25px;
+        }
+        hr {
+            border: 1px solid #d3531a;
+            width: 80%;
+            left: 10%;
+        }
+        .footer div {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="https://www.gyenespaintball.hu"><img src="http://gyenespaintball.hu/assets/pictures/email/gyenes-logo-light-color.png" alt="logo"></a>
+            <a href="https://www.gyenespaintball.hu"><img src="http://gyenespaintball.hu/assets/pictures/email/gyenes-logo-written.png" alt="writtenlogo"></a>
+        </div>
+        <div class="greeting">
+            <img src="http://gyenespaintball.hu/assets/pictures/slider/home/2.jpg" alt="image">
+            <div class="backdrop"></div>
+            <div class="text">
+                <div>Kedves Valakinevű János!</div>
+                <div>Köszönjük a foglalást!</div>
+            </div>
+        </div>
+        <div class="body">
+            <div class="justified">A foglalásról a foglalt időpont előtt 48 órával fog kapni egy emlékeztető emailt. Amennyiben lemondaná a foglalást kérjük 24 órával az időpont előtt jelezze.</div>
+            <div class="detail-header">A foglalás részletei:</div>
+            <div class="table">
+                <div>
+                    <span>Név</span>
+                    <span>Valakinevű János</span>
+                </div>
+                <div>
+                    <span>Email</span>
+                    <span>janos.valakinevu.lljlkj123@gmail.com</span>
+                </div>
+                <div>
+                    <span>Telefonszám</span>
+                    <span>+36202381767</span>
+                </div>
+                <div>
+                    <span>Játékosszám</span>
+                    <span>21</span>
+                </div>
+                <div>
+                    <span>Dátum</span>
+                    <span>2021.07.04 14:00</span>
+                </div>
+                <div>
+                    <span>Időtartam</span>
+                    <span>2 óra</span>
+                </div>
+                <div>
+                    <span>Alapár</span>
+                    <span>3000 Ft</span>
+                </div>
+                <div>
+                    <span>Golyók ára</span>
+                    <span>15 Ft/db</span>
+                </div>
+                <div>
+                    <span>Lövedék az árban</span>
+                    <span>0 db</span>
+                </div>
+                <div>
+                    <span>Megjegyzések</span>
+                    <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, amet atque commodi cum eveniet impedit labore magni non, numquam officia perferendis placeat quae quasi qui veniam vero voluptates? Quasi, suscipit?</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <strong>Kapcsolat:</strong><br>
+            <a href="tel:+36202342342">+36202342342</a><br>
+            <a href="tel:+36202342342">+36202342342</a><br>
+            <a href="mailto:kapcsolat@gyenespaintball.hu">kapcsolat@gyenespaintball.hu</a><br><br>
+            <strong>Nyitvatartás:</strong><br>
+            minden nap <br>
+            8:00-18:00
+            <hr>
+            <div>
+                <a href="https://www.facebook.com/gyenespaintball/"><img src="http://gyenespaintball.hu/assets/icons/facebook.png" alt=""></a>
+                <a href="https://www.instagram.com/gyenespaintball/"><img src="http://gyenespaintball.hu/assets/icons/instagram-sketched.png" alt=""></a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
