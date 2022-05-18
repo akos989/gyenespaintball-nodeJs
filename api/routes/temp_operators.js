@@ -16,3 +16,4 @@ router.get('/can_validate/:operatorId',
 );
 
 module.exports = router;
+

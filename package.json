@@ -23,6 +23,7 @@
     "cors": "^2.8.5",
     "cron": "^1.8.2",
     "express": "^4.17.1",
+    "ical-generator": "^3.4.3",
     "jsonwebtoken": "^8.5.1",
     "moment-timezone": "^0.5.28",
     "mongodb": "^3.5.5",
