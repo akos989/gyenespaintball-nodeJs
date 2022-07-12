@@ -1,0 +1,49 @@
+<!-- Todo: emailHeaderImageUrl -->
+{{> HeaderPartial imageUrl=emailHeaderImageUrl }}
+<div style="font-weight: bold; font-size: 30px; text-align: center;">Kedves {{reservation.name}}!</div>
+<div style="font-weight: bold; font-size: 25px;  text-align: center;">{{emailTitle}}</div>
+<div style="text-align: justify; margin: 30px 0; ">{{emailDetails}}</div>
+<div style="margin-bottom: 20px; font-weight: bold; ">A foglalás részletei:</div>
+<div style="border: 1px solid black; background-color: #cccacb; padding: 15px 5px; border-radius: 10px; font-size: 14px; word-break: break-word;">
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Név</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.name}}</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Email</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.email}}</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Telefonszám</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.phoneNumber}}</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Játékosszám</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.playerNumber}}</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Dátum</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.date}}</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Időtartam</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.package.duration}} óra</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Alapár</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.package.basePrice}} Ft</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Golyók ára</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.package.bulletPrice}} Ft/db</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Lövedék az árban</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.package.includedBullets}} db</span>
+    </div>
+    <div style="display: flex;">
+        <span style="text-align: right; float: left; width: 35%; padding-right: 10px;">Megjegyzések</span>
+        <span style="padding-left: 10px; text-align: left; float: right; width: 65%; border-left: 1px solid black; padding-bottom: 20px;">{{reservation.notes}}</span>
+    </div>
+</div>
+{{> FooterPartial }}
