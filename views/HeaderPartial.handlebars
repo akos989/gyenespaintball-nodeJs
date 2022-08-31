@@ -3,8 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .container {
+            width: 100%;
+            border: 1px solid black;
+        }
+        .header-image {
+            height: 150px;
+        }
+        @media screen and (min-width: 600px) {
+            .container {
+                width: 600px;
+                margin: auto;
+            }
+            .header-image {
+                height: 200px;
+            }
+        }
+    </style>
 </head>
 <body style="color: black;">
+<div class="container">
 <table style="width: 100%; background-image: url(https://gyenespaintball.hu/assets/pictures/email-header-background-black.png); background-repeat: repeat; background-size: contain;" align="center" >
     <tr style="height: 5px;"><th></th></tr>
     <tr>
@@ -18,8 +37,8 @@
 </table>
 <table style="width: 100%; margin: 0; padding: 0; border-spacing: 0; border-collapse: collapse;">
     <tr style="width: 100%; margin: 0; background-size: cover; background-image: url({{imageUrl}}); background-position: center;">
-        <th style="height: 200px;"></th>
+        <th class="header-image"></th>
     </tr>
 </table>
-<div style="padding-top: 15px; width: 100%; background-color: #dfdfdf;">
+<div style="padding-top: 15px; width: 100%;">
     <div style="margin: 0 15px;">

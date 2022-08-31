@@ -1,5 +1,4 @@
 const Reservation = require('../../models/reservation');
-const mongoose = require('mongoose');
 
 module.exports = (req, res, next) => {
     if (req.params.reservationId) {

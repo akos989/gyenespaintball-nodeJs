@@ -7,7 +7,6 @@ const checkTemp = require('../middleware/auth/check_temp');
 const getAdmins = require('../middleware/operator/get_admins');
 
 const MessageController = require('../controllers/messages');
-const EmailController = require('../controllers/email');
 
 router.get('/',
     checkAuth, checkTemp,
@@ -15,10 +14,8 @@ router.get('/',
 );
 
 router.post('/',
-    MessageController.create,
     getAdmins,
-    EmailController.client_message_create_body, EmailController.send_to_client,
-    EmailController.admin_message_create_body, EmailController.send_to_admins
+    MessageController.create
 );
 
 router.delete('/',
@@ -28,8 +25,8 @@ router.delete('/',
 
 router.post('/reply/:messageId',
     checkAuth, checkAdmin,
-    MessageController.reply,
-    EmailController.client_message_reply_body, EmailController.send_to_client
+    getAdmins,
+    MessageController.reply
 );
 
 module.exports = router;

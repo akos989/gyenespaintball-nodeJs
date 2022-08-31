@@ -2,8 +2,9 @@
 <hr style="border: 1px solid black;">
 <div style="text-align: center; padding-bottom: 10px;">
     <div><strong>Kapcsolat:</strong></div>
-    <div><a href="tel:+36202342342">+36202342342</a></div>
-    <div><a href="tel:+36202342342">+36202342342</a></div>
+    {{#each adminPhoneNumbers}}
+        <div><a href={{phoneNumberToLink this}}>{{this}}</a></div>
+    {{/each}}
     <div><a href="mailto:kapcsolat@gyenespaintball.hu">kapcsolat@gyenespaintball.hu</a><br><br></div>
     <div><strong>Nyitvatartás:</strong></div>
     <div>minden nap</div>
@@ -16,6 +17,7 @@
             <th style="width: 30px; height: 30px; background-size: cover; background-image: url(http://gyenespaintball.hu/assets/icons/instagram-sketched.png); background-position: center;"><a style="display: block; text-decoration:none;" href="https://www.instagram.com/gyenespaintball/">&nbsp;</a></th>
         </tr>
     </table>
+</div>
 </div>
 </div>
 </body>

@@ -1,30 +1,32 @@
 const Email = require('./Email')
-const EmailContext = require('./EmailContext');
+const ReservationEmailContext = require('./ReservationEmailContext');
 const EmailOptions = require('./EmailOptions');
 const ReservationEmailTypes = require('./ReservationEmailTypes');
 const ical = require('ical-generator');
 
-const emailTemplate = 'ReservationCreatedClientEmail';
-
-module.exports = class ReservationClientEmail extends Email {
-    constructor({reservation, reservationEmailType, receiver}) {
+module.exports = class ReservationEmail extends Email {
+    constructor({reservation, reservationEmailType, receiver, adminPhoneNumbers}) {
         super();
-        const unmodifiedReservationDate = new Date(reservation.date.getFullYear(), reservation.date.getMonth(), reservation.date.getDate(), reservation.date.getHours());
+        let unmodifiedReservationDate;
+        if (reservation.date) {
+            unmodifiedReservationDate = new Date(reservation.date.getFullYear(), reservation.date.getMonth(), reservation.date.getDate(), reservation.date.getHours());
+        }
 
-        const emailContext = new EmailContext({
+        const reservationEmailContext = new ReservationEmailContext({
             emailHeaderImageUrl: reservationEmailType.EmailHeaderImageUrl,
             emailTitle: reservationEmailType.EmailTitle,
             emailDetails: reservationEmailType.EmailDetails,
-            reservation: reservation
+            reservation: reservation,
+            adminPhoneNumbers: adminPhoneNumbers
         });
 
         this.emailOptions = new EmailOptions({
             receiver: receiver,
             subject: reservationEmailType.Subject,
             text: reservationEmailType.Text,
-            template: emailTemplate,
-            context: emailContext,
-            iCalEvent: this.createICalEvent(reservationEmailType.Type, unmodifiedReservationDate)
+            template: reservationEmailType.EmailTemplate,
+            context: reservationEmailContext,
+            iCalEvent: this.createICalEvent(reservationEmailType, unmodifiedReservationDate, reservation, adminPhoneNumbers)
         });
     }
 
@@ -32,9 +34,10 @@ module.exports = class ReservationClientEmail extends Email {
         super.send(this.emailOptions);
     }
 
-    createICalEvent(emailType, startDate) {
-        if (emailType === ReservationEmailTypes.Created.Type ||
-            emailType === ReservationEmailTypes.Modified.Type) {
+    createICalEvent(emailType, startDate, reservation, adminPhoneNumbers) {
+        if (emailType.Type === ReservationEmailTypes.Created.Type ||
+            emailType.Type === ReservationEmailTypes.Modified.Type ||
+            emailType.Type === ReservationEmailTypes.Admin.Type) {
             const endDate = new Date(startDate);
             endDate.setHours(startDate.getHours() + 2);
 
@@ -49,10 +52,10 @@ module.exports = class ReservationClientEmail extends Email {
                         start: startDate,
                         end: endDate,
                         status: 'CONFIRMED',
-                        summary: 'Gyenenpaintball foglalás',
+                        summary: emailType.getEmailSummary(reservation),
                         transparency: 'OPAQUE',
                         url: 'https://www.gyenespaintball.hu',
-                        description: 'Itt még lesz valami szép leírás, hogy mennyi emberre foglalt meg ilyenek :D', // Todo: write this description
+                        description: emailType.getEmailDescription(reservation, adminPhoneNumbers),
                         geo: {lat: 46.76888838542698, lon: 17.27390882592543},
                         location: 'Gyenesdiás, Balaton u., 8315 Hungary',
                         busyStatus: 'BUSY',

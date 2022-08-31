@@ -1,4 +1,6 @@
 const Message = require("../models/message");
+const MessageEmail = require('../models/MessageEmail');
+const MessageEmailTypes = require('../models/MessageEmailTypes');
 
 exports.get_all = (req, res, _) => {
     Message.findAll()
@@ -27,7 +29,7 @@ exports.get_all = (req, res, _) => {
         });
 };
 
-exports.create = (req, res, next) => {
+exports.create = (req, res, _) => {
     const message = Message.build({
         name: req.body.name,
         email: req.body.email,
@@ -36,14 +38,29 @@ exports.create = (req, res, next) => {
 
     message.save()
         .then(result => {
-            res.locals.emailSubject = 'Új üzenet';
-            res.locals.emailTitle = 'Köszönjük, hogy hagyott üzenetet!';
-            res.locals.reservationInfo = result;
-            res.locals.messageInfo = result;
-            res.locals.adminEmail = true;
-            next();
+            const messageEmailData = {
+                name: result.name,
+                text: result.text,
+                email: result.email
+            };
+            const messageClientEmail = new MessageEmail({
+                message: messageEmailData,
+                messageEmailType: MessageEmailTypes.Created,
+                receiver: messageEmailData.email,
+                adminPhoneNumbers: res.locals.adminPhoneNumbers
+            });
 
-            res.status(201).json({
+            const messageAdminEmail = new MessageEmail({
+                message: messageEmailData,
+                messageEmailType: MessageEmailTypes.Admin,
+                receiver: res.locals.adminEmails,
+                adminPhoneNumbers: res.locals.adminPhoneNumbers
+            });
+
+            messageClientEmail.send();
+            messageAdminEmail.send();
+
+            return res.status(201).json({
                 _id: result.id,
                 name: result.name,
                 email: result.email,
@@ -81,7 +98,7 @@ exports.delete = (req, res, _) => {
         });
 };
 
-exports.reply = (req, res, next) => {
+exports.reply = (req, res, _) => {
     if (!req.body.replyBody) {
         return res.status(500).json({
             error: {
@@ -103,13 +120,22 @@ exports.reply = (req, res, next) => {
             message.reply = req.body.replyBody;
             message.save()
                 .then(result => {
-                    res.locals.emailSubject = 'Válasz';
-                    res.locals.replyBody = req.body.replyBody;
-                    res.locals.messageInfo = result;
-                    res.locals.reservationInfo = result;
-                    res.locals.adminEmail = false;
+                    const messageEmailData = {
+                        name: result.name,
+                        text: result.text,
+                        email: result.email,
+                        reply: result.reply,
+                        replied: result.replied
+                    };
+                    const messageClientEmail = new MessageEmail({
+                        message: messageEmailData,
+                        messageEmailType: MessageEmailTypes.Reply,
+                        receiver: messageEmailData.email,
+                        adminPhoneNumbers: res.locals.adminPhoneNumbers
+                    });
+                    messageClientEmail.send();
 
-                    res.status(201).json({
+                    return res.status(201).json({
                         _id: result.id,
                         name: result.name,
                         email: result.email,
@@ -118,7 +144,6 @@ exports.reply = (req, res, next) => {
                         reply: result.reply,
                         timestamp: result.createdAt
                     });
-                    return next();
                 })
                 .catch(err => {
                     return res.status(500).json({

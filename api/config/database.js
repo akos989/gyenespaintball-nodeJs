@@ -1,11 +1,6 @@
 const {Sequelize} = require('sequelize');
 
-module.exports = new Sequelize('gyenespaintball', 'root', 'Balint1999', {
-    host: 'localhost',
+module.exports = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
     dialect: 'mysql'
 });
-
-// module.exports = new Sequelize('hwpuigic_gyenespaintball_db', 'hwpuigic_akos', 'Gyenes1230', {
-//     host: 'localhost',
-//     dialect: 'mysql'
-// });

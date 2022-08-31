@@ -6,6 +6,7 @@ module.exports = (req, res, next) => {
     })
         .then(operators => {
             const adminsEmails = [];
+            res.locals.adminPhoneNumbers = operators.map(operator => operator.phoneNumber);
             for (const operator of operators) {
                 adminsEmails.push(operator.email);
             }

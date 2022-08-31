@@ -2,9 +2,6 @@ const nodemailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
 const path = require('path');
 
-const emailHost = 'mail.gyenespaintball.hu';
-const emailUser = 'kapcsolat@gyenespaintball.hu';
-const emailPassword = 'Gyenes1230';
 const emailPort = 465;
 
 module.exports = class Email {
@@ -29,12 +26,12 @@ module.exports = class Email {
 
     createTransporter() {
         return nodemailer.createTransport({
-            host: emailHost,
+            host: process.env.EMAIL_HOST,
             port: emailPort,
             secure: true,
             auth: {
-                user: emailUser,
-                pass: emailPassword
+                user: process.env.EMAIL_ADDR,
+                pass: process.env.EMAIL_PASS
             },
             tls: {
                 rejectUnauthorized: false
@@ -47,6 +44,11 @@ module.exports = class Email {
             extName: ".handlebars",
             partialsDir: path.resolve(__dirname, "..", "..", "views"),
             defaultLayout: false,
+            helpers: {
+                phoneNumberToLink: phoneNumber => {
+                    return `tel:${phoneNumber}`
+                }
+            }
         },
         viewPath: path.resolve(__dirname, "..", "..", "views"),
         extName: ".handlebars"
