@@ -32,4 +32,3 @@ module.exports = Operators = db.define('Operators', {
         type: DataTypes.DATE
     }
 });
-//newReservations: [{ type: Schema.Types.ObjectId, ref: 'Reservation' }]

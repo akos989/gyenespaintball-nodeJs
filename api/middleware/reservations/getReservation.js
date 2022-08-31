@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
             return res.status(404).json({
                 error: {
                     error: 'NOT_FOUND',
-                    message: err
+                    message: 'No reservation found'
                 }
             });
         })

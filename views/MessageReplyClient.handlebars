@@ -1,10 +1,10 @@
-{{> HeaderPartial imageUrl="https://gyenespaintball.hu/assets/pictures/page-headers/futas.jpg" }}
-<div style="font-weight: bold; font-size: 30px; text-align: center;">Kedves {{name}}!</div>
+{{> HeaderPartial imageUrl=emailHeaderImageUrl }}
+<div style="font-weight: bold; font-size: 30px; text-align: center;">Kedves {{message.name}}!</div>
 <div style="margin-top: 30px; font-size: large;">
-    <div style="font-size: unset; margin: 10px 20px; text-align: justify;">{{replyBody}}</div>
+    <div style="font-size: unset; margin: 10px 20px; text-align: justify;">{{message.reply}}</div>
     <div style="margin-top: 30px;">Üdv.: Gyenespaintball csapata</div>
     <hr style="border: 1px dashed black; margin: 10px 0">
     <div style="margin: 10px 0;" >Eredeti üzeneted:</div>
-    <div style="font-style: italic; font-size: unset; margin: 10px 20px; text-align: justify;">{{originalMessage}}</div>
+    <div style="font-style: italic; font-size: unset; margin: 10px 20px; text-align: justify;">{{message.text}}</div>
 </div>
-{{> FooterPartial }}
+{{> FooterPartial adminPhoneNumbers=adminPhoneNumbers }}

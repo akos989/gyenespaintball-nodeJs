@@ -341,14 +341,12 @@ exports.new_reservation = (req, res, next) => {
         .then(operators => {
             operators.forEach(o => {
                 o.addNewReservation(res.locals.reservationInfo)
-                    .then(result => {})
+                    .then(_ => {})
                     .catch(err => console.log(err));
             });
-            return next();
         })
         .catch(err => {
             console.log(err)
-            return next();
         });
 };
 exports.view_reservation = (req, res, _) => {

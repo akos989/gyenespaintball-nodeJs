@@ -13,7 +13,6 @@ const setUpForDelete = require('../middleware/reservations/setUpForDelete');
 
 const getAdmins = require('../middleware/operator/get_admins');
 
-const EmailController = require('../controllers/email');
 const ReservationsController = require('../controllers/reservations');
 const OperatorController = require('../controllers/operators');
 
@@ -33,18 +32,16 @@ router.post('/allForMonth',
 router.post('/',
     setUpNew, findPackage,
     checkDate, checkNoDates, checkPackage,
-    ReservationsController.create,
-    OperatorController.new_reservation,
     getAdmins,
-    EmailController.client_reservaion_email, EmailController.send_to_client,
-    EmailController.admin_reservation_email, EmailController.send_to_admins
+    ReservationsController.create,
+    OperatorController.new_reservation
 );
 router.patch('/:reservationId',
     checkAuth, checkAdmin,
     setUpNew, findPackage,
+    getAdmins,
     checkDate, checkNoDates, checkPackage,
-    ReservationsController.update,
-    EmailController.client_reservaion_email, EmailController.send_to_client
+    ReservationsController.update
 );
 
 router.post('/toggleArchived',
@@ -55,8 +52,8 @@ router.post('/toggleArchived',
 router.delete('/',
     checkAuth, checkAdmin,
     setUpForDelete,
-    ReservationsController.delete,
-    EmailController.client_reservaion_email, EmailController.send_to_client
+    getAdmins,
+    ReservationsController.delete
 );
 
 module.exports = router;

@@ -2,8 +2,12 @@ const {Op} = require("sequelize");
 
 const Reservation = require('../models/reservation');
 const Packages = require('../models/package');
+const ReservationEmail = require('../models/ReservationEmail');
+const ReservationEmailTypes = require('../models/ReservationEmailTypes');
 
-const logger = require('../../logger');
+const getAdminPhoneNumbers = require('../middleware/operator/GetAdminPhoneNumbers');
+
+const lodash = require('lodash');
 
 exports.get_all = (req, res, next) => {
     Reservation.findAll({
@@ -68,29 +72,64 @@ exports.create = (req, res, next) => {
     const reservation = res.locals.reservation;
     reservation.save()
         .then(result => {
-            res.locals.emailSubject = 'Paintball foglalás';
-            res.locals.emailTitle = 'Köszönjük a foglalást!';
-            res.locals.emailDetails = 'A foglalásról a foglalt időpont előtt 48 órával fog kapni egy emlékeztető emailt. Amennyiben lemondaná a foglalást kérjük 24 órával az időpont előtt jelezze.';
-            res.locals.reservationInfo = result;
-            res.locals.calendarEvent = 'create';
-            res.locals.adminEmail = true;
             result.setPackage(res.locals.package)
-                .then().catch();
-            next();
-            res.status(201).json({
-                reservation: {
-                    _id: result.id,
-                    name: result.name,
-                    email: result.email,
-                    phoneNumber: result.phoneNumber,
-                    playerNumber: result.playerNumber,
-                    notes: result.notes,
-                    date: result.date,
-                    packageId: req.body.packageId,
-                    archived: result.archived,
-                    timeStamp: reservation.createdAt
-                }
-            });
+                .then(reservationWithPackage => {
+                    const reservationEmailData = {
+                        name: reservationWithPackage.name,
+                        email: reservationWithPackage.email,
+                        phoneNumber: reservationWithPackage.phoneNumber,
+                        playerNumber: reservationWithPackage.playerNumber,
+                        notes: reservationWithPackage.notes,
+                        date: new Date(reservationWithPackage.date.getFullYear(), reservationWithPackage.date.getMonth(), reservationWithPackage.date.getDate(), reservationWithPackage.date.getUTCHours()),
+                        package: {
+                            bulletPrice: res.locals.package.bulletPrice,
+                            duration: res.locals.package.duration,
+                            basePrice: res.locals.package.basePrice,
+                            includedBullets: res.locals.package.includedBullets
+                        }
+                    };
+
+                    const reservationCreatedEmail = new ReservationEmail({
+                        reservation: lodash.cloneDeep(reservationEmailData),
+                        reservationEmailType: ReservationEmailTypes.Created,
+                        receiver: reservationEmailData.email,
+                        adminPhoneNumbers: res.locals.adminPhoneNumbers
+                    });
+                    const reservationAdminEmail = new ReservationEmail({
+                        reservation: lodash.cloneDeep(reservationEmailData),
+                        reservationEmailType: ReservationEmailTypes.Admin,
+                        receiver: res.locals.adminEmails,
+                        adminPhoneNumbers: res.locals.adminPhoneNumbers
+                    });
+                    reservationCreatedEmail.send();
+                    reservationAdminEmail.send();
+
+                    res.locals.reservationInfo = reservationWithPackage;
+                    next();
+                    res.status(201).json({
+                        reservation: {
+                            _id: reservationWithPackage.id,
+                            name: reservationWithPackage.name,
+                            email: reservationWithPackage.email,
+                            phoneNumber: reservationWithPackage.phoneNumber,
+                            playerNumber: reservationWithPackage.playerNumber,
+                            notes: reservationWithPackage.notes,
+                            date: reservationWithPackage.date,
+                            packageId: req.body.packageId,
+                            archived: reservationWithPackage.archived,
+                            timeStamp: reservation.createdAt
+                        }
+                    });
+                })
+                .catch(error => {
+                    return res.status(500).json({
+                        error: {
+                            error: 'RESERVATION_CREATE_FAILED',
+                            message: error
+                        }
+                    });
+                });
+
         })
         .catch(err => {
             res.status(500).json({
@@ -106,49 +145,59 @@ exports.update = (req, res, next) => {
     const reservation = res.locals.reservation;
     reservation.save()
         .then(result => {
-            result.setPackage(res.locals.package);
-            if (result.archived) {
-                return res.status(200).json({
-                    reservation: {
-                        _id: result.id,
-                        name: result.name,
-                        email: result.email,
-                        phoneNumber: result.phoneNumber,
-                        playerNumber: result.playerNumber,
-                        notes: result.notes,
-                        date: result.date,
-                        packageId: res.locals.package.id,
-                        archived: result.archived,
-                        timeStamp: result.createdAt
-                    }
-                });
-            } else {
-                res.locals.emailSubject = 'Módosított foglalás';
-                res.locals.emailTitle = 'Foglalási adatai módosítva lettek!';
-                res.locals.emailDetails = 'A lenti foglalás adatai megváltoztak. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
-                res.locals.reservationInfo = result;
-                res.locals.adminEmail = false;
-                res.locals.calendarEvent = 'update';
-                next();
+            result.setPackage(res.locals.package)
+                .then(reservationWithPackage => {
+                    res.status(200).json({
+                        message: 'RESERVATION_UPDATED',
+                        reservation: {
+                            _id: reservationWithPackage.id,
+                            name: reservationWithPackage.name,
+                            email: reservationWithPackage.email,
+                            phoneNumber: reservationWithPackage.phoneNumber,
+                            playerNumber: reservationWithPackage.playerNumber,
+                            notes: reservationWithPackage.notes,
+                            date: reservationWithPackage.date,
+                            packageId: res.locals.package.id,
+                            archived: reservationWithPackage.archived,
+                            timeStamp: reservationWithPackage.createdAt
+                        }
+                    });
+                    if (!reservationWithPackage.archived) {
+                        const reservationEmailData = {
+                            name: reservationWithPackage.name,
+                            email: reservationWithPackage.email,
+                            phoneNumber: reservationWithPackage.phoneNumber,
+                            playerNumber: reservationWithPackage.playerNumber,
+                            notes: reservationWithPackage.notes,
+                            date: new Date(reservationWithPackage.date.getFullYear(), reservationWithPackage.date.getMonth(), reservationWithPackage.date.getDate(), reservationWithPackage.date.getUTCHours()),
+                            package: {
+                                bulletPrice: res.locals.package.bulletPrice,
+                                duration: res.locals.package.duration,
+                                basePrice: res.locals.package.basePrice,
+                                includedBullets: res.locals.package.includedBullets
+                            }
+                        };
 
-                res.status(200).json({
-                    message: 'RESERVATION_UPDATED',
-                    reservation: {
-                        _id: result.id,
-                        name: result.name,
-                        email: result.email,
-                        phoneNumber: result.phoneNumber,
-                        playerNumber: result.playerNumber,
-                        notes: result.notes,
-                        date: result.date,
-                        packageId: res.locals.package.id,
-                        archived: result.archived
+                        const reservationCreatedEmail = new ReservationEmail({
+                            reservation: lodash.cloneDeep(reservationEmailData),
+                            reservationEmailType: ReservationEmailTypes.Modified,
+                            receiver: reservationEmailData.email,
+                            adminPhoneNumbers: res.locals.adminPhoneNumbers
+                        });
+                        reservationCreatedEmail.send();
                     }
+                })
+                .catch(error => {
+                    return res.status(500).json({
+                        error: {
+                            error: 'FAILED',
+                            message: error
+                        }
+                    });
                 });
-            }
         })
         .catch(err => {
-            res.status(500).json({
+            return res.status(500).json({
                 error: {
                     error: 'FAILED',
                     message: err
@@ -178,17 +227,37 @@ exports.toggleArchived = (req, res, _) => {
         });
 };
 
-exports.delete = (req, res, next) => {
+exports.delete = (req, res, _) => {
     Reservation.destroy({
         where: {id: req.body.ids}
     })
         .then(() => {
-            res.locals.emailSubject = 'Törölt foglalás';
-            res.locals.emailTitle = 'Foglalását törölték!';
-            res.locals.emailDetails = 'A lenti foglalást törölték. Amennyiben erre nem számított mihamarabb vegye fel a kapcsolatot valamelyik munkatársunkkal.';
-            res.locals.adminEmail = false;
-            next();
-            res.status(200).json({
+            for (const reservation of res.locals.reservations) {
+                if (!reservation.archived) {
+                    const reservationEmailData = {
+                        name: reservation.name,
+                        email: reservation.email,
+                        phoneNumber: reservation.phoneNumber,
+                        playerNumber: reservation.playerNumber,
+                        notes: reservation.notes,
+                        date: new Date(reservation.date.getFullYear(), reservation.date.getMonth(), reservation.date.getDate(), reservation.date.getUTCHours()),
+                        package: {
+                            bulletPrice: reservation.Package.bulletPrice,
+                            duration: reservation.Package.duration,
+                            basePrice: reservation.Package.basePrice,
+                            includedBullets: reservation.Package.includedBullets
+                        }
+                    };
+                    const reservationEmail = new ReservationEmail({
+                        reservation: reservationEmailData,
+                        reservationEmailType: ReservationEmailTypes.Deleted,
+                        receiver: reservationEmailData.email,
+                        adminPhoneNumbers: res.locals.adminPhoneNumbers
+                    });
+                    reservationEmail.send();
+                }
+            }
+            return res.status(200).json({
                 message: 'DELETE_SUCCESFUL'
             });
         })
@@ -209,9 +278,9 @@ exports.get_for_month = (req, res, _) => {
 
     Reservation.findAll({
         where: {
-            date: {[Op.between]: [fromDate, toDate]},
-            include: Packages
-        }
+            date: {[Op.between]: [fromDate, toDate]}
+        },
+        include: Packages
     })
         .then(reservations => {
             return res.status(200).json({
@@ -234,69 +303,78 @@ exports.get_for_month = (req, res, _) => {
         });
 }
 
-exports.notify_reservations = () => {
-    const EmailController = require('./email');
+exports.notify_reservations = async () => {
     let tomorrowDate = new Date();
     tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 2);
     let laterDate = new Date();
     laterDate.setUTCDate(laterDate.getUTCDate() + 3);
-    logger.info(`CronJob_4 tomorrow: ${tomorrowDate}`);
-    logger.info(`CronJob_4 later: ${laterDate}`);
-    Reservation.findAll({
+
+    const reservations = await Reservation.findAll({
         where: {
             date: {[Op.between]: [tomorrowDate, laterDate]},
             archived: false
         },
         include: Packages
-    })
-        .then(reservations => {
-            logger.info(`CronJob_4 reservations: ${JSON.stringify(reservations)}`);
-            reservations.forEach((reservation) => {
-                const htmlBody = EmailController
-                    .scheduled_email_content(reservation, reservation.Package);
-                EmailController.scheduled_email(
-                    reservation.email, htmlBody, 'Foglalási emlékeztető'
-                );
-                logger.info(`CronJob_4 htmlBody: ${JSON.stringify(htmlBody)}`);
-            });
-        })
-        .catch(err => {
-            logger.error(`CronJob_4 error: ${JSON.stringify(err)}`);
+    });
+    let adminPhoneNumbers = [];
+    try {
+       adminPhoneNumbers = await getAdminPhoneNumbers();
+    } catch (e) {
+        console.log(e);
+    }
+
+    for (const reservation of reservations) {
+        const reservationEmailData = {
+            name: reservation.name,
+            email: reservation.email,
+            phoneNumber: reservation.phoneNumber,
+            playerNumber: reservation.playerNumber,
+            notes: reservation.notes,
+            date: new Date(reservation.date.getFullYear(), reservation.date.getMonth(), reservation.date.getDate(), reservation.date.getUTCHours()),
+            package: {
+                bulletPrice: reservation.Package.bulletPrice,
+                duration: reservation.Package.duration,
+                basePrice: reservation.Package.basePrice,
+                includedBullets: reservation.Package.includedBullets
+            }
+        };
+
+        const reservationCreatedEmail = new ReservationEmail({
+            reservation: lodash.cloneDeep(reservationEmailData),
+            reservationEmailType: ReservationEmailTypes.Scheduled,
+            receiver: reservationEmailData.email,
+            adminPhoneNumbers: adminPhoneNumbers
         });
+        reservationCreatedEmail.send();
+    }
 };
 
-exports.autoArchiveReservations = () => {
-    const EmailController = require('./email');
+exports.autoArchiveReservations = async () => {
     let today = new Date();
     today.setUTCDate(today.getUTCDate());
-    logger.info(`CronJob_21: ${today}`);
 
-    Reservation.findAll({
-        where: {
-            date: {[Op.lte]: today},
-            archived: false
-        }
-    })
-        .then(reservations => {
-            logger.info(`CronJob_21: ${JSON.stringify(reservations)}`);
-            reservations.forEach(reservation => {
-                reservation.archived = true;
-                reservation.save()
-                    .then(result => {
-                        logger.info(`CronJob_21 save finished: ${JSON.stringify(result)}`);
-                    })
-                    .catch(err => {
-                        logger.error(`CronJob_21 save error: ${JSON.stringify(err)}`);
-                    });
-                const htmlBody = EmailController
-                    .thanks_email_content(reservation);
-                EmailController.scheduled_email(
-                    reservation.email, htmlBody, 'Köszönet'
-                );
-                logger.info(`CronJob_21 htmlBody: ${JSON.stringify(htmlBody)}`);
+    try {
+        const adminPhoneNumbers = await getAdminPhoneNumbers() ?? [];
+        const reservations = await Reservation.findAll({
+            where: {
+                date: {[Op.lte]: today},
+                archived: false
+            }
+        });
+        for (const reservation of reservations) {
+            reservation.archived = true;
+            const result = await reservation.save();
+            const reservationCreatedEmail = new ReservationEmail({
+                reservation: {
+                    name: result.name
+                },
+                reservationEmailType: ReservationEmailTypes.ThankYou,
+                receiver: result.email,
+                adminPhoneNumbers: adminPhoneNumbers
             });
-        })
-        .catch(err => {
-            logger.error(`CronJob_21 error: ${JSON.stringify(err)}`);
-        })
+            reservationCreatedEmail.send();
+        }
+    } catch (exception) {
+        console.log(exception);
+    }
 };

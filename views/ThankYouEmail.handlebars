@@ -1,11 +1,24 @@
-{{> HeaderPartial imageUrl="https://gyenespaintball.hu/assets/pictures/page-headers/futas.jpg" }}
-<div style="font-weight: bold; font-size: 30px; text-align: center;">Kedves {{name}}!</div>
-<div style="font-weight: bold; font-size: 25px;  text-align: center;">Köszönjük, hogy velünk játszottatok!</div>
+{{> HeaderPartial imageUrl=emailHeaderImageUrl }}
+<div style="font-weight: bold; font-size: 30px; text-align: center;">Kedves {{reservation.name}}!</div>
 <div style="text-align: justify; margin-top: 30px; font-size: large;">
-    <div>Reméljük, hogy csapatoddal jól éreztétek magatokat és tetszett a játék. Számunkra nagyon fontos a visszajelzéss, kérlek értékeljetek minket a következő linken:</div>
-    <div style="text-align: center; margin: 20px;"><a href="https://g.page/r/CcYr0A3xLg7FEAg/review">
-        <button style="">Értékelés</button>
-    </a></div>
-    <div style="margin: 20px 0;">Találkozzunk legközelebb is!</div>
+    <div>Köszönjük szépen, hogy nálunk játszottatok, reméljük, hogy csapatoddal együtt jól éreztétek magatokat és tetszett a játék!</div>
+    <div style="margin-bottom: 30px;">Ha még nem értékeltél minket a Google-n, itt a remek lehetőség:</div>
+    <div style="text-align: center;">
+        <a style="text-decoration: none; color: black;" href="https://g.page/r/CcYr0A3xLg7FEAg/review">
+            <div style="background-color: #4286F5; border-radius: 50px; padding: 5px 5px; height: 50px; display: inline-flex; align-items: center; justify-content: center;  align-self: flex-start;">
+                <table style="">
+                    <tr style="height: 47px;">
+                        <th style="width: 45px; background-size: cover; background-image: url(https://gyenespaintball.hu/assets/pictures/google-logo-min.jpg); background-position: center;"></th>
+                        <th>
+                            <span style="margin-left: 10px;">Értékelj a Google-n</span>
+                        </th>
+                    </tr>
+                </table>
+
+            </div>
+        </a>
+    </div>
+    <div style="margin-top: 30px;">Az értékelésed csupán 2 percet vesz igénybe, viszont nekünk hatalmas segítség!</div>
+    <div style="margin: 20px 0;">Mi nagyon izgatottan várjuk ajánlásodat és mindig szívesen hallunk felőletek. Ha van bármilyen észrevételed amit személyesen velünk szeretnél megosztani kérjük csak válaszolj erre az emailre! Reméljük, hogy hamarosan újra találkozunk a következő játék alkalmával!</div>
 </div>
-{{> FooterPartial }}
+{{> FooterPartial adminPhoneNumbers = adminPhoneNumbers }}

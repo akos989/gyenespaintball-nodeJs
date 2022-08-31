@@ -1,15 +1,15 @@
-{{> HeaderPartial imageUrl="https://gyenespaintball.hu/assets/pictures/page-headers/futas.jpg" }}
+{{> HeaderPartial imageUrl=emailHeaderImageUrl }}
 <div style="font-weight: bold; font-size: 25px;  text-align: center;">Új üzenet érkezett!</div>
 <div style="margin-top: 30px; font-size: large;">
     <div>Adatok:</div>
-    <div style="word-break: break-word;">Email cím: {{emailAddress}}</div>
-    <div style="word-break: break-word;">Név: {{name}}</div>
+    <div style="word-break: break-word;">Email cím: {{message.email}}</div>
+    <div style="word-break: break-word;">Név: {{message.name}}</div>
     <div style="margin-bottom: 10px;">Üzenet:</div>
-    <div style="font-size: unset; margin: 10px 20px; text-align: justify;">{{clientMessage}}</div>
+    <div style="font-size: unset; margin: 10px 20px; text-align: justify;">{{message.text}}</div>
     <div style="margin-top: 30px; text-align: center;">
         <a href="https://www.gyenespaintball.hu/operators/messages">
             <button>Válaszolok</button>
         </a>
     </div>
 </div>
-{{> FooterPartial }}
+{{> FooterPartial adminPhoneNumbers=adminPhoneNumbers }}
